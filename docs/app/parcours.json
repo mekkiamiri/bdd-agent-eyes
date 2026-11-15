@@ -1,0 +1,59 @@
+{
+  "_lisezmoi": "Carte des parcours de l'appli de démo. outils/valider.py vérifie que chaque libellé et chaque texte existe bien dans index.html ou app.js, et que chaque chaîne entre guillemets d'un scénario Gherkin existe dans le parcours visé (ou dans les parcours dont il dépend).",
+  "parcours": {
+    "connexion": {
+      "ecran": "Connexion",
+      "depend_de": [],
+      "champs": ["Email", "Mot de passe"],
+      "boutons": ["Se connecter"],
+      "textes": [
+        "Bonjour {email}",
+        "Email ou mot de passe incorrect.",
+        "Compte bloqué après 3 essais. Réessayez plus tard."
+      ],
+      "valeurs": ["demo@exemple.org", "bonjour123"],
+      "pieges": [
+        "Le bouton « Se connecter » se désactive après 3 échecs.",
+        "Le lien « Connexion » du bandeau et le bouton « Se connecter » se ressemblent."
+      ]
+    },
+    "panier": {
+      "ecran": "Catalogue",
+      "depend_de": [],
+      "champs": ["Code promo"],
+      "boutons": ["Ajouter", "Appliquer", "Commander"],
+      "produits": ["Marteau", "Tournevis", "Mètre ruban"],
+      "textes": [
+        "12,00 €", "6,50 €", "9,90 €",
+        "Épuisé",
+        "Code BIENVENUE appliqué : -10 %",
+        "Code promo inconnu."
+      ],
+      "valeurs": ["BIENVENUE"],
+      "pieges": [
+        "Trois boutons portent le même texte visible « Ajouter » (seul l'aria-label les distingue).",
+        "« Tournevis » est épuisé : son bouton « Ajouter » est désactivé mais reste visible.",
+        "« Commander » est désactivé tant que le panier est vide."
+      ]
+    },
+    "livraison": {
+      "ecran": "Livraison",
+      "depend_de": ["panier"],
+      "champs": ["Nom", "Adresse", "Code postal"],
+      "cases": ["J'accepte les conditions de vente"],
+      "boutons": ["Enregistrer l'adresse", "Valider la commande"],
+      "textes": [
+        "Le nom est obligatoire.",
+        "Le code postal doit contenir 5 chiffres.",
+        "Adresse enregistrée.",
+        "Commande confirmée"
+      ],
+      "valeurs": [],
+      "pieges": [
+        "« Valider la commande » reste désactivé tant que la case n'est pas cochée, sans message.",
+        "« Commande confirmée » est toujours dans le DOM, caché : visible seulement après validation.",
+        "« Enregistrer l'adresse » et « Valider la commande » : deux façons de « valider »."
+      ]
+    }
+  }
+}

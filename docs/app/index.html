@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Quincaillerie · appli de démo</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<!-- Appli de démo du dépôt bdd-agent-eyes.
+     Trois parcours (connexion, panier, livraison) et des pièges visuels volontaires :
+     bouton désactivé, message d'erreur, libellés ambigus, texte présent dans le DOM mais invisible.
+     Les libellés visibles sont listés dans parcours.json ; outils/valider.py vérifie que les deux concordent. -->
+<header>
+  <strong>La Quincaillerie</strong>
+  <nav aria-label="Navigation principale">
+    <a href="#connexion">Connexion</a>
+    <a href="#catalogue">Catalogue</a>
+    <a href="#livraison">Livraison</a>
+  </nav>
+  <span id="bonjour" class="bonjour"></span>
+</header>
+
+<main>
+  <!-- Parcours « connexion » -->
+  <section id="ecran-connexion" data-ecran="connexion" aria-labelledby="t-connexion">
+    <h1 id="t-connexion">Connexion</h1>
+    <p class="aide">Compte de démo : demo@exemple.org / bonjour123</p>
+    <form id="form-connexion" novalidate>
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="off">
+      <label for="mdp">Mot de passe</label>
+      <input id="mdp" name="mdp" type="password" autocomplete="off">
+      <button type="submit" id="btn-connexion">Se connecter</button>
+    </form>
+    <p id="erreur-connexion" class="erreur" role="alert"></p>
+  </section>
+
+  <!-- Parcours « panier » -->
+  <section id="ecran-catalogue" data-ecran="catalogue" aria-labelledby="t-catalogue" hidden>
+    <h1 id="t-catalogue">Catalogue</h1>
+    <ul class="produits">
+      <li><span>Marteau</span><span class="prix">12,00 €</span>
+        <button type="button" data-produit="Marteau" aria-label="Ajouter Marteau au panier">Ajouter</button></li>
+      <li><span>Tournevis</span><span class="prix">6,50 €</span>
+        <button type="button" data-produit="Tournevis" aria-label="Ajouter Tournevis au panier" disabled>Ajouter</button>
+        <span class="epuise">Épuisé</span></li>
+      <li><span>Mètre ruban</span><span class="prix">9,90 €</span>
+        <button type="button" data-produit="Mètre ruban" aria-label="Ajouter Mètre ruban au panier">Ajouter</button></li>
+    </ul>
+    <div class="panier" aria-labelledby="t-panier">
+      <h2 id="t-panier">Panier</h2>
+      <ul id="lignes-panier"></ul>
+      <p><span id="panier-compte" data-testid="panier-compte">0 article</span> · Total : <span id="total" data-testid="total">0,00 €</span></p>
+      <label for="promo">Code promo</label>
+      <input id="promo" name="promo" autocomplete="off">
+      <button type="button" id="btn-promo">Appliquer</button>
+      <p id="message-promo" class="info" role="status"></p>
+      <button type="button" id="btn-commander" disabled>Commander</button>
+    </div>
+  </section>
+
+  <!-- Parcours « livraison » -->
+  <section id="ecran-livraison" data-ecran="livraison" aria-labelledby="t-livraison" hidden>
+    <h1 id="t-livraison">Livraison</h1>
+    <form id="form-livraison" novalidate>
+      <label for="nom">Nom</label>
+      <input id="nom" name="nom" autocomplete="off">
+      <label for="adresse">Adresse</label>
+      <input id="adresse" name="adresse" autocomplete="off">
+      <label for="cp">Code postal</label>
+      <input id="cp" name="cp" inputmode="numeric" autocomplete="off">
+      <p class="choix">
+        <input id="cgv" name="cgv" type="checkbox">
+        <label for="cgv">J'accepte les conditions de vente</label>
+      </p>
+      <button type="button" id="btn-enregistrer">Enregistrer l'adresse</button>
+      <button type="submit" id="btn-valider" disabled>Valider la commande</button>
+    </form>
+    <ul id="erreurs-livraison" class="erreur" role="alert"></ul>
+    <p id="info-livraison" class="info" role="status"></p>
+    <!-- Piège : ce texte est toujours dans le DOM, mais caché tant que la commande n'est pas validée.
+         Un test qui cherche le texte dans le HTML brut le trouve ; un humain ou un agent qui regarde l'écran, non. -->
+    <div id="confirmation" class="confirmation" hidden>
+      <h2>Commande confirmée</h2>
+      <p>Merci, votre commande est en préparation.</p>
+    </div>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

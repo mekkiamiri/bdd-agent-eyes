@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ["cfp-*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validateur:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Tests du validateur
+        run: python3 -m unittest discover -s tests -v
+      - name: Features valides et liées à l'appli
+        run: python3 outils/valider.py
+      - name: Page de démo à jour
+        run: python3 outils/construire_page.py --check
+
+  reference-cucumber:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Chromium pour Playwright
+        run: mvn -B -q test-compile exec:java -Dexec.args="install --with-deps chromium"
+      - name: Cucumber + Playwright (scénarios @attendu:passe)
+        run: mvn -B verify

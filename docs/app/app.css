@@ -1,0 +1,27 @@
+/* Appli de démo volontairement sobre, en clair, pour qu'elle ressemble à une vraie appli métier. */
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#1d1d1f;background:#f6f5f2}
+header{display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding:12px 20px;background:#fff;border-bottom:1px solid #ddd}
+header nav{display:flex;gap:14px}
+header a{color:#1d4ed8}
+.bonjour{margin-left:auto;color:#555}
+main{max-width:640px;margin:0 auto;padding:20px}
+h1{font-size:26px;margin:0 0 12px}
+h2{font-size:20px;margin:16px 0 8px}
+label{display:block;margin-top:12px;font-weight:600}
+.choix label{display:inline;font-weight:400}
+input{font:inherit;padding:8px 10px;border:1px solid #bbb;border-radius:6px;width:100%;max-width:360px}
+input[type=checkbox]{width:auto}
+button{font:inherit;margin-top:14px;padding:8px 16px;border-radius:6px;border:1px solid #1d4ed8;background:#1d4ed8;color:#fff;cursor:pointer}
+/* Piège visuel : un bouton désactivé reste presque aussi visible qu'un bouton actif. */
+button:disabled{background:#8aa4e6;border-color:#8aa4e6;cursor:not-allowed}
+.produits{list-style:none;padding:0;margin:0}
+.produits li{display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #e5e5e5}
+.produits li span:first-child{flex:1}
+.produits button{margin-top:0}
+.epuise{color:#9a3412;font-size:14px}
+.panier{margin-top:20px;padding:16px;background:#fff;border:1px solid #ddd;border-radius:8px}
+.erreur{color:#b91c1c;padding-left:0;list-style:none}
+.info{color:#166534}
+.aide{color:#555;font-size:14px}
+.confirmation{margin-top:16px;padding:16px;background:#ecfdf5;border:1px solid #10b981;border-radius:8px}
