@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vos scénarios Gherkin joués par un agent qui voit l'appli · Mekki Amiri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#121416;--paper:#e9e4d8;--amber:#ffb000;--muted:#a9a39a;--dim:#5b5f63;--line:#2a2e31;--green:#7fd18b;--red:#ff5a4f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--paper);font:14px/1.6 'Martian Mono',monospace}
+a{color:var(--amber)}
+.wrap{max-width:1280px;margin:0 auto;padding:32px 20px 60px}
+.k{color:var(--amber);letter-spacing:.2em;text-transform:uppercase;font-size:12px}
+h1,h2{font-family:'Instrument Serif',serif;font-weight:400;margin:0}
+h1{font-size:clamp(34px,6vw,64px);line-height:1.02;margin:10px 0 16px}
+h2{font-size:clamp(26px,3.6vw,38px);margin:40px 0 12px}
+em{color:var(--amber);font-style:italic}
+.muted{color:var(--muted)}
+.todo{border:1px dashed var(--amber);color:var(--amber);padding:2px 8px;font-size:12px;white-space:nowrap}
+.jeu{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;margin-top:20px}
+@media (max-width:900px){.jeu{grid-template-columns:1fr}}
+.cadre{border:2px solid var(--line);background:#0b0c0d}
+.cadre iframe{display:block;width:100%;height:620px;border:0;background:#f6f5f2}
+.panneau{border:2px solid var(--line);padding:18px;background:#0b0c0d}
+select,button{font:inherit;background:#1a1d20;color:var(--paper);border:1px solid var(--dim);padding:8px 10px;border-radius:0}
+select{width:100%}
+button{cursor:pointer}
+button:hover{border-color:var(--amber)}
+.etapes{list-style:none;padding:0;margin:16px 0 0}
+.etapes li{padding:7px 0 7px 30px;position:relative;border-top:1px solid var(--line)}
+.etapes li::before{content:"·";position:absolute;left:8px;color:var(--dim)}
+.etapes li.ctx{color:var(--muted)}
+.etapes li.courant{color:var(--amber)}
+.etapes li.courant::before{content:"▸";color:var(--amber)}
+.etapes li.vu::before{content:"✓";color:var(--green)}
+.etapes li.hors::before{content:"?";color:var(--red)}
+.etapes b{font-weight:500;color:var(--amber)}
+.verdict{margin-top:14px;padding:10px 12px;border-left:3px solid var(--amber);background:#15181a;display:none}
+.verdict.visible{display:block}
+.barre{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+table{border-collapse:collapse;width:100%;margin-top:8px;font-size:13px}
+th{font-weight:400;color:var(--muted);text-align:left;padding:10px;border-bottom:2px solid var(--dim);text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+td{padding:10px;border-bottom:1px solid var(--line)}
+.tableau{overflow-x:auto}
+footer{margin-top:50px;color:var(--dim);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="k">Devoxx France 2027 · proposition de talk · v0</div>
+  <h1>Vos scénarios Gherkin joués par<br>un agent qui <em>voit l'appli</em></h1>
+  <p>Et si on n'écrivait plus les step definitions ? Un agent lit le scénario, regarde l'écran
+  (capture + arbre d'accessibilité) et le joue. Mais <em>sait-il dire non</em> à un scénario faux ou ambigu ?</p>
+  <p class="muted">Ici, c'est vous l'agent : choisissez un scénario, jouez-le dans l'appli de démo,
+  et regardez les étapes se cocher. Certains scénarios sont volontairement faux ou ambigus : à vous de les repérer.</p>
+
+  <div class="jeu">
+    <div class="cadre"><iframe id="appli" title="Appli de démo La Quincaillerie" src="app/index.html"></iframe></div>
+    <div class="panneau">
+      <label class="k" for="choix">Scénario en cours</label>
+      <select id="choix" style="margin-top:8px"></select>
+      <ul class="etapes" id="etapes"></ul>
+      <div class="barre">
+        <button type="button" id="recommencer">Recommencer</button>
+        <button type="button" id="reveler">Voir la vérité terrain</button>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <p class="muted" style="font-size:12px;margin-top:14px">Le suivi des étapes est indicatif : il compare ce que l'appli
+      affiche aux chaînes entre guillemets du scénario. Ce n'est pas un juge, c'est justement la question du talk.</p>
+    </div>
+  </div>
+
+  <h2>Agent contre Cucumber : <em>à mesurer</em></h2>
+  <p class="muted">Protocole publié (<a href="https://github.com/mekkiamiri/bdd-agent-eyes/blob/main/PROTOCOLE.md">PROTOCOLE.md</a>).
+  Aucune mesure n'a encore été faite : aucune case n'est remplie.</p>
+  <div class="tableau">
+  <table>
+    <tr><th>Mesure</th><th>Cucumber + Playwright</th><th>Agent · arbre d'accessibilité</th><th>Agent · capture</th><th>Agent · les deux</th></tr>
+    <tr><td>Réussite (verdict juste)</td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td></tr>
+    <tr><td>Faux positifs</td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td></tr>
+    <tr><td>Faux négatifs</td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td></tr>
+    <tr><td>Refus justes (scénarios ambigus)</td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td></tr>
+    <tr><td>Temps par scénario</td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td></tr>
+    <tr><td>Coût (tokens · temps humain)</td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td><td><span class="todo">à mesurer</span></td></tr>
+  </table>
+  </div>
+
+  <h2>Ce qui tourne déjà</h2>
+  <p>L'appli de démo (3 parcours, pièges visuels), <span id="nb"></span>, le validateur
+  (syntaxe + lien feature → parcours → appli, tests verts) et la référence Cucumber-JVM + Playwright Java.
+  Le banc de l'agent reste à brancher.</p>
+  <p><a href="https://github.com/mekkiamiri/bdd-agent-eyes">Dépôt</a> · <a href="slides/">Slides</a> · <a href="app/">Appli seule</a></p>
+  <footer>Mekki Amiri · Apache-2.0 · aucun chiffre de résultat n'est affiché avant mesure.</footer>
+</div>
+
+<script src="scenarios.js"></script>
+<script>
+"use strict";
+const S = window.SCENARIOS;
+const choix = document.getElementById("choix");
+const liste = document.getElementById("etapes");
+const cadre = document.getElementById("appli");
+const verdict = document.getElementById("verdict");
+const LIBELLE = { passe: "le scénario est juste : il doit passer", echec: "le scénario est faux : l'appli fait autre chose", ambigu: "le scénario est ambigu : il faut refuser de le jouer" };
+
+document.getElementById("nb").textContent = S.length + " scénarios Gherkin dont " +
+  S.filter((s) => s.attendu !== "passe").length + " faux ou ambigus";
+
+S.forEach((s, i) => {
+  const o = document.createElement("option");
+  o.value = i;
+  o.textContent = s.fonctionnalite + " · " + s.nom;
+  choix.appendChild(o);
+});
+
+let scenario, pointeur, journal, etat;
+const echapper = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const guillemets = (t) => [...t.matchAll(/"([^"]*)"/g)].map((m) => m[1]);
+
+function rendre() {
+  liste.innerHTML = "";
+  scenario.etapes.forEach((e, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = "<b>" + echapper(e.mot) + "</b> " + echapper(e.texte).replace(/"([^"]*)"/g, "« $1 »");
+    if (e.contexte) li.classList.add("ctx");
+    if (i < pointeur) li.classList.add("vu");
+    if (i === pointeur) li.classList.add(regle(e) ? "courant" : "hors");
+    if (i === pointeur && !regle(e)) li.title = "Étape impossible à suivre : que doit-on voir ou faire ?";
+    liste.appendChild(li);
+  });
+}
+
+// Chaque étape du vocabulaire devient une condition sur ce que l'appli a signalé.
+function regle(e) {
+  const t = e.texte, q = guillemets(t);
+  const vus = (x) => etat && etat.textes.some((v) => v.includes(x));
+  const action = (pred) => journal.some((ev) => ev.type !== "ecran" && pred(ev.libelle || ""));
+  let m;
+  if ((m = /^je suis sur la page "(.+)"$/.exec(t))) return () => etat && etat.ecran === m[1].toLowerCase();
+  if (/^je suis connecté$/.test(t)) return () => vus("Bonjour ");
+  if ((m = /^je saisis "(.*)" dans le champ "(.+)"$/.exec(t))) return () => action((l) => l === m[2] + "=" + m[1]);
+  if ((m = /^je clique sur "(.+)"$/.exec(t))) return () => action((l) => l === m[1] || l.startsWith(m[1] + " "));
+  if ((m = /^j'ajoute "(.+)" au panier$/.exec(t))) return () => action((l) => l === "Ajouter " + m[1] + " au panier");
+  if ((m = /^je coche "(.+)"$/.exec(t))) return () => action((l) => l === m[1]);
+  if ((m = /^je ne vois pas "(.+)"$/.exec(t))) return () => etat && !vus(m[1]);
+  if ((m = /^je vois "(.+)"$/.exec(t))) return () => vus(m[1]);
+  if ((m = /^le panier contient (\d+) articles?$/.exec(t))) return () => etat && etat.textes.includes(m[1] + (m[1] > 1 ? " articles" : " article"));
+  if ((m = /^le total est "(.+)"$/.exec(t))) return () => etat && etat.textes.includes(m[1]);
+  if ((m = /^le bouton "(.+)" est désactivé$/.exec(t))) return () => etat && etat.desactives.includes(m[1]);
+  return null; // hors vocabulaire : un humain (ou un agent) doit le signaler
+}
+
+function avancer() {
+  while (pointeur < scenario.etapes.length) {
+    const r = regle(scenario.etapes[pointeur]);
+    if (!r || !r()) break;
+    pointeur += 1;
+    journal = []; // une action ne compte que pour l'étape courante
+  }
+  rendre();
+  if (pointeur === scenario.etapes.length) {
+    verdict.className = "verdict visible";
+    verdict.textContent = "Toutes les étapes ont été vues à l'écran.";
+  }
+}
+
+function charger(i) {
+  scenario = S[i];
+  pointeur = 0; journal = []; etat = null;
+  verdict.className = "verdict";
+  const premiere = scenario.etapes.find((e) => /^je suis sur la page "/.test(e.texte));
+  const ecran = premiere ? guillemets(premiere.texte)[0].toLowerCase() : "connexion";
+  cadre.src = "app/index.html?t=" + Date.now() + "#" + ecran;
+  rendre();
+}
+
+window.addEventListener("message", (e) => {
+  const d = e.data;
+  if (!d || d.source !== "quincaillerie" || !scenario) return;
+  etat = d;
+  journal.push(d);
+  avancer();
+});
+
+choix.addEventListener("change", () => charger(Number(choix.value)));
+document.getElementById("recommencer").addEventListener("click", () => charger(Number(choix.value)));
+document.getElementById("reveler").addEventListener("click", () => {
+  verdict.className = "verdict visible";
+  verdict.innerHTML = "<b style='color:var(--amber)'>Vérité terrain</b> : " + LIBELLE[scenario.attendu] +
+    (scenario.piege ? ".<br>" + echapper(scenario.piege) : ".");
+});
+charger(0);
+</script>
+</body>
+</html>

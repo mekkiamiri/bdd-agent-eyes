@@ -1,0 +1,241 @@
+<!-- Slides du talk « Vos scénarios Gherkin joués par un agent qui voit l'appli » (Tools-in-Action 30 min)
+     Construire : python3 <kit>/build_deck.py slides/slides.html docs/slides/index.html "Gherkin joué par un agent"
+     Règle : aucun chiffre de résultat avant mesure ; les emplacements sont marqués « à mesurer ».
+     Plan : 0-3 problème · 3-7 l'idée · 7-17 démo · 17-24 mesures · 24-28 quand quoi · 28-30 questions -->
+
+<!-- 1. Titre -->
+<section class="slide">
+  {{RULER}}
+  <div class="pad" style="top:250px">
+    <div class="k reveal">Devoxx France 2027 · Tools-in-Action</div>
+    <h1 class="reveal" style="margin-top:40px;font-size:128px">Vos scénarios Gherkin<br>joués par un agent<br>qui <em>voit l'appli</em></h1>
+  </div>
+  <div style="position:absolute;right:120px;bottom:140px;text-align:right" class="reveal"><h3>Mekki Amiri</h3><p class="muted" style="font-size:24px;margin:8px 0 0">Tech Lead · architecte système</p></div>
+  <aside class="notes">Bonjour. 30 minutes, une démo, et un tableau qu'on remplira avec des mesures, pas des impressions.</aside>
+</section>
+
+<!-- 2. Le problème (0-3) -->
+<section class="slide">
+  <div class="pad" style="top:260px">
+    <div class="k reveal">Le problème</div>
+    <h2 class="reveal" style="margin-top:30px">Le scénario se lit.<br><em>La colle, beaucoup moins.</em></h2>
+  </div>
+  {{CHROME}}
+  <aside class="notes">Qui écrit du Gherkin ici ? Qui maintient les step definitions ? Voilà.</aside>
+</section>
+
+<!-- 3. Le scénario et sa colle -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">features/panier.feature → Etapes.java</div>
+    <pre class="code reveal" style="margin-top:40px">Quand j'ajoute "Marteau" au panier
+Alors le panier contient 1 article</pre>
+    <pre class="code reveal" style="margin-top:30px"><span class="h">@Quand("j'ajoute {string} au panier")</span>
+public void jAjouteAuPanier(String produit) {
+  page.getByRole(AriaRole.BUTTON, new GetByRoleOptions()
+      .setName("Ajouter " + produit + " au panier").setExact(true)).click();
+}</pre>
+  </div>
+  {{CHROME}}
+  <aside class="notes">Deux lignes lisibles par le métier. Et derrière, du code qui dépend d'un aria-label. Renommez-le : rouge.</aside>
+</section>
+
+<!-- 4. La question (3-7) -->
+<section class="slide">
+  <div class="pad" style="top:220px">
+    <div class="k reveal">La question</div>
+    <h2 class="reveal" style="margin-top:30px">Et si personne<br>n'écrivait <em>la colle</em> ?</h2>
+    <p class="muted reveal" style="margin-top:50px">Un agent lit le scénario, regarde l'écran, et le joue.</p>
+  </div>
+  {{CHROME}}
+</section>
+
+<!-- 5. Section : l'idée -->
+<section class="slide">
+  {{RULER}}
+  <div class="pad" style="top:320px"><div class="k reveal">Partie 1</div><h1 class="reveal" style="margin-top:30px">L'agent <em>testeur</em></h1></div>
+  {{CHROME}}
+</section>
+
+<!-- 6. Ce que fait l'agent -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">Pas de step definitions</div>
+    <ul class="steps reveal">
+      <li data-n="01">Il lit <span class="muted">· le scénario, sans les tags ni la réponse</span></li>
+      <li data-n="02">Il regarde <span class="muted">· capture d'écran + arbre d'accessibilité</span></li>
+      <li data-n="03">Il rend un verdict <span class="muted">· passe, échec ou <em>refus</em></span></li>
+    </ul>
+  </div>
+  {{CHROME}}
+  <aside class="notes">Outil de navigation : par exemple Playwright MCP (browser_snapshot, browser_take_screenshot). Consigne dans agent/CONSIGNE.md : pas de clic forcé, pas de script.</aside>
+</section>
+
+<!-- 7. La vérité terrain -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">La vérité terrain</div>
+    <div class="readouts reveal" style="margin-top:60px"><div><b>9</b><span>justes · doivent passer</span></div><div><b>3</b><span>faux · doivent échouer</span></div><div><b>3</b><span>ambigus · à refuser</span></div></div>
+    <p class="reveal" style="margin-top:60px">Un tag <em>@attendu</em> par scénario, et le piège écrit noir sur blanc.<br><span class="muted">Un validateur vérifie chaque libellé contre l'appli.</span></p>
+  </div>
+  {{CHROME}}
+</section>
+
+<!-- 8. Section : démo (7-17) -->
+<section class="slide">
+  {{RULER}}
+  <div class="pad" style="top:320px"><div class="k reveal">Partie 2</div><h1 class="reveal" style="margin-top:30px"><em>Démo</em></h1></div>
+  {{CHROME}}
+  <aside class="notes">Basculer sur la page de démo : appli à gauche, scénario à droite. Terminal prêt avec mvn verify.</aside>
+</section>
+
+<!-- 9. Démo : même scénario, deux joueurs -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">Démo · « Commande valide »</div>
+    <div class="cols reveal" style="margin-top:60px">
+      <div class="panel"><h3>Cucumber + Playwright</h3><p class="muted">step definitions écrites à la main</p></div>
+      <div class="panel"><h3>Agent</h3><p class="muted">capture + arbre d'accessibilité, rien d'autre</p></div>
+    </div>
+  </div>
+  {{CHROME}}
+  <aside class="notes">1) mvn verify : vert. 2) L'agent joue le même scénario. Montrer ce qu'il voit à chaque étape. Plan B : vidéo.</aside>
+</section>
+
+<!-- 10. Piège 1 : bouton désactivé -->
+<section class="slide">
+  <div class="pad" style="top:220px">
+    <div class="k reveal">Piège 1 · @attendu:echec</div>
+    <h2 class="reveal" style="margin-top:30px">« J'ajoute Tournevis au panier »</h2>
+    <p class="reveal" style="margin-top:40px">Le bouton est là. <em>Il est désactivé.</em></p>
+    <p class="muted reveal">L'agent force-t-il le clic ? Conclut-il que c'est passé ?</p>
+  </div>
+  {{CHROME}}
+</section>
+
+<!-- 11. Piège 2 : libellé ambigu -->
+<section class="slide">
+  <div class="pad" style="top:220px">
+    <div class="k reveal">Piège 2 · @attendu:ambigu</div>
+    <h2 class="reveal" style="margin-top:30px">« Je clique sur <em>Ajouter</em> »</h2>
+    <p class="reveal" style="margin-top:40px">Trois boutons portent ce texte.</p>
+    <p class="muted reveal">Playwright refuse (mode strict). Et l'agent : il devine, ou il demande ?</p>
+  </div>
+  {{CHROME}}
+  <aside class="notes">Le total attendu (12,00 €) laisse deviner Marteau. Deviner n'est pas tester.</aside>
+</section>
+
+<!-- 12. Piège 3 : texte caché dans le DOM -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">Piège 3 · le DOM ment</div>
+    <pre class="code reveal" style="margin-top:40px"><span class="c">&lt;!-- docs/app/index.html --&gt;</span>
+&lt;div id="confirmation" <span class="h">hidden</span>&gt;
+  &lt;h2&gt;Commande confirmée&lt;/h2&gt;
+&lt;/div&gt;</pre>
+    <h3 class="reveal" style="margin-top:50px">Toujours dans le HTML. <em>Visible seulement après validation.</em></h3>
+  </div>
+  {{CHROME}}
+  <aside class="notes">Un test qui cherche le texte dans le HTML brut passe à tort. Un œil, humain ou agent, ne le voit pas.</aside>
+</section>
+
+<!-- 13. Le refus -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">Ce qu'on attend d'un bon testeur</div>
+    <pre class="code reveal" style="margin-top:40px">Et je valide
+Alors la commande est enregistrée</pre>
+    <pre class="code reveal" style="margin-top:30px">{"verdict": "<span class="h">refus</span>", "etape": 3,
+ "explication": "…", "preuve": "…"}</pre>
+    <p class="muted reveal" style="margin-top:30px">Format demandé à l'agent. Sa vraie réponse : en démo.</p>
+  </div>
+  {{CHROME}}
+  <aside class="notes">Cucumber : étape non définie. L'agent : saura-t-il dire « ce scénario n'est pas testable » ?</aside>
+</section>
+
+<!-- 14. Section : mesures (17-24) -->
+<section class="slide">
+  {{RULER}}
+  <div class="pad" style="top:320px"><div class="k reveal">Partie 3</div><h1 class="reveal" style="margin-top:30px">Les <em>mesures</em></h1></div>
+  {{CHROME}}
+</section>
+
+<!-- 15. Tableau (à mesurer) -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">15 scénarios · 3 passages chacun</div>
+    <table class="m reveal" style="margin-top:40px">
+      <tr><th>Configuration</th><th>Réussite</th><th>Faux positifs</th><th>Refus justes</th><th>Temps</th><th>Coût</th></tr>
+      <tr><td>Cucumber + Playwright</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+      <tr><td>Agent · arbre</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+      <tr><td>Agent · capture</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+      <tr><td>Agent · les deux</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+    </table>
+    <div class="todo reveal" style="margin-top:36px">à mesurer · protocole dans PROTOCOLE.md</div>
+  </div>
+  {{CHROME}}
+  <aside class="notes">Le faux positif est le pire : on croit que c'est testé. C'est la colonne à regarder en premier.</aside>
+</section>
+
+<!-- 16. Robustesse et coût (à mesurer) -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">Quand l'interface change</div>
+    <h2 class="reveal" style="margin:30px 0 40px">Renommer un <em>aria-label</em>.<br>Qui casse ?</h2>
+    <div class="cols reveal" style="gap:40px">
+      <div class="panel"><h3>Cucumber</h3><p class="muted">step definitions à réparer</p><div class="todo">à mesurer</div></div>
+      <div class="panel"><h3>Agent</h3><p class="muted">tokens et temps par scénario</p><div class="todo">à mesurer</div></div>
+    </div>
+  </div>
+  {{CHROME}}
+</section>
+
+<!-- 18. Arbre de décision (provisoire) -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">Cucumber ou agent, quand ? · provisoire</div>
+    <div class="cols reveal" style="margin-top:50px;grid-template-columns:1fr 1fr 1fr;gap:40px">
+      <div class="panel"><h3>Non-régression en CI</h3><p class="muted">rapide, répétable</p><div class="todo">à mesurer</div></div>
+      <div class="panel"><h3>Nouveau scénario</h3><p class="muted">avant d'écrire la colle</p><div class="todo">à mesurer</div></div>
+      <div class="panel"><h3>Relire les scénarios</h3><p class="muted">trouver les ambigus</p><div class="todo">à mesurer</div></div>
+    </div>
+  </div>
+  {{CHROME}}
+</section>
+
+<!-- 19. Écrire du Gherkin jouable -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">Du Gherkin qu'un agent peut jouer</div>
+    <ul class="steps reveal">
+      <li data-n="01">Un libellé <em>visible</em> par élément</li>
+      <li data-n="02">Un <em>Alors</em> qui se voit à l'écran</li>
+      <li data-n="03">Pas de « je valide » <span class="muted">· nommer le bouton</span></li>
+    </ul>
+  </div>
+  {{CHROME}}
+  <aside class="notes">Ces règles viennent des pièges de la démo. Bonus : elles rendent aussi les scénarios plus clairs pour les humains.</aside>
+</section>
+
+<!-- 20. Chez vous, demain -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">Chez vous, demain</div>
+    <pre class="code reveal" style="margin-top:40px">git clone https://github.com/mekkiamiri/bdd-agent-eyes
+python3 outils/valider.py
+mvn verify</pre>
+    <p class="reveal" style="margin-top:40px">Remplacez l'appli de démo par la vôtre, et les pièges par vos vrais scénarios.</p>
+  </div>
+  {{CHROME}}
+</section>
+
+<!-- 21. Fin -->
+<section class="slide">
+  {{RULER}}
+  <div class="pad" style="top:300px">
+    <h2 class="reveal">Un bon testeur sait <em>dire non</em>.</h2>
+    <p class="reveal" style="margin-top:50px">mekkiamiri.github.io/bdd-agent-eyes</p>
+    <p class="muted reveal">Questions ?</p>
+  </div>
+  {{CHROME}}
+</section>
