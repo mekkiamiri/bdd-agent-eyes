@@ -37,3 +37,13 @@ Fonctionnalité: Panier
     Piège : trois boutons affichent « Ajouter » et le scénario ne dit pas lequel. Le total laisse deviner « Marteau », mais deviner n'est pas tester.
     Quand je clique sur "Ajouter"
     Alors le total est "12,00 €"
+
+  @attendu:passe
+  Scénario: Un code inconnu retire la remise
+    Soit j'ajoute "Marteau" au panier
+    Et je saisis "BIENVENUE" dans le champ "Code promo"
+    Et je clique sur "Appliquer"
+    Quand je saisis "FAUX" dans le champ "Code promo"
+    Et je clique sur "Appliquer"
+    Alors je vois "Code promo inconnu."
+    Et le total est "12,00 €"

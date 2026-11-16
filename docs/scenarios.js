@@ -1,4 +1,50 @@
 // Généré par outils/construire_page.py à partir de features/*.feature : ne pas modifier.
+window.VOCABULAIRE = [
+ {
+  "expression": "je suis sur la page {string}",
+  "regex": "^je suis sur la page \"(?<ecran>[^\"]+)\"$"
+ },
+ {
+  "expression": "je suis connecté",
+  "regex": "^je suis connecté$"
+ },
+ {
+  "expression": "je saisis {string} dans le champ {string}",
+  "regex": "^je saisis \"(?<libre>[^\"]*)\" dans le champ \"(?<champ>[^\"]+)\"$"
+ },
+ {
+  "expression": "je clique sur {string}",
+  "regex": "^je clique sur \"(?<bouton>[^\"]+)\"$"
+ },
+ {
+  "expression": "j'ajoute {string} au panier",
+  "regex": "^j'ajoute \\\"(?<produit>[^\\\"]+)\\\" au panier$"
+ },
+ {
+  "expression": "je coche {string}",
+  "regex": "^je coche \"(?<case>[^\"]+)\"$"
+ },
+ {
+  "expression": "je vois {string}",
+  "regex": "^je vois \"(?<texte>[^\"]+)\"$"
+ },
+ {
+  "expression": "je ne vois pas {string}",
+  "regex": "^je ne vois pas \"(?<texte>[^\"]+)\"$"
+ },
+ {
+  "expression": "le panier contient {int} article(s)",
+  "regex": "^le panier contient (?<nombre>\\d+) articles?$"
+ },
+ {
+  "expression": "le total est {string}",
+  "regex": "^le total est \"(?<montant>\\d+,\\d\\d €)\"$"
+ },
+ {
+  "expression": "le bouton {string} est désactivé",
+  "regex": "^le bouton \"(?<bouton>[^\"]+)\" est désactivé$"
+ }
+];
 window.SCENARIOS = [
  {
   "id": "connexion.feature:Connexion réussie",
@@ -176,6 +222,51 @@ window.SCENARIOS = [
    {
     "mot": "Alors",
     "texte": "je suis connecté",
+    "contexte": false
+   }
+  ]
+ },
+ {
+  "id": "livraison-panier-vide.feature:Commande refusée quand le panier est vide",
+  "fonctionnalite": "Livraison sans panier",
+  "parcours": "livraison",
+  "nom": "Commande refusée quand le panier est vide",
+  "attendu": "passe",
+  "piege": "",
+  "etapes": [
+   {
+    "mot": "Soit",
+    "texte": "je suis sur la page \"Livraison\"",
+    "contexte": true
+   },
+   {
+    "mot": "Quand",
+    "texte": "je saisis \"Camille Martin\" dans le champ \"Nom\"",
+    "contexte": false
+   },
+   {
+    "mot": "Et",
+    "texte": "je saisis \"69003\" dans le champ \"Code postal\"",
+    "contexte": false
+   },
+   {
+    "mot": "Et",
+    "texte": "je coche \"J'accepte les conditions de vente\"",
+    "contexte": false
+   },
+   {
+    "mot": "Et",
+    "texte": "je clique sur \"Valider la commande\"",
+    "contexte": false
+   },
+   {
+    "mot": "Alors",
+    "texte": "je vois \"Votre panier est vide.\"",
+    "contexte": false
+   },
+   {
+    "mot": "Et",
+    "texte": "je ne vois pas \"Commande confirmée\"",
     "contexte": false
    }
   ]
@@ -565,6 +656,56 @@ window.SCENARIOS = [
    },
    {
     "mot": "Alors",
+    "texte": "le total est \"12,00 €\"",
+    "contexte": false
+   }
+  ]
+ },
+ {
+  "id": "panier.feature:Un code inconnu retire la remise",
+  "fonctionnalite": "Panier",
+  "parcours": "panier",
+  "nom": "Un code inconnu retire la remise",
+  "attendu": "passe",
+  "piege": "",
+  "etapes": [
+   {
+    "mot": "Soit",
+    "texte": "je suis sur la page \"Catalogue\"",
+    "contexte": true
+   },
+   {
+    "mot": "Soit",
+    "texte": "j'ajoute \"Marteau\" au panier",
+    "contexte": false
+   },
+   {
+    "mot": "Et",
+    "texte": "je saisis \"BIENVENUE\" dans le champ \"Code promo\"",
+    "contexte": false
+   },
+   {
+    "mot": "Et",
+    "texte": "je clique sur \"Appliquer\"",
+    "contexte": false
+   },
+   {
+    "mot": "Quand",
+    "texte": "je saisis \"FAUX\" dans le champ \"Code promo\"",
+    "contexte": false
+   },
+   {
+    "mot": "Et",
+    "texte": "je clique sur \"Appliquer\"",
+    "contexte": false
+   },
+   {
+    "mot": "Alors",
+    "texte": "je vois \"Code promo inconnu.\"",
+    "contexte": false
+   },
+   {
+    "mot": "Et",
     "texte": "le total est \"12,00 €\"",
     "contexte": false
    }

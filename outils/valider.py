@@ -23,6 +23,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass, field
+from html.parser import HTMLParser
 from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -232,18 +233,95 @@ def _motif_texte(texte: str, valeurs: list[str]) -> re.Pattern:
     return re.compile("^" + alt.join(re.escape(m) for m in morceaux) + "$")
 
 
+class _TexteHtml(HTMLParser):
+    """Texte affiché par index.html : nœuds texte hors <script>, <style> et commentaires ; attributs data-ecran."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.morceaux: list[str] = []
+        self.ecrans: set[str] = set()
+        self._ignorer = 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ("script", "style"):
+            self._ignorer += 1
+        for nom, val in attrs:
+            if nom == "data-ecran" and val:
+                self.ecrans.add(val)
+
+    def handle_endtag(self, tag):
+        if tag in ("script", "style") and self._ignorer:
+            self._ignorer -= 1
+
+    def handle_data(self, data):
+        if not self._ignorer and data.strip():
+            self.morceaux.append(" ".join(data.split()))
+
+
+def _sans_commentaires_js(code: str) -> str:
+    """Retire les commentaires // et /* */ d'un code JavaScript, sans toucher aux chaînes."""
+    sortie, i, chaine = [], 0, None
+    while i < len(code):
+        c = code[i]
+        if chaine:
+            sortie.append(c)
+            if c == "\\" and i + 1 < len(code):
+                sortie.append(code[i + 1])
+                i += 1
+            elif c == chaine:
+                chaine = None
+        elif c in "\"'`":
+            chaine = c
+            sortie.append(c)
+        elif code.startswith("//", i):
+            while i < len(code) and code[i] != "\n":
+                i += 1
+            continue
+        elif code.startswith("/*", i):
+            fin = code.find("*/", i + 2)
+            i = len(code) if fin < 0 else fin + 2
+            continue
+        else:
+            sortie.append(c)
+        i += 1
+    return "".join(sortie)
+
+
+def texte_affiche(dossier_app: Path) -> tuple[str, set[str]]:
+    """Texte que l'appli peut afficher, et ses écrans (data-ecran).
+
+    - index.html : texte visible des balises (pas les commentaires, pas les scripts, pas les attributs) ;
+    - app.js : chaînes littérales des seules instructions qui écrivent à l'écran
+      (« .textContent = … » ou « erreurs.push(…) »), commentaires retirés.
+    Limite : du JS jamais appelé mais qui écrit dans textContent serait encore compté.
+    """
+    analyseur = _TexteHtml()
+    analyseur.feed((dossier_app / "index.html").read_text(encoding="utf-8"))
+    morceaux = list(analyseur.morceaux)
+    js = _sans_commentaires_js((dossier_app / "app.js").read_text(encoding="utf-8"))
+    for instruction in re.split(r";\s*\n|\n(?=\s*(?:const|let|if|for|\}))", js):
+        for ecriture in re.split(r"\.textContent =|erreurs\.push\(", instruction)[1:]:
+            # seule la partie à droite de l'écriture compte (pas les sélecteurs ni les noms d'événements)
+            ecriture = re.split(r"\.textContent =|\$\(|addEventListener", ecriture)[0]
+            for litteral in re.findall(r'"((?:[^"\\]|\\.)*)"|`((?:[^`\\]|\\.)*)`', ecriture):
+                    texte = litteral[0] or re.sub(r"\$\{[^}]*\}", "\n", litteral[1])
+                    morceaux.extend(t for t in texte.split("\n") if t)
+    return "\n".join(html.unescape(m) for m in morceaux), analyseur.ecrans
+
+
 def verifier_parcours_dans_appli(parcours: dict, dossier_app: Path, rapport: Rapport) -> None:
-    """Chaque libellé déclaré dans parcours.json doit exister dans le code de l'appli."""
-    source = "\n".join(html.unescape((dossier_app / nom).read_text(encoding="utf-8"))
-                       for nom in ("index.html", "app.js"))
+    """Chaque libellé déclaré dans parcours.json doit être affiché par l'appli, chaque écran exister."""
+    source, ecrans = texte_affiche(dossier_app)
     for pid, p in parcours.items():
+        if p.get("ecran", "").lower() not in ecrans:
+            rapport.erreur(f"parcours.json/{pid}", f"écran « {p.get('ecran')} » sans data-ecran correspondant dans index.html")
         libelles = [p.get("ecran", "")]
         for cle in ("champs", "boutons", "produits", "cases", "textes", "valeurs"):
             libelles += p.get(cle, [])
         for lib in libelles:
             morceaux = [m for m in re.split(r"\{[^}]+\}", lib) if m.strip()]
             if not lib or not all(m in source for m in morceaux):
-                rapport.erreur(f"parcours.json/{pid}", f"« {lib} » introuvable dans index.html ou app.js")
+                rapport.erreur(f"parcours.json/{pid}", f"« {lib} » n'est affiché nulle part par index.html ou app.js")
         for dep in p.get("depend_de", []):
             if dep not in parcours:
                 rapport.erreur(f"parcours.json/{pid}", f"dépend d'un parcours inconnu « {dep} »")
@@ -264,6 +342,17 @@ def _portee(parcours: dict, pid: str) -> dict:
     return portee
 
 
+def _ecrans_accessibles(parcours: dict, pid: str) -> set[str]:
+    vus, a_voir = set(), [pid]
+    while a_voir:
+        courant = a_voir.pop()
+        if courant in vus or courant not in parcours:
+            continue
+        vus.add(courant)
+        a_voir += parcours[courant].get("depend_de", [])
+    return {parcours[x]["ecran"] for x in vus}
+
+
 def resoudre_etape(texte: str, parcours: dict, pid: str) -> list[str]:
     """Retourne la liste des problèmes de l'étape (liste vide si elle est jouable)."""
     for motif, _ in VOCABULAIRE_RE:
@@ -274,9 +363,8 @@ def resoudre_etape(texte: str, parcours: dict, pid: str) -> list[str]:
         portee = _portee(parcours, pid)
         for type_, valeur in m.groupdict().items():
             if type_ == "ecran":
-                ecrans = [p["ecran"] for p in parcours.values()]
-                if valeur not in ecrans:
-                    problemes.append(f"page inconnue « {valeur} »")
+                if valeur not in _ecrans_accessibles(parcours, pid):
+                    problemes.append(f"page « {valeur} » hors du parcours « {pid} » et de ses dépendances")
             elif type_ in OU_CHERCHER:
                 connus = [x for cle in OU_CHERCHER[type_] for x in portee.get(cle, [])]
                 if type_ == "texte":

@@ -18,15 +18,19 @@ function visible(el) {
   return el && !el.closest("[hidden]") && el.textContent.trim() !== "";
 }
 function textesVisibles() {
-  const sel = "h1, h2, [role=alert], [role=alert] li, [role=status], #bonjour, #total, #panier-compte, #lignes-panier li, .confirmation p";
+  const sel = "h1, h2, [role=alert], [role=alert] li, [role=status], #bonjour, #total, #panier-compte, #lignes-panier li, " +
+    ".produits li span, .confirmation p";
   return [...document.querySelectorAll(sel)].filter(visible).map((el) => el.textContent.trim());
 }
 function signaler(type, libelle) {
   if (window.parent === window) return;
   const desactives = [...document.querySelectorAll("button:disabled")].filter((b) => !b.closest("[hidden]"))
     .map((b) => b.textContent.trim());
+  // Même origine que la page de démo (GitHub Pages ou serveur local). En file://, l'origine est opaque
+  // (« null ») et ne peut pas servir de cible : seul ce cas utilise "*".
+  const cible = location.origin === "null" ? "*" : location.origin;
   window.parent.postMessage({ source: "quincaillerie", type, libelle, textes: textesVisibles(), desactives,
-    ecran: location.hash.slice(1) || "connexion" }, "*");
+    ecran: location.hash.slice(1) || "connexion" }, cible);
 }
 
 // ---------- Navigation ----------
@@ -93,6 +97,7 @@ $("#btn-promo").addEventListener("click", () => {
     etat.promo = true;
     $("#message-promo").textContent = "Code BIENVENUE appliqué : -10 %";
   } else {
+    etat.promo = false; // un code inconnu retire la remise déjà appliquée
     $("#message-promo").textContent = "Code promo inconnu.";
   }
   rendrePanier();
@@ -106,6 +111,8 @@ $("#btn-commander").addEventListener("click", () => {
 // ---------- Livraison ----------
 function erreursLivraison() {
   const erreurs = [];
+  // On peut arriver ici par le lien « Livraison » du bandeau, panier vide : la commande est refusée.
+  if (nbArticles() === 0) erreurs.push("Votre panier est vide.");
   if ($("#nom").value.trim() === "") erreurs.push("Le nom est obligatoire.");
   if (!/^\d{5}$/.test($("#cp").value.trim())) erreurs.push("Le code postal doit contenir 5 chiffres.");
   const ul = $("#erreurs-livraison");
@@ -145,10 +152,6 @@ document.querySelectorAll("input:not([type=checkbox])").forEach((input) => {
   });
 });
 
-// La page parente peut demander de recommencer (rechargement complet = état neuf).
-window.addEventListener("message", (e) => {
-  if (e.data && e.data.type === "recommencer") { location.hash = "#" + (e.data.ecran || "connexion"); location.reload(); }
-});
 
 rendrePanier();
 afficher();

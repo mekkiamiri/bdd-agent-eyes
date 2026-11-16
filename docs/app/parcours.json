@@ -46,7 +46,8 @@
         "Le nom est obligatoire.",
         "Le code postal doit contenir 5 chiffres.",
         "Adresse enregistrée.",
-        "Commande confirmée"
+        "Commande confirmée",
+        "Votre panier est vide."
       ],
       "valeurs": [],
       "pieges": [

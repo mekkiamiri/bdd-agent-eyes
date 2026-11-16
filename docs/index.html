@@ -90,7 +90,7 @@ footer{margin-top:50px;color:var(--dim);font-size:12px}
   <h2>Ce qui tourne déjà</h2>
   <p>L'appli de démo (3 parcours, pièges visuels), <span id="nb"></span>, le validateur
   (syntaxe + lien feature → parcours → appli, tests verts) et la référence Cucumber-JVM + Playwright Java.
-  Le banc de l'agent reste à brancher.</p>
+  Le lanceur de l'agent est écrit et testé avec un faux agent ; les mesures restent à faire.</p>
   <p><a href="https://github.com/mekkiamiri/bdd-agent-eyes">Dépôt</a> · <a href="slides/">Slides</a> · <a href="app/">Appli seule</a></p>
   <footer>Mekki Amiri · Apache-2.0 · aucun chiffre de résultat n'est affiché avant mesure.</footer>
 </div>
@@ -132,23 +132,30 @@ function rendre() {
   });
 }
 
-// Chaque étape du vocabulaire devient une condition sur ce que l'appli a signalé.
+// Chaque expression du vocabulaire (window.VOCABULAIRE, généré depuis outils/valider.py)
+// devient une condition sur ce que l'appli a signalé. Un test vérifie que les clés couvrent tout le vocabulaire.
+const vus = (x) => etat && etat.textes.some((v) => v.includes(x));
+const action = (pred) => journal.some((ev) => ev.type !== "ecran" && pred(ev.libelle || ""));
+const CONDITIONS = {
+  "je suis sur la page {string}": (g) => () => etat && etat.ecran === g.ecran.toLowerCase(),
+  "je suis connecté": () => () => vus("Bonjour "),
+  "je saisis {string} dans le champ {string}": (g) => () => action((l) => l === g.champ + "=" + g.libre),
+  "je clique sur {string}": (g) => () => action((l) => l === g.bouton || l.startsWith(g.bouton + " ")),
+  "j'ajoute {string} au panier": (g) => () => action((l) => l === "Ajouter " + g.produit + " au panier"),
+  "je coche {string}": (g) => () => action((l) => l === g.case),
+  "je vois {string}": (g) => () => vus(g.texte),
+  "je ne vois pas {string}": (g) => () => etat && !vus(g.texte),
+  "le panier contient {int} article(s)": (g) => () => etat && etat.textes.includes(g.nombre + (Number(g.nombre) > 1 ? " articles" : " article")),
+  "le total est {string}": (g) => () => etat && etat.textes.includes(g.montant),
+  "le bouton {string} est désactivé": (g) => () => etat && etat.desactives.includes(g.bouton),
+};
+const VOCAB = window.VOCABULAIRE.map((v) => ({ re: new RegExp(v.regex), condition: CONDITIONS[v.expression] }));
+
 function regle(e) {
-  const t = e.texte, q = guillemets(t);
-  const vus = (x) => etat && etat.textes.some((v) => v.includes(x));
-  const action = (pred) => journal.some((ev) => ev.type !== "ecran" && pred(ev.libelle || ""));
-  let m;
-  if ((m = /^je suis sur la page "(.+)"$/.exec(t))) return () => etat && etat.ecran === m[1].toLowerCase();
-  if (/^je suis connecté$/.test(t)) return () => vus("Bonjour ");
-  if ((m = /^je saisis "(.*)" dans le champ "(.+)"$/.exec(t))) return () => action((l) => l === m[2] + "=" + m[1]);
-  if ((m = /^je clique sur "(.+)"$/.exec(t))) return () => action((l) => l === m[1] || l.startsWith(m[1] + " "));
-  if ((m = /^j'ajoute "(.+)" au panier$/.exec(t))) return () => action((l) => l === "Ajouter " + m[1] + " au panier");
-  if ((m = /^je coche "(.+)"$/.exec(t))) return () => action((l) => l === m[1]);
-  if ((m = /^je ne vois pas "(.+)"$/.exec(t))) return () => etat && !vus(m[1]);
-  if ((m = /^je vois "(.+)"$/.exec(t))) return () => vus(m[1]);
-  if ((m = /^le panier contient (\d+) articles?$/.exec(t))) return () => etat && etat.textes.includes(m[1] + (m[1] > 1 ? " articles" : " article"));
-  if ((m = /^le total est "(.+)"$/.exec(t))) return () => etat && etat.textes.includes(m[1]);
-  if ((m = /^le bouton "(.+)" est désactivé$/.exec(t))) return () => etat && etat.desactives.includes(m[1]);
+  for (const v of VOCAB) {
+    const m = v.re.exec(e.texte);
+    if (m) return v.condition ? v.condition(m.groups || {}) : null;
+  }
   return null; // hors vocabulaire : un humain (ou un agent) doit le signaler
 }
 
@@ -177,6 +184,9 @@ function charger(i) {
 }
 
 window.addEventListener("message", (e) => {
+  // N'accepter que les messages du cadre de l'appli, de la même origine (en file://, l'origine est « null »).
+  if (e.source !== cadre.contentWindow) return;
+  if (e.origin !== location.origin && !(location.protocol === "file:" && e.origin === "null")) return;
   const d = e.data;
   if (!d || d.source !== "quincaillerie" || !scenario) return;
   etat = d;

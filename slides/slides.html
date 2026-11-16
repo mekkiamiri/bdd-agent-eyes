@@ -31,9 +31,8 @@
     <pre class="code reveal" style="margin-top:40px">Quand j'ajoute "Marteau" au panier
 Alors le panier contient 1 article</pre>
     <pre class="code reveal" style="margin-top:30px"><span class="h">@Quand("j'ajoute {string} au panier")</span>
-public void jAjouteAuPanier(String produit) {
-  page.getByRole(AriaRole.BUTTON, new GetByRoleOptions()
-      .setName("Ajouter " + produit + " au panier").setExact(true)).click();
+void jAjoute(String produit) {
+  page.getByRole(BUTTON, nom("Ajouter " + produit + " au panier")).click();
 }</pre>
   </div>
   {{CHROME}}
@@ -75,7 +74,7 @@ public void jAjouteAuPanier(String produit) {
 <section class="slide">
   <div class="pad">
     <div class="k reveal">La vérité terrain</div>
-    <div class="readouts reveal" style="margin-top:60px"><div><b>9</b><span>justes · doivent passer</span></div><div><b>3</b><span>faux · doivent échouer</span></div><div><b>3</b><span>ambigus · à refuser</span></div></div>
+    <div class="readouts reveal" style="margin-top:60px"><div><b>11</b><span>justes · doivent passer</span></div><div><b>3</b><span>faux · doivent échouer</span></div><div><b>3</b><span>ambigus · à refuser</span></div></div>
     <p class="reveal" style="margin-top:60px">Un tag <em>@attendu</em> par scénario, et le piège écrit noir sur blanc.<br><span class="muted">Un validateur vérifie chaque libellé contre l'appli.</span></p>
   </div>
   {{CHROME}}
@@ -119,7 +118,7 @@ public void jAjouteAuPanier(String produit) {
     <div class="k reveal">Piège 2 · @attendu:ambigu</div>
     <h2 class="reveal" style="margin-top:30px">« Je clique sur <em>Ajouter</em> »</h2>
     <p class="reveal" style="margin-top:40px">Trois boutons portent ce texte.</p>
-    <p class="muted reveal">Playwright refuse (mode strict). Et l'agent : il devine, ou il demande ?</p>
+    <p class="muted reveal">Cucumber échoue : aucun bouton ne s'appelle exactement « Ajouter ». Et l'agent : il devine, ou il demande ?</p>
   </div>
   {{CHROME}}
   <aside class="notes">Le total attendu (12,00 €) laisse deviner Marteau. Deviner n'est pas tester.</aside>
@@ -163,13 +162,13 @@ Alors la commande est enregistrée</pre>
 <!-- 15. Tableau (à mesurer) -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">15 scénarios · 3 passages chacun</div>
+    <div class="k reveal">17 scénarios · 3 passages chacun</div>
     <table class="m reveal" style="margin-top:40px">
-      <tr><th>Configuration</th><th>Réussite</th><th>Faux positifs</th><th>Refus justes</th><th>Temps</th><th>Coût</th></tr>
-      <tr><td>Cucumber + Playwright</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
-      <tr><td>Agent · arbre</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
-      <tr><td>Agent · capture</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
-      <tr><td>Agent · les deux</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+      <tr><th>Configuration</th><th>Réussite</th><th>Faux positifs</th><th>Faux négatifs</th><th>Refus justes</th><th>Temps</th><th>Coût</th></tr>
+      <tr><td>Cucumber + Playwright</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="muted" style="text-align:right">sans objet</td><td class="n">—</td><td class="n">—</td></tr>
+      <tr><td>Agent · arbre</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+      <tr><td>Agent · capture</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+      <tr><td>Agent · les deux</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
     </table>
     <div class="todo reveal" style="margin-top:36px">à mesurer · protocole dans PROTOCOLE.md</div>
   </div>
@@ -190,20 +189,20 @@ Alors la commande est enregistrée</pre>
   {{CHROME}}
 </section>
 
-<!-- 18. Arbre de décision (provisoire) -->
+<!-- 17. Arbre de décision (provisoire) -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">Cucumber ou agent, quand ? · provisoire</div>
+    <div class="k reveal">Cucumber ou agent, quand ? · trois hypothèses</div>
     <div class="cols reveal" style="margin-top:50px;grid-template-columns:1fr 1fr 1fr;gap:40px">
-      <div class="panel"><h3>Non-régression en CI</h3><p class="muted">rapide, répétable</p><div class="todo">à mesurer</div></div>
-      <div class="panel"><h3>Nouveau scénario</h3><p class="muted">avant d'écrire la colle</p><div class="todo">à mesurer</div></div>
-      <div class="panel"><h3>Relire les scénarios</h3><p class="muted">trouver les ambigus</p><div class="todo">à mesurer</div></div>
+      <div class="panel"><h3>Non-régression en CI</h3><p class="muted" style="font-size:26px">Hypothèse : Cucumber reste plus rapide et plus stable.</p><div class="todo">à mesurer</div></div>
+      <div class="panel"><h3>Nouveau scénario</h3><p class="muted" style="font-size:26px">Hypothèse : l'agent le joue avant qu'on écrive la colle.</p><div class="todo">à mesurer</div></div>
+      <div class="panel"><h3>Relire les scénarios</h3><p class="muted" style="font-size:26px">Hypothèse : l'agent repère les ambigus que Cucumber joue sans rien dire.</p><div class="todo">à mesurer</div></div>
     </div>
   </div>
   {{CHROME}}
 </section>
 
-<!-- 19. Écrire du Gherkin jouable -->
+<!-- 18. Écrire du Gherkin jouable -->
 <section class="slide">
   <div class="pad">
     <div class="k reveal">Du Gherkin qu'un agent peut jouer</div>
@@ -217,7 +216,7 @@ Alors la commande est enregistrée</pre>
   <aside class="notes">Ces règles viennent des pièges de la démo. Bonus : elles rendent aussi les scénarios plus clairs pour les humains.</aside>
 </section>
 
-<!-- 20. Chez vous, demain -->
+<!-- 19. Chez vous, demain -->
 <section class="slide">
   <div class="pad">
     <div class="k reveal">Chez vous, demain</div>
@@ -229,7 +228,7 @@ mvn verify</pre>
   {{CHROME}}
 </section>
 
-<!-- 21. Fin -->
+<!-- 20. Fin -->
 <section class="slide">
   {{RULER}}
   <div class="pad" style="top:300px">

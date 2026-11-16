@@ -37,3 +37,22 @@ jobs:
         run: mvn -B -q test-compile exec:java -Dexec.args="install --with-deps chromium"
       - name: Cucumber + Playwright (scénarios @attendu:passe)
         run: mvn -B verify
+
+  pieges-cucumber:
+    # Vérifie la vérité terrain côté Cucumber : chaque scénario @attendu:echec ou @attendu:ambigu
+    # doit échouer (assertion, délai dépassé ou étape non définie), scénario par scénario.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Chromium pour Playwright
+        run: mvn -B -q test-compile exec:java -Dexec.args="install --with-deps chromium"
+      - name: Cucumber sur les pièges, puis vérification scénario par scénario
+        run: python3 outils/verifier_pieges.py --lancer

@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from valider import RACINE, valider  # noqa: E402
+from valider import RACINE, VOCABULAIRE, valider  # noqa: E402
 
 SORTIE = RACINE / "docs" / "scenarios.js"
 
@@ -34,7 +34,11 @@ def contenu() -> str:
                 "etapes": [{"mot": e.mot.strip(), "texte": e.texte, "contexte": True} for e in f.contexte]
                 + [{"mot": e.mot.strip(), "texte": e.texte, "contexte": False} for e in s.etapes],
             })
+    # Le vocabulaire des étapes vient de outils/valider.py : la page ne le recopie pas.
+    vocabulaire = [{"expression": expr, "regex": "^" + motif.replace("(?P<", "(?<") + "$"}
+                   for motif, expr in VOCABULAIRE]
     return ("// Généré par outils/construire_page.py à partir de features/*.feature : ne pas modifier.\n"
+            "window.VOCABULAIRE = " + json.dumps(vocabulaire, ensure_ascii=False, indent=1) + ";\n"
             "window.SCENARIOS = " + json.dumps(donnees, ensure_ascii=False, indent=1) + ";\n")
 
 

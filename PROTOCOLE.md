@@ -19,15 +19,20 @@ et sait-il refuser un scénario faux ou ambigu ?
 | Carte des parcours (libellés visibles) | `docs/app/parcours.json`, vérifiée par `outils/valider.py` |
 | Référence Cucumber-JVM 8.1.0 + Playwright Java 1.65.0 | `pom.xml`, `src/test/java/…/Etapes.java` |
 | Consigne de l'agent | `agent/CONSIGNE.md` |
+| Lancement de l'agent (3 configurations MCP) | `agent/lancer.py`, `agent/mcp-*.json` |
+| Contrôle des pièges côté Cucumber | `outils/verifier_pieges.py` (job CI `pieges-cucumber`) |
 | Calcul des mesures | `outils/comparer.py` |
 
 ## Configurations comparées
 
 1. **Cucumber** : `mvn verify -Dcucumber.filter.tags="@attendu:passe or not @attendu:passe"` (tous les scénarios, y compris les pièges).
    Verdict `passe` si le scénario passe, `echec` sinon (une étape non définie compte comme `echec`).
-2. **Agent, arbre d'accessibilité seul** : l'agent ne reçoit que l'arbre d'accessibilité.
-3. **Agent, capture d'écran seule** : l'agent ne reçoit que des captures.
-4. **Agent, les deux** : capture + arbre d'accessibilité.
+2. **Agent, arbre d'accessibilité seul** (`mcp-arbre.json` : `--image-responses omit`).
+3. **Agent, capture d'écran seule** (`mcp-capture.json` : `--caps vision --snapshot-mode none`).
+4. **Agent, les deux** (`mcp-les-deux.json` : `--caps vision`).
+
+Ces options de `@playwright/mcp` 0.0.85 sont lues dans son README ; leur effet exact (ce que voit vraiment
+l'agent dans chaque configuration) est à contrôler sur un premier passage avant toute mesure.
 
 Pour chaque configuration agent : le modèle, sa version, la date et l'outil de navigation sont notés dans
 le fichier de résultats. Aucun modèle n'est désigné « meilleur » sur un seul passage.
@@ -35,13 +40,14 @@ le fichier de résultats. Aucun modèle n'est désigné « meilleur » sur un se
 ## Déroulé
 
 1. `python3 outils/valider.py` doit afficher `OK` (sinon, la vérité terrain n'est pas fiable).
-2. Retirer des scénarios envoyés à l'agent les tags `@attendu:*` et les lignes `Piège :`.
+2. Les scénarios envoyés à l'agent n'ont ni tags, ni descriptions, ni lignes `Piège :` (`agent/lancer.py` les retire).
 3. Chaque scénario est joué **3 fois** par configuration, dans un navigateur neuf (appli rechargée).
 4. Noter pour chaque passage : verdict, explication, durée de bout en bout, tokens en entrée et sortie,
    coût calculé avec le tarif public du jour (date notée).
 5. Pour Cucumber, compter aussi à part le temps d'écriture et de maintenance des step definitions
    (temps réel noté pendant l'écriture, et après une modification de l'appli : voir « Robustesse »).
-6. Écrire `resultats/<config>/resultats.json` (format dans `outils/comparer.py`), puis :
+6. Agent : `python3 agent/lancer.py --config arbre|capture|les-deux` écrit `resultats/agent-<config>/resultats.json`
+   (une ligne par passage). Cucumber : écrire `resultats/cucumber/resultats.json` au même format (conversion à faire). Puis :
    `python3 outils/comparer.py resultats/*/resultats.json`.
 
 ## Mesures
@@ -52,7 +58,7 @@ le fichier de résultats. Aucun modèle n'est désigné « meilleur » sur un se
 | Faux positifs | `passe` sur un scénario `@attendu:echec` ou `@attendu:ambigu` (le plus grave : on croit que c'est testé) |
 | Faux négatifs | `echec` ou `refus` sur un scénario `@attendu:passe` |
 | Refus justes | `refus` sur un scénario `@attendu:ambigu`, avec une explication qui nomme l'ambiguïté |
-| Stabilité | même verdict sur les 3 passages |
+| Stabilité | même verdict sur les 3 passages ; variance de la réussite entre passages |
 | Temps | durée par scénario, de l'ouverture de l'appli au verdict |
 | Coût | tokens et coût par scénario (agent) ; temps humain d'écriture des step definitions (Cucumber) |
 

@@ -2,6 +2,7 @@
 
 import json
 import re
+import shlex
 import shutil
 import sys
 import tempfile
@@ -14,6 +15,10 @@ sys.path.insert(0, str(RACINE / "outils"))
 import comparer  # noqa: E402
 import construire_page  # noqa: E402
 import valider  # noqa: E402
+import verifier_pieges  # noqa: E402
+
+sys.path.insert(0, str(RACINE / "agent"))
+import lancer  # noqa: E402
 
 APP = RACINE / "docs" / "app"
 ENTETE = "# language: fr\n@parcours:panier\nFonctionnalité: Essai\n\n  Contexte:\n    Soit je suis sur la page \"Catalogue\"\n\n"
@@ -36,8 +41,9 @@ class DepotReel(unittest.TestCase):
         fonctionnalites, _ = valider.valider(RACINE / "features", APP)
         attendus = {s.attendu for f in fonctionnalites for s in f.scenarios}
         self.assertEqual(attendus, {"passe", "echec", "ambigu"})
-        for f in fonctionnalites:
-            self.assertTrue(any(s.attendu != "passe" for s in f.scenarios), f.fichier)
+        for pid in ("connexion", "panier", "livraison"):
+            self.assertTrue(any(s.attendu != "passe" for f in fonctionnalites if f.parcours == pid
+                                for s in f.scenarios), pid)
 
     def test_les_pieges_sont_signales_en_notes(self):
         _, rapport = valider.valider(RACINE / "features", APP)
@@ -137,19 +143,6 @@ class LienParcours(unittest.TestCase):
         self.assertEqual(r.erreurs, [])
         self.assertEqual(len(r.notes), 2)
 
-    def test_libelle_du_parcours_absent_de_l_appli(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            app = Path(tmp)
-            for nom in ("index.html", "app.js"):
-                shutil.copy(APP / nom, app / nom)
-            carte = json.loads((APP / "parcours.json").read_text(encoding="utf-8"))
-            carte["parcours"]["panier"]["boutons"].append("Payer maintenant")
-            (app / "parcours.json").write_text(json.dumps(carte), encoding="utf-8")
-            r = valider.Rapport()
-            valider.verifier_parcours_dans_appli(valider.charger_parcours(app), app, r)
-            self.assertEqual(len(r.erreurs), 1)
-            self.assertIn("Payer maintenant", r.erreurs[0])
-
 
 class VocabulaireJava(unittest.TestCase):
     def test_meme_vocabulaire_que_les_step_definitions(self):
@@ -157,6 +150,78 @@ class VocabulaireJava(unittest.TestCase):
         expressions_java = set(re.findall(r'@(?:Soit|Quand|Alors)\("([^"]+)"\)', java))
         expressions_python = {expr for _, expr in valider.VOCABULAIRE}
         self.assertEqual(expressions_java, expressions_python)
+
+
+class TexteAffiche(unittest.TestCase):
+    """Les libellés doivent être affichés par l'appli, pas seulement présents dans un commentaire."""
+
+    def copie(self, tmp, html_ajout="", js_ajout="", carte_modif=None):
+        app = Path(tmp)
+        (app / "index.html").write_text((APP / "index.html").read_text(encoding="utf-8").replace(
+            "</main>", html_ajout + "</main>"), encoding="utf-8")
+        (app / "app.js").write_text((APP / "app.js").read_text(encoding="utf-8") + js_ajout, encoding="utf-8")
+        carte = json.loads((APP / "parcours.json").read_text(encoding="utf-8"))
+        carte["parcours"]["panier"]["boutons"].append("Payer maintenant")
+        if carte_modif:
+            carte_modif(carte)
+        (app / "parcours.json").write_text(json.dumps(carte), encoding="utf-8")
+        r = valider.Rapport()
+        valider.verifier_parcours_dans_appli(valider.charger_parcours(app), app, r)
+        return r.erreurs
+
+    def test_libelle_absent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            erreurs = self.copie(tmp)
+        self.assertEqual(len(erreurs), 1)
+        self.assertIn("Payer maintenant", erreurs[0])
+
+    def test_libelle_dans_un_commentaire_html_ne_compte_pas(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(len(self.copie(tmp, html_ajout="<!-- Payer maintenant -->")), 1)
+
+    def test_libelle_dans_un_commentaire_js_ne_compte_pas(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(len(self.copie(tmp, js_ajout='\n// $("#x").textContent = "Payer maintenant";\n')), 1)
+
+    def test_libelle_dans_un_selecteur_js_ne_compte_pas(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(len(self.copie(tmp, js_ajout='\nconst x = "Payer maintenant";\n')), 1)
+
+    def test_libelle_affiche_par_le_js(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(self.copie(tmp, js_ajout='\n$("#x").textContent = "Payer maintenant";\n'), [])
+
+    def test_libelle_affiche_par_le_html(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(self.copie(tmp, html_ajout="<button>Payer maintenant</button>"), [])
+
+    def test_ecran_sans_data_ecran(self):
+        def renommer(carte):
+            carte["parcours"]["panier"]["ecran"] = "Boutique"
+        with tempfile.TemporaryDirectory() as tmp:
+            erreurs = self.copie(tmp, html_ajout="<h1>Boutique</h1><button>Payer maintenant</button>",
+                                 carte_modif=renommer)
+        self.assertEqual(len(erreurs), 1)
+        self.assertIn("data-ecran", erreurs[0])
+
+    def test_page_hors_du_parcours(self):
+        carte = valider.charger_parcours(APP)
+        self.assertEqual(valider.resoudre_etape('je suis sur la page "Catalogue"', carte, "livraison"), [])
+        self.assertNotEqual(valider.resoudre_etape('je suis sur la page "Connexion"', carte, "livraison"), [])
+
+
+class PageDeDemo(unittest.TestCase):
+    def test_la_page_gere_tout_le_vocabulaire_genere(self):
+        page = (RACINE / "docs" / "index.html").read_text(encoding="utf-8")
+        bloc = page.split("const CONDITIONS = {", 1)[1].split("\n};", 1)[0]
+        cles = set(re.findall(r'^\s*"([^"]+)":', bloc, re.M))
+        self.assertEqual(cles, {expr for _, expr in valider.VOCABULAIRE})
+
+    def test_le_vocabulaire_est_genere_dans_scenarios_js(self):
+        js = (RACINE / "docs" / "scenarios.js").read_text(encoding="utf-8")
+        vocab = json.loads(js.split("window.VOCABULAIRE = ", 1)[1].split(";\nwindow.SCENARIOS", 1)[0])
+        self.assertEqual([v["expression"] for v in vocab], [e for _, e in valider.VOCABULAIRE])
+        self.assertNotIn("(?P<", js)
 
 
 class Comparateur(unittest.TestCase):
@@ -172,9 +237,33 @@ class Comparateur(unittest.TestCase):
         self.assertEqual((m["justes"], m["faux_positifs"], m["faux_negatifs"], m["refus_justes"]), (2, 1, 0, 1))
         self.assertEqual((m["duree_s"], m["cout_usd"]), (6.0, 2.0))
 
+    def test_trois_passages_ne_s_ecrasent_pas(self):
+        lignes = []
+        for passage, (v1, v2) in enumerate([("passe", "echec"), ("passe", "passe"), ("passe", "refus")], 1):
+            lignes += [{"id": "a:passe", "passage": passage, "verdict": v1, "duree_s": passage},
+                       {"id": "a:faux", "passage": passage, "verdict": v2, "duree_s": 1}]
+        m = comparer.mesurer({"scenarios": lignes}, self.VERITE)
+        self.assertEqual((m["verdicts"], m["justes"], m["faux_positifs"]), (6, 5, 1))
+        self.assertEqual(m["stables"], 1)  # a:passe stable, a:faux instable
+        self.assertEqual(m["reussite_par_passage"], [1.0, 0.5, 1.0])
+        self.assertAlmostEqual(m["reussite_moyenne"], 2.5 / 3)
+        self.assertAlmostEqual(m["reussite_variance"], 1 / 18)
+        self.assertAlmostEqual(m["variance_duree_s2"], (2 / 3 + 0) / 2)
+
+    def test_passage_implicite_par_ordre(self):
+        lignes = [{"id": "a:passe", "verdict": "passe"}, {"id": "a:passe", "verdict": "echec"}]
+        groupes = comparer.regrouper({"scenarios": lignes}, self.VERITE)
+        self.assertEqual([r["passage"] for r in groupes["a:passe"]], [1, 2])
+
+    def test_passage_en_double(self):
+        lignes = [{"id": "a:passe", "passage": 1, "verdict": "passe"},
+                  {"id": "a:passe", "passage": 1, "verdict": "echec"}]
+        with self.assertRaises(ValueError):
+            comparer.mesurer({"scenarios": lignes}, self.VERITE)
+
     def test_refus_d_un_scenario_juste(self):
         m = comparer.mesurer({"scenarios": [{"id": "a:passe", "verdict": "refus"}]}, self.VERITE)
-        self.assertEqual((m["faux_negatifs"], m["refus_injustes"], m["joues"]), (1, 1, 1))
+        self.assertEqual((m["faux_negatifs"], m["refus_injustes"], m["scenarios_joues"]), (1, 1, 1))
 
     def test_verdict_invalide(self):
         with self.assertRaises(ValueError):
@@ -187,6 +276,93 @@ class Comparateur(unittest.TestCase):
     def test_verite_terrain_du_depot(self):
         verite = comparer.verite_terrain()
         self.assertEqual(verite["panier.feature:Ajouter au panier"], "ambigu")
+
+
+class LanceurAgent(unittest.TestCase):
+    FAUX = f"{shlex.quote(sys.executable)} tests/faux_agent.py"
+    AMBIGU = "livraison.feature:La commande est enregistrée"
+    JUSTE = "panier.feature:Ajouter un produit"
+
+    def test_l_invite_cache_la_verite_terrain(self):
+        texte = lancer.invite(lancer.scenarios()[self.AMBIGU], "file:///app")
+        self.assertIn("Et je valide", texte)
+        self.assertIn("Contexte:", texte)
+        self.assertNotIn("@attendu", texte)
+        self.assertNotIn("Piège", texte)
+        self.assertNotIn("@parcours", texte)
+
+    def test_faux_agent_bout_en_bout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code = lancer.main(["--config", "essai", "--commande", self.FAUX, "--sortie", tmp, "--passages", "2",
+                                "--scenario", self.AMBIGU, "--scenario", self.JUSTE])
+            self.assertEqual(code, 0)
+            donnees = json.loads((Path(tmp) / "agent-essai" / "resultats.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(donnees["scenarios"]), 4)
+        self.assertEqual(donnees["erreurs"], [])
+        m = comparer.mesurer(donnees, comparer.verite_terrain())
+        self.assertEqual((m["verdicts"], m["justes"], m["refus_justes"], m["stables"]), (4, 4, 2, 2))
+
+    def test_reponse_illisible_va_dans_les_erreurs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            lancer.main(["--config", "essai", "--commande", self.FAUX + " illisible", "--sortie", tmp,
+                         "--passages", "1", "--scenario", self.JUSTE])
+            donnees = json.loads((Path(tmp) / "agent-essai" / "resultats.json").read_text(encoding="utf-8"))
+        self.assertEqual((len(donnees["scenarios"]), len(donnees["erreurs"])), (0, 1))
+
+    def test_lire_reponse_texte_brut(self):
+        verdict, cout = lancer.lire_reponse('blabla {"a": 1} puis {"verdict": "echec", "etape": 2}')
+        self.assertEqual((verdict["verdict"], cout), ("echec", 0.0))
+
+    def test_config_mcp_existe_pour_chaque_configuration(self):
+        for config in ("arbre", "capture", "les-deux"):
+            mcp = json.loads((RACINE / "agent" / f"mcp-{config}.json").read_text(encoding="utf-8"))
+            self.assertEqual(mcp["mcpServers"]["playwright"]["args"][0], "@playwright/mcp@0.0.85")
+
+
+RAPPORT_SUREFIRE = """<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.mekkiamiri.bddagent.RunCucumberTest">
+ <testcase name="Connexion - Message d'accueil personnalisé"><failure type="org.opentest4j.AssertionFailedError" message="Locator expected to be visible"/></testcase>
+ <testcase name="Connexion - Connexion rapide"><failure type="com.microsoft.playwright.TimeoutError" message="Timeout 2000ms exceeded."/></testcase>
+ <testcase name="Panier - Ajouter un produit épuisé"><error type="com.microsoft.playwright.TimeoutError" message="Timeout 2000ms exceeded."/></testcase>
+ <testcase name="Panier - Ajouter au panier"><failure type="com.microsoft.playwright.TimeoutError" message="Timeout"/></testcase>
+ <testcase name="Livraison - Message quand les conditions ne sont pas cochées"><failure type="com.microsoft.playwright.TimeoutError" message="Timeout"/></testcase>
+ <testcase name="Livraison - La commande est enregistrée"><failure type="io.cucumber.junit.platform.engine.UndefinedStepException" message="The step 'je valide' is undefined."/></testcase>
+</testsuite>
+"""
+
+
+class PiegesCucumber(unittest.TestCase):
+    def rapports(self, texte):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        (Path(tmp) / "TEST-RunCucumberTest.xml").write_text(texte, encoding="utf-8")
+        return verifier_pieges.lire_rapports(Path(tmp))
+
+    def test_tous_les_pieges_echouent_comme_prevu(self):
+        self.assertEqual(verifier_pieges.verifier(self.rapports(RAPPORT_SUREFIRE)), [])
+
+    def test_un_piege_qui_passe_est_une_erreur(self):
+        texte = RAPPORT_SUREFIRE.replace(
+            '<failure type="org.opentest4j.AssertionFailedError" message="Locator expected to be visible"/>', "")
+        erreurs = verifier_pieges.verifier(self.rapports(texte))
+        self.assertEqual(len(erreurs), 1)
+        self.assertIn("Message d'accueil", erreurs[0])
+
+    def test_echec_attendu_mais_etape_non_definie(self):
+        texte = RAPPORT_SUREFIRE.replace(
+            'type="org.opentest4j.AssertionFailedError" message="Locator expected to be visible"',
+            'type="io.cucumber.junit.platform.engine.UndefinedStepException" message="undefined"')
+        self.assertEqual(len(verifier_pieges.verifier(self.rapports(texte))), 1)
+
+    def test_erreur_d_infrastructure_n_est_pas_un_echec(self):
+        texte = RAPPORT_SUREFIRE.replace(
+            'type="com.microsoft.playwright.TimeoutError" message="Timeout 2000ms exceeded."/></testcase>\n <testcase name="Panier',
+            'type="java.lang.RuntimeException" message="Failed to create driver"/></testcase>\n <testcase name="Panier', 1)
+        self.assertEqual(len(verifier_pieges.verifier(self.rapports(texte))), 1)
+
+    def test_scenario_absent_du_rapport(self):
+        texte = "\n".join(l for l in RAPPORT_SUREFIRE.splitlines() if "Connexion rapide" not in l)
+        self.assertEqual(len(verifier_pieges.verifier(self.rapports(texte))), 1)
 
 
 if __name__ == "__main__":

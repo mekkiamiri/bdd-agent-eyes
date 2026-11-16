@@ -53,7 +53,7 @@ public class Etapes {
     @Soit("je suis sur la page {string}")
     public void jeSuisSurLaPage(String ecran) {
         page.navigate(APP + "#" + ecran.toLowerCase(Locale.ROOT));
-        assertThat(page.getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName(ecran).setLevel(1))).isVisible();
+        assertThat(page.getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName(ecran).setExact(true).setLevel(1))).isVisible();
     }
 
     @Soit("je suis connecté")
@@ -72,8 +72,9 @@ public class Etapes {
 
     @Quand("je clique sur {string}")
     public void jeCliqueSur(String libelle) {
-        // Pas de setExact : « Ajouter » désigne trois boutons, Playwright refuse (mode strict).
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(libelle)).click();
+        // Nom accessible exact : « Ajouter » ne désigne aucun bouton (leurs noms sont « Ajouter Marteau au panier »…),
+        // le clic échoue au bout du délai au lieu de deviner.
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(libelle).setExact(true)).click();
     }
 
     @Quand("j'ajoute {string} au panier")
@@ -89,13 +90,13 @@ public class Etapes {
 
     @Alors("je vois {string}")
     public void jeVois(String texte) {
-        assertThat(page.getByText(texte)).isVisible();
+        assertThat(page.getByText(texte, new Page.GetByTextOptions().setExact(true))).isVisible();
     }
 
     @Alors("je ne vois pas {string}")
     public void jeNeVoisPas(String texte) {
         // « Commande confirmée » est toujours dans le DOM : seul un contrôle de visibilité est juste.
-        assertThat(page.getByText(texte)).isHidden();
+        assertThat(page.getByText(texte, new Page.GetByTextOptions().setExact(true))).isHidden();
     }
 
     @Alors("le panier contient {int} article(s)")
@@ -110,6 +111,6 @@ public class Etapes {
 
     @Alors("le bouton {string} est désactivé")
     public void leBoutonEstDesactive(String libelle) {
-        assertThat(page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(libelle))).isDisabled();
+        assertThat(page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(libelle).setExact(true))).isDisabled();
     }
 }
