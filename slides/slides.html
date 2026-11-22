@@ -1,6 +1,7 @@
 <!-- Slides du talk « Vos scénarios Gherkin joués par un agent qui voit l'appli » (Tools-in-Action 30 min)
      Construire : python3 <kit>/build_deck.py slides/slides.html docs/slides/index.html "Gherkin joué par un agent"
-     Règle : aucun chiffre de résultat avant mesure ; les emplacements sont marqués « à mesurer ».
+     Règle : aucun chiffre de résultat inventé. Les mesures agent ne sont pas faites : on montre le protocole,
+     les hypothèses (marquées comme telles) et les vraies sorties de la CI (run 44152005490, 17/11/2026).
      Plan : 0-3 problème · 3-7 l'idée · 7-17 démo · 17-24 mesures · 24-28 quand quoi · 28-30 questions -->
 
 <!-- 1. Titre -->
@@ -11,7 +12,7 @@
     <h1 class="reveal" style="margin-top:40px;font-size:128px">Vos scénarios Gherkin<br>joués par un agent<br>qui <em>voit l'appli</em></h1>
   </div>
   <div style="position:absolute;right:120px;bottom:140px;text-align:right" class="reveal"><h3>Mekki Amiri</h3><p class="muted" style="font-size:24px;margin:8px 0 0">Tech Lead · architecte système</p></div>
-  <aside class="notes">Bonjour. 30 minutes, une démo, et un tableau qu'on remplira avec des mesures, pas des impressions.</aside>
+  <aside class="notes">Version 30 min : toutes les diapos. Version Quickie 20 min (Nantes, Strasbourg) : sauter 5, 12, 14, 16 et 20 ; dire le piège 3 en une phrase sur la 11, et donner le dépôt sur la dernière. Dire en ouverture : bonjour, une démo, une CI qui prouve la vérité terrain, et un protocole plutôt que des impressions.</aside>
 </section>
 
 <!-- 2. Le problème (0-3) -->
@@ -91,25 +92,36 @@ void jAjoute(String produit) {
 <!-- 9. Démo : même scénario, deux joueurs -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">Démo · « Commande valide »</div>
+    <div class="k reveal">Démo · « Commande valide » · features/livraison.feature</div>
     <div class="cols reveal" style="margin-top:60px">
-      <div class="panel"><h3>Cucumber + Playwright</h3><p class="muted">step definitions écrites à la main</p></div>
-      <div class="panel"><h3>Agent</h3><p class="muted">capture + arbre d'accessibilité, rien d'autre</p></div>
+      <div class="panel"><h3>Cucumber + Playwright</h3><p class="muted" style="font-size:28px">step definitions écrites à la main</p><pre class="code" style="font-size:22px;padding:24px 28px">mvn -B verify
+Tests run: 17, Failures: 0,
+  Skipped: 6
+BUILD SUCCESS</pre></div>
+      <div class="panel"><h3>Agent</h3><p class="muted" style="font-size:28px">capture + arbre d'accessibilité, rien d'autre</p><pre class="code" style="font-size:22px;padding:24px 28px">python3 agent/lancer.py \
+  --config les-deux \
+  --scenario "livraison.feature:
+    Commande valide"</pre></div>
     </div>
   </div>
   {{CHROME}}
-  <aside class="notes">1) mvn verify : vert. 2) L'agent joue le même scénario. Montrer ce qu'il voit à chaque étape. Plan B : vidéo.</aside>
+  <aside class="notes">À gauche, la vraie sortie de la CI : les 11 scénarios justes passent, les 6 pièges sont mis de côté. À droite, la commande qui donne le même scénario à l'agent, sans tags ni ligne « Piège ». Démo agent à venir : le premier passage réel n'est pas encore fait ; plan B, la vidéo de ce passage, enregistrée avant la conférence.</aside>
 </section>
 
 <!-- 10. Piège 1 : bouton désactivé -->
 <section class="slide">
-  <div class="pad" style="top:220px">
-    <div class="k reveal">Piège 1 · @attendu:echec</div>
-    <h2 class="reveal" style="margin-top:30px">« J'ajoute Tournevis au panier »</h2>
-    <p class="reveal" style="margin-top:40px">Le bouton est là. <em>Il est désactivé.</em></p>
-    <p class="muted reveal">L'agent force-t-il le clic ? Conclut-il que c'est passé ?</p>
+  <div class="pad">
+    <div class="k reveal">Piège 1 · @attendu:echec · « Ajouter un produit épuisé »</div>
+    <h2 class="reveal" style="margin-top:30px;font-size:84px">Le bouton est là. <em>Il est désactivé.</em></h2>
+    <pre class="code reveal" style="margin-top:40px;font-size:24px"><span class="c"># CI · job pieges-cucumber · 17/11/2026 (extrait)</span>
+<span class="h">✘ Quand j'ajoute "Tournevis" au panier</span>
+  locator resolved to &lt;button <span class="h">disabled</span> … aria-label="Ajouter Tournevis au panier"&gt;
+  element is not enabled
+  TimeoutError: Timeout 2000ms exceeded.</pre>
+    <p class="muted reveal" style="margin-top:30px">Cucumber échoue, comme prévu. L'agent, lui, va-t-il forcer le clic ?</p>
   </div>
   {{CHROME}}
+  <aside class="notes">Vraie sortie de la CI, pas une maquette. Playwright attend que le bouton soit cliquable, il ne l'est jamais, le scénario échoue au bout de 2 secondes. C'est la vérité terrain : ce scénario est faux, il doit échouer.</aside>
 </section>
 
 <!-- 11. Piège 2 : libellé ambigu -->
@@ -118,10 +130,10 @@ void jAjoute(String produit) {
     <div class="k reveal">Piège 2 · @attendu:ambigu</div>
     <h2 class="reveal" style="margin-top:30px">« Je clique sur <em>Ajouter</em> »</h2>
     <p class="reveal" style="margin-top:40px">Trois boutons portent ce texte.</p>
-    <p class="muted reveal">Cucumber échoue : aucun bouton ne s'appelle exactement « Ajouter ». Et l'agent : il devine, ou il demande ?</p>
+    <p class="muted reveal">Cucumber échoue : aucun nom accessible n'est exactement « Ajouter ».<br>Il échoue juste, mais <em>sans dire pourquoi</em>. Et l'agent : il devine, ou il refuse ?</p>
   </div>
   {{CHROME}}
-  <aside class="notes">Le total attendu (12,00 €) laisse deviner Marteau. Deviner n'est pas tester.</aside>
+  <aside class="notes">En CI, Cucumber attend un bouton nommé « Ajouter » et tombe en délai dépassé : les vrais noms sont « Ajouter Marteau au panier »… Le total attendu, 12,00 €, laisse deviner Marteau. Deviner n'est pas tester. (Version 20 min : dire ici en une phrase que « Commande confirmée » est caché dans le DOM.)</aside>
 </section>
 
 <!-- 12. Piège 3 : texte caché dans le DOM -->
@@ -142,14 +154,16 @@ void jAjoute(String produit) {
 <section class="slide">
   <div class="pad">
     <div class="k reveal">Ce qu'on attend d'un bon testeur</div>
-    <pre class="code reveal" style="margin-top:40px">Et je valide
-Alors la commande est enregistrée</pre>
-    <pre class="code reveal" style="margin-top:30px">{"verdict": "<span class="h">refus</span>", "etape": 3,
- "explication": "…", "preuve": "…"}</pre>
-    <p class="muted reveal" style="margin-top:30px">Format demandé à l'agent. Sa vraie réponse : en démo.</p>
+    <pre class="code reveal" style="margin-top:40px"><span class="c"># CI · Cucumber · « La commande est enregistrée »</span>
+  ✔ Et je saisis "69003" dans le champ "Code postal"
+  <span class="h">■ Et je valide</span>                     <span class="c">← étape non définie</span>
+  ↷ Alors la commande est enregistrée</pre>
+    <pre class="code reveal" style="margin-top:30px"><span class="c"># agent/CONSIGNE.md · règle 3 · réponse demandée</span>
+{"verdict": "<span class="h">refus</span>", "etape": …, "explication": "…", "preuve": "…"}</pre>
+    <p class="muted reveal" style="margin-top:30px">Cucumber s'arrête. Un bon testeur dit <em>ce qui manque</em>.</p>
   </div>
   {{CHROME}}
-  <aside class="notes">Cucumber : étape non définie. L'agent : saura-t-il dire « ce scénario n'est pas testable » ?</aside>
+  <aside class="notes">En haut, la vraie sortie de la CI : personne n'a écrit la colle de « je valide », Cucumber s'arrête. En bas, le format que la consigne impose à l'agent : refuser et dire ce qui manque. Que l'agent le fasse vraiment, c'est ce que le protocole mesure.</aside>
 </section>
 
 <!-- 14. Section : mesures (17-24) -->
@@ -157,52 +171,73 @@ Alors la commande est enregistrée</pre>
   {{RULER}}
   <div class="pad" style="top:320px"><div class="k reveal">Partie 3</div><h1 class="reveal" style="margin-top:30px">Les <em>mesures</em></h1></div>
   {{CHROME}}
+  <aside class="notes">Ce qui est prouvé aujourd'hui, et comment on mesurera le reste.</aside>
 </section>
 
-<!-- 15. Tableau (à mesurer) -->
+<!-- 15. Ce que la CI prouve déjà -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">17 scénarios · 3 passages chacun</div>
+    <div class="k reveal">Déjà prouvé · CI du 17/11/2026 · outils/verifier_pieges.py</div>
+    <pre class="code reveal" style="margin-top:40px;font-size:24px">ok  @attendu:echec  echec        Connexion - Message d'accueil personnalisé
+ok  @attendu:ambigu echec        Connexion - Connexion rapide
+ok  @attendu:echec  echec        Livraison - Message quand les conditions…
+ok  @attendu:ambigu non définie  Livraison - La commande est enregistrée
+ok  @attendu:echec  echec        Panier - Ajouter un produit épuisé
+ok  @attendu:ambigu echec        Panier - Ajouter au panier</pre>
+    <h3 class="reveal" style="margin-top:50px"><em>6 pièges sur 6</em> font échouer Cucumber.</h3>
+    <p class="muted reveal">Et les 11 scénarios justes passent. La vérité terrain tient.</p>
+  </div>
+  {{CHROME}}
+  <aside class="notes">Avant de mesurer un agent, il faut une vérité terrain fiable. À chaque push, la CI joue les 6 scénarios faux ou ambigus et vérifie un par un qu'ils échouent pour la bonne raison. Si un piège passait, la CI serait rouge.</aside>
+</section>
+
+<!-- 16. Le protocole -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">PROTOCOLE.md · ce qu'on mesure, et comment</div>
+    <ul class="steps reveal">
+      <li data-n="01">17 scénarios, <em>sans</em> tags ni « Piège : » <span class="muted">· agent/lancer.py les retire</span></li>
+      <li data-n="02">4 configurations × 3 passages <span class="muted">· navigateur neuf à chaque fois</span></li>
+      <li data-n="03">Verdict, temps, tokens, coût <span class="muted">· modèle et date notés</span></li>
+    </ul>
+    <p class="reveal" style="margin-top:40px"><em>Faux positif</em> : « passe » sur un scénario faux ou ambigu.<br><span class="muted">Puis on renomme un aria-label, et on rejoue sans toucher à rien.</span></p>
+  </div>
+  {{CHROME}}
+  <aside class="notes">Quatre configurations : Cucumber, et l'agent avec l'arbre seul, la capture seule, ou les deux. Chaque scénario trois fois, pour voir si l'agent change d'avis. Le faux positif est le pire : on croit que c'est testé. Deuxième passage : on change l'interface sans changer le comportement, et on compte ce qui casse de chaque côté.</aside>
+</section>
+
+<!-- 17. La grille -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal">La grille · lignes agent publiées dans le dépôt en janvier 2027</div>
     <table class="m reveal" style="margin-top:40px">
-      <tr><th>Configuration</th><th>Réussite</th><th>Faux positifs</th><th>Faux négatifs</th><th>Refus justes</th><th>Temps</th><th>Coût</th></tr>
-      <tr><td>Cucumber + Playwright</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="muted" style="text-align:right">sans objet</td><td class="n">—</td><td class="n">—</td></tr>
-      <tr><td>Agent · arbre</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
-      <tr><td>Agent · capture</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
-      <tr><td>Agent · les deux</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+      <tr><th>Configuration</th><th>Réussite</th><th>Faux positifs</th><th>Faux négatifs</th><th>Refus justes</th></tr>
+      <tr><td>Cucumber + Playwright</td><td class="n">17 / 17</td><td class="n">0</td><td class="n">0</td><td class="muted" style="text-align:right">impossible</td></tr>
+      <tr><td>Agent · arbre</td><td class="muted" colspan="4" style="text-align:right">janvier 2027</td></tr>
+      <tr><td>Agent · capture</td><td class="muted" colspan="4" style="text-align:right">janvier 2027</td></tr>
+      <tr><td>Agent · les deux</td><td class="muted" colspan="4" style="text-align:right">janvier 2027</td></tr>
     </table>
-    <div class="todo reveal" style="margin-top:36px">à mesurer · protocole dans PROTOCOLE.md</div>
+    <p class="muted reveal" style="margin-top:36px;font-size:28px">Ligne Cucumber : CI du 17/11/2026, 1 passage. Sa colle a été écrite pour ces 17 scénarios.</p>
   </div>
   {{CHROME}}
-  <aside class="notes">Le faux positif est le pire : on croit que c'est testé. C'est la colonne à regarder en premier.</aside>
+  <aside class="notes">La ligne Cucumber est réelle : 11 justes qui passent, 6 pièges qui échouent. 17 sur 17, mais attention : j'ai écrit la colle en connaissant les scénarios, et Cucumber ne sait pas refuser, il échoue sans dire pourquoi. Les lignes agent seront publiées dans le dépôt, et si l'agent fait moins bien, je le dirai ici.</aside>
 </section>
 
-<!-- 16. Robustesse et coût (à mesurer) -->
+<!-- 18. Quand quoi : trois hypothèses -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">Quand l'interface change</div>
-    <h2 class="reveal" style="margin:30px 0 40px">Renommer un <em>aria-label</em>.<br>Qui casse ?</h2>
-    <div class="cols reveal" style="gap:40px">
-      <div class="panel"><h3>Cucumber</h3><p class="muted">step definitions à réparer</p><div class="todo">à mesurer</div></div>
-      <div class="panel"><h3>Agent</h3><p class="muted">tokens et temps par scénario</p><div class="todo">à mesurer</div></div>
-    </div>
-  </div>
-  {{CHROME}}
-</section>
-
-<!-- 17. Arbre de décision (provisoire) -->
-<section class="slide">
-  <div class="pad">
-    <div class="k reveal">Cucumber ou agent, quand ? · trois hypothèses</div>
+    <div class="k reveal">Cucumber ou agent, quand ? · trois hypothèses, pas des résultats</div>
     <div class="cols reveal" style="margin-top:50px;grid-template-columns:1fr 1fr 1fr;gap:40px">
-      <div class="panel"><h3>Non-régression en CI</h3><p class="muted" style="font-size:26px">Hypothèse : Cucumber reste plus rapide et plus stable.</p><div class="todo">à mesurer</div></div>
-      <div class="panel"><h3>Nouveau scénario</h3><p class="muted" style="font-size:26px">Hypothèse : l'agent le joue avant qu'on écrive la colle.</p><div class="todo">à mesurer</div></div>
-      <div class="panel"><h3>Relire les scénarios</h3><p class="muted" style="font-size:26px">Hypothèse : l'agent repère les ambigus que Cucumber joue sans rien dire.</p><div class="todo">à mesurer</div></div>
+      <div class="panel"><h3>Non-régression en CI</h3><p class="muted" style="font-size:26px">Je m'attends à ce que Cucumber reste devant, parce qu'il est déterministe et ne coûte aucun token.</p></div>
+      <div class="panel"><h3>Nouveau scénario</h3><p class="muted" style="font-size:26px">Je m'attends à ce que l'agent le joue tout de suite, parce qu'il n'a pas besoin de colle.</p></div>
+      <div class="panel"><h3>Relire les scénarios</h3><p class="muted" style="font-size:26px">Je m'attends à ce que l'agent dise pourquoi un scénario est ambigu, là où Cucumber échoue sans explication.</p></div>
     </div>
   </div>
   {{CHROME}}
+  <aside class="notes">Ce sont des hypothèses, je les annonce avant les mesures pour ne pas les ajuster après coup. La troisième est la plus intéressante : Cucumber fait déjà échouer les ambigus, mais il ne sait pas dire pourquoi.</aside>
 </section>
 
-<!-- 18. Écrire du Gherkin jouable -->
+<!-- 19. Écrire du Gherkin jouable -->
 <section class="slide">
   <div class="pad">
     <div class="k reveal">Du Gherkin qu'un agent peut jouer</div>
@@ -216,7 +251,7 @@ Alors la commande est enregistrée</pre>
   <aside class="notes">Ces règles viennent des pièges de la démo. Bonus : elles rendent aussi les scénarios plus clairs pour les humains.</aside>
 </section>
 
-<!-- 19. Chez vous, demain -->
+<!-- 20. Chez vous, demain -->
 <section class="slide">
   <div class="pad">
     <div class="k reveal">Chez vous, demain</div>
@@ -226,9 +261,10 @@ mvn verify</pre>
     <p class="reveal" style="margin-top:40px">Remplacez l'appli de démo par la vôtre, et les pièges par vos vrais scénarios.</p>
   </div>
   {{CHROME}}
+  <aside class="notes">Le validateur tourne avec Python seul. mvn verify joue la référence Cucumber. Le protocole est dans PROTOCOLE.md : prenez-le pour tester l'idée sur vos propres scénarios.</aside>
 </section>
 
-<!-- 20. Fin -->
+<!-- 21. Fin -->
 <section class="slide">
   {{RULER}}
   <div class="pad" style="top:300px">

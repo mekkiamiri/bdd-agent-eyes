@@ -1,7 +1,9 @@
 # Protocole : un agent qui voit l'appli contre Cucumber classique
 
-**État : aucune mesure publiée.** Tous les chiffres du talk et de la page sont « à mesurer » tant que
-`resultats/` ne contient pas de fichier de résultats réel, produit par ce protocole.
+**État : aucune mesure agent publiée** (prévues dans le dépôt en janvier 2027). Le talk et la page
+n'affichent qu'une ligne réelle : les verdicts de Cucumber dans la CI du 17/11/2026 (11 scénarios justes
+qui passent, 6 pièges qui échouent). Aucun autre chiffre tant que `resultats/` ne contient pas de fichier
+de résultats réel, produit par ce protocole.
 
 ## Question
 

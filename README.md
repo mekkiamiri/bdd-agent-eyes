@@ -59,7 +59,7 @@ features/*.feature ──(tags @parcours, @attendu)──► outils/valider.py �
 | `agent/lancer.py` | Envoie chaque scénario (sans tags ni pièges) à une commande d'agent configurable, par défaut `claude -p` avec le serveur MCP `@playwright/mcp` 0.0.85 (`agent/mcp-arbre.json`, `mcp-capture.json`, `mcp-les-deux.json`), et écrit `resultats/agent-<config>/resultats.json`. Testé avec un faux agent ; jamais lancé en CI. |
 | `outils/verifier_pieges.py` | Lance Cucumber sur `not @attendu:passe` et vérifie, scénario par scénario, l'échec attendu (assertion, délai dépassé ou étape non définie). |
 | `outils/comparer.py` | Regroupe les 3 passages de chaque scénario et calcule réussite (moyenne et variance entre passages), stabilité, faux positifs, faux négatifs, refus justes, temps et coût. |
-| `docs/index.html` | Page de démo : vous jouez le scénario dans l'appli, les étapes se cochent à côté ; tableau de comparaison « à mesurer ». |
+| `docs/index.html` | Page de démo : vous jouez le scénario dans l'appli, les étapes se cochent à côté ; tableau de comparaison (colonne Cucumber tirée de la CI, colonnes agent publiées en janvier 2027). |
 
 Versions vérifiées sur Maven Central le 16/11/2026 : Cucumber-JVM 8.1.0, JUnit 6.1.3, Playwright Java 1.65.0, Surefire 3.6.1, Compiler 3.16.0, exec-maven-plugin 3.7.0.
 
