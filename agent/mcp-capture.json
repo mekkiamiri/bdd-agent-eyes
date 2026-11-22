@@ -2,7 +2,17 @@
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@0.0.85", "--isolated", "--allow-unrestricted-file-access", "--caps", "vision", "--snapshot-mode", "none"]
+      "args": [
+        "@playwright/mcp@0.0.85",
+        "--isolated",
+        "--allow-unrestricted-file-access",
+        "--caps",
+        "vision",
+        "--snapshot-mode",
+        "none",
+        "--browser",
+        "chrome"
+      ]
     }
   }
 }

@@ -37,8 +37,8 @@ RACINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RACINE / "outils"))
 from valider import valider  # noqa: E402
 
-COMMANDE_DEFAUT = ("claude -p --output-format json --strict-mcp-config "
-                   "--mcp-config agent/mcp-{config}.json --allowedTools mcp__playwright")
+COMMANDE_DEFAUT = ("claude -p --output-format json --setting-sources project --model claude-sonnet-5-5 "
+                   "--strict-mcp-config --mcp-config agent/mcp-{config}.json --allowedTools mcp__playwright")
 VERDICTS = ("passe", "echec", "refus")
 
 
