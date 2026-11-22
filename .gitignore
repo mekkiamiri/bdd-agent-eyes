@@ -6,3 +6,7 @@ __pycache__/
 *.iml
 .vscode/
 .env
+
+# Traces locales du navigateur piloté
+.playwright-mcp/
+/${local_app_data}*
