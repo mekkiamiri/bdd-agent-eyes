@@ -92,6 +92,21 @@ def lire_reponse(sortie: str) -> tuple[dict | None, float]:
     return trouve, cout
 
 
+def sans_fenetre(chemin_config: str) -> str:
+    """Copie la config MCP en remplaçant Chrome par WebKit, en mode headless, dans un fichier temporaire."""
+    import tempfile
+    d = json.loads((RACINE / chemin_config).read_text(encoding="utf-8"))
+    args = d["mcpServers"]["playwright"]["args"]
+    if "--browser" in args:
+        i = args.index("--browser")
+        del args[i:i + 2]
+    args += ["--browser", "webkit", "--headless"]
+    f = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8")
+    json.dump(d, f)
+    f.close()
+    return f.name
+
+
 def jouer(sid: str, gherkin: str, commande: list[str], url: str, delai: float) -> dict:
     debut = time.monotonic()
     try:
@@ -120,6 +135,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--url", default=(RACINE / "docs" / "app" / "index.html").as_uri())
     p.add_argument("--sortie", default=str(RACINE / "resultats"))
     p.add_argument("--delai", type=float, default=600, help="secondes par scénario")
+    p.add_argument("--sans-fenetre", action="store_true",
+                   help="navigateur WebKit de Playwright en mode headless (pour les postes où Chrome headless est interdit)")
     a = p.parse_args(argv)
 
     tous = scenarios()
@@ -129,6 +146,8 @@ def main(argv: list[str] | None = None) -> int:
         print("scénarios inconnus :", inconnus)
         return 2
     commande = shlex.split(a.commande.replace("{config}", a.config))
+    if a.sans_fenetre:
+        commande = [sans_fenetre(c) if c.endswith(f"mcp-{a.config}.json") else c for c in commande]
     fichier = Path(a.sortie) / f"agent-{a.config}" / "resultats.json"
     if fichier.exists():
         donnees = json.loads(fichier.read_text(encoding="utf-8"))
