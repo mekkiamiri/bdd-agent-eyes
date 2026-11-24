@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import shlex
 import subprocess
 import sys
@@ -89,7 +90,22 @@ def lire_reponse(sortie: str) -> tuple[dict | None, float]:
             continue
         if isinstance(objet, dict) and "verdict" in objet:
             trouve = objet
+    if trouve is None and ("\\'" in texte or '\\"' in texte):
+        # L'agent écrit parfois \' ou \" dans son JSON (échappements en trop) : on les retire et on relit.
+        propre = texte.replace("\\'", "'").replace('\\"', '"')
+        if propre != texte:
+            return lire_reponse(json.dumps({"result": propre, "total_cost_usd": cout}))
     return trouve, cout
+
+
+def anonymiser(texte: str) -> str:
+    """Retire des résultats les chemins locaux (dossier du dépôt, dossier personnel, fichiers temporaires)."""
+    import re
+    texte = texte.replace(RACINE.as_uri() + "/", "").replace(str(RACINE) + "/", "")
+    texte = re.sub(r"/(?:private/)?var/folders/[^\s\"']+", "<fichier temporaire>", texte)
+    texte = re.sub(r"(ENOTFOUND|ECONNREFUSED|ETIMEDOUT)\s+(?!<)[\w.-]+", r"\1 <proxy d'entreprise>", texte)
+    texte = re.sub(r"<proxy d'entreprise>\s+[\w-]+(?:\.[\w-]+)+", "ENOTFOUND <proxy d'entreprise>", texte)
+    return re.sub(r"/Users/[^/\s\"']+", "~", texte)
 
 
 def sans_fenetre(chemin_config: str) -> str:
@@ -117,6 +133,8 @@ def jouer(sid: str, gherkin: str, commande: list[str], url: str, delai: float) -
         sortie, code = "", "délai dépassé"
     duree = round(time.monotonic() - debut, 2)
     verdict, cout = lire_reponse(sortie)
+    if verdict is None and os.environ.get("LANCER_DEBUG"):
+        Path(os.environ["LANCER_DEBUG"]).write_text(sortie, encoding="utf-8")
     ligne = {"id": sid, "duree_s": duree, "cout_usd": cout}
     if code != 0 or verdict is None or verdict.get("verdict") not in VERDICTS:
         ligne["erreur"] = f"code {code} ; sortie : {sortie[-300:]!r}"
@@ -165,7 +183,7 @@ def main(argv: list[str] | None = None) -> int:
             donnees[cible].append(ligne)
             print(f"{sid} · passage {ligne['passage']} · {ligne.get('verdict', 'ERREUR')} · {ligne['duree_s']} s")
             fichier.parent.mkdir(parents=True, exist_ok=True)
-            fichier.write_text(json.dumps(donnees, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+            fichier.write_text(anonymiser(json.dumps(donnees, ensure_ascii=False, indent=1)) + "\n", encoding="utf-8")
     print(f"écrit {fichier}")
     return 0
 

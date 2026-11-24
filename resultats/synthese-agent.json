@@ -1,0 +1,44 @@
+[
+ {
+  "config": "arbre",
+  "passages": 51,
+  "justes": 51,
+  "erreurs": 0,
+  "ecartees": 11,
+  "duree_s": 13.9,
+  "cout_usd": 0.069,
+  "par_attendu": {
+   "passe": 33,
+   "echec": 9,
+   "ambigu": 9
+  }
+ },
+ {
+  "config": "capture",
+  "passages": 51,
+  "justes": 51,
+  "erreurs": 0,
+  "ecartees": 12,
+  "duree_s": 13.4,
+  "cout_usd": 0.062,
+  "par_attendu": {
+   "passe": 33,
+   "echec": 9,
+   "ambigu": 9
+  }
+ },
+ {
+  "config": "les-deux",
+  "passages": 51,
+  "justes": 51,
+  "erreurs": 0,
+  "ecartees": 8,
+  "duree_s": 13.4,
+  "cout_usd": 0.059,
+  "par_attendu": {
+   "passe": 33,
+   "echec": 9,
+   "ambigu": 9
+  }
+ }
+]

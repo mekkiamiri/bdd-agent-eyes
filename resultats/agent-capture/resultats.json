@@ -1,0 +1,605 @@
+{
+ "config": "agent-capture",
+ "scenarios": [
+  {
+   "id": "connexion.feature:Connexion réussie",
+   "duree_s": 11.73,
+   "cout_usd": 0.1325222,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre : saisie de l'email, saisie du mot de passe, clic sur « Se connecter ». Le message attendu s'affiche ensuite.",
+   "preuve": "Après le clic, la capture d'écran et l'arbre d'accessibilité montrent « Bonjour demo@exemple.org » en haut à droite de la barre d'en-tête. Aucun message d'erreur n'est affiché.",
+   "passage": 1
+  },
+  {
+   "id": "connexion.feature:Mauvais mot de passe",
+   "duree_s": 10.27,
+   "cout_usd": 0.1339539,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre. Le message d'erreur attendu s'affiche après le clic sur « Se connecter ».",
+   "preuve": "La page « Connexion » était ouverte. Les champs contenaient « demo@exemple.org » et « mauvais » (masqué en points). Après le clic, le texte rouge « Email ou mot de passe incorrect. » est apparu sous le formulaire, à l'écran et dans l'arbre d'accessibilité (alert).",
+   "passage": 1
+  },
+  {
+   "id": "connexion.feature:Compte bloqué après trois échecs",
+   "duree_s": 10.24,
+   "cout_usd": 0.0990682,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre. Après le troisième clic sur « Se connecter », le message de blocage s'affiche et le bouton est désactivé.",
+   "preuve": "Je n'ai pas pris de capture d'écran, seulement l'arbre d'accessibilité. Il contient l'alerte « Compte bloqué après 3 essais. Réessayez plus tard. » et le bouton « Se connecter » marqué [disabled]. Les champs Email et Mot de passe contiennent « demo@exemple.org » et « mauvais ».",
+   "passage": 1
+  },
+  {
+   "id": "connexion.feature:Message d'accueil personnalisé",
+   "duree_s": 9.67,
+   "cout_usd": 0.0679806,
+   "verdict": "echec",
+   "etape": 4,
+   "explication": "Après la connexion, l'application affiche « Bonjour demo@exemple.org » dans l'en-tête, et non « Bienvenue, Demo ». Le texte attendu n'apparaît nulle part à l'écran.",
+   "preuve": "Les étapes 1 à 3 se sont déroulées normalement. Après le clic sur « Se connecter », la capture montre « Bonjour demo@exemple.org » en haut à droite. La page reste sur le formulaire de Connexion. Aucun message « Bienvenue, Demo » n'est visible.",
+   "passage": 1
+  },
+  {
+   "id": "connexion.feature:Connexion rapide",
+   "duree_s": 8.16,
+   "cout_usd": 0.056241700000000006,
+   "verdict": "refus",
+   "etape": 2,
+   "explication": "Le scénario ne dit pas quel élément « Connexion » désigner, ni avec quels identifiants se connecter. Le résultat « je suis connecté » n'est pas défini par un indicateur visible à l'écran.",
+   "preuve": "« Connexion » apparaît à deux endroits : le lien de navigation (#connexion), qui ne fait que rester sur la page de connexion, et le titre de la page, qui n'est pas cliquable. Le vrai bouton s'appelle « Se connecter », et il y a deux champs vides, Email et Mot de passe. Le scénario ne donne aucun identifiant. Aucun message ni nom d'utilisateur ne permet de reconnaître un état « connecté ».",
+   "passage": 1
+  },
+  {
+   "id": "livraison-panier-vide.feature:Commande refusée quand le panier est vide",
+   "duree_s": 19.69,
+   "cout_usd": 0.097566,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre. L'application affiche « Votre panier est vide. » et n'affiche pas « Commande confirmée ».",
+   "preuve": "Après le clic sur « Valider la commande », le message rouge « Votre panier est vide. » apparaît sous les boutons. Le champ Nom contient « Camille Martin », le Code postal « 69003 » et la case des conditions est cochée. La page ne contient nulle part le texte « Commande confirmée », ni à l'écran ni dans l'arbre d'accessibilité. Le champ « Adresse » est resté vide, le scénario n'en parle pas, et cela n'a pas changé le résultat.",
+   "passage": 1
+  },
+  {
+   "id": "livraison.feature:Commande valide",
+   "duree_s": 15.69,
+   "cout_usd": 0.0841668,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué le contexte puis chaque étape dans l'ordre, et l'application a affiché la confirmation attendue.",
+   "preuve": "Après le clic sur « Valider la commande », la page Livraison affiche le titre « Commande confirmée » et le texte « Merci, votre commande est en préparation. » Avant ce clic, le bouton était grisé. Il est devenu cliquable une fois les trois champs remplis et la case cochée.",
+   "passage": 1
+  },
+  {
+   "id": "livraison.feature:Code postal invalide",
+   "duree_s": 14.11,
+   "cout_usd": 0.085126,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué le contexte et les étapes du scénario dans l'ordre. Après le clic sur « Enregistrer l'adresse » avec le code postal « 6900 », l'application affiche le message d'erreur attendu et aucune confirmation d'enregistrement.",
+   "preuve": "Page Livraison : Nom = « Camille Martin », Code postal = « 6900 ». Après le clic, le texte rouge « Le code postal doit contenir 5 chiffres. » apparaît sous les boutons. « Adresse enregistrée. » n'apparaît nulle part, ni sur la capture ni dans l'arbre d'accessibilité. Le champ Adresse est resté vide, car le scénario ne demande pas de le remplir.",
+   "passage": 1
+  },
+  {
+   "id": "livraison.feature:Conditions de vente non acceptées",
+   "duree_s": 17.63,
+   "cout_usd": 0.0960937,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "Après avoir saisi le nom et le code postal sans cocher les conditions de vente, le bouton « Valider la commande » est resté désactivé et aucune confirmation de commande n'est apparue.",
+   "preuve": "Sur la page Livraison, la capture montre Nom = « Camille Martin », Code postal = « 69003 », la case « J'accepte les conditions de vente » décochée, et le bouton « Valider la commande » grisé. L'arbre d'accessibilité indique `button \"Valider la commande\" [disabled]`. Le texte « Commande confirmée » n'apparaît nulle part sur la page.",
+   "passage": 1
+  },
+  {
+   "id": "livraison.feature:Message quand les conditions ne sont pas cochées",
+   "duree_s": 18.68,
+   "cout_usd": 0.10729540000000001,
+   "verdict": "echec",
+   "etape": 3,
+   "explication": "Le bouton « Valider la commande » est désactivé après la saisie du nom et du code postal, avec les conditions non cochées. Je ne peux donc pas cliquer dessus, et le message attendu n'apparaît pas.",
+   "preuve": "Page Livraison : Nom = « Camille Martin », Code postal = « 69003 », case « J'accepte les conditions de vente » décochée. Le bouton « Valider la commande » est grisé (disabled). Les zones d'alerte et de statut sont vides et le texte « Veuillez accepter les conditions de vente » n'apparaît nulle part.",
+   "passage": 1
+  },
+  {
+   "id": "livraison.feature:La commande est enregistrée",
+   "duree_s": 15.67,
+   "cout_usd": 0.0622205,
+   "verdict": "refus",
+   "etape": 6,
+   "explication": "L'étape « je valide » peut désigner deux boutons : « Enregistrer l'adresse » ou « Valider la commande ». Le scénario ne dit pas lequel. De plus, « Valider la commande » est désactivé, et rien n'indique ce qui le débloque : le champ « Adresse » et la case « J'accepte les conditions de vente » ne figurent pas dans le scénario. Enfin, « la commande est enregistrée » ne dit pas quel message ou affichage prouve que c'est fait. Les étapes sont numérotées de 1 à 7 en comptant le Contexte (« je valide » est la 6e).",
+   "preuve": "Les étapes 1 à 3 ont marché : le Catalogue s'affiche, le panier indique « Marteau × 1 » et « 1 article · Total : 12,00 € », et « Commander » mène à la page Livraison. Cette page a les champs Nom, Adresse et Code postal, la case des conditions, le bouton actif « Enregistrer l'adresse » et le bouton désactivé « Valider la commande ». Aucun message de confirmation n'est affiché. Je n'ai pas saisi les champs et je n'ai cliqué sur aucun des deux boutons, pour ne pas deviner.",
+   "passage": 1
+  },
+  {
+   "id": "panier.feature:Ajouter un produit",
+   "duree_s": 10.41,
+   "cout_usd": 0.0690433,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai ouvert la page Catalogue, puis cliqué sur « Ajouter » pour le Marteau. Le panier affiche bien 1 article et un total de 12,00 €.",
+   "preuve": "Dans le panier, la ligne « Marteau × 1 » apparaît, suivie de « 1 article · Total : 12,00 € ».",
+   "passage": 1
+  },
+  {
+   "id": "panier.feature:Code promo de bienvenue",
+   "duree_s": 13.33,
+   "cout_usd": 0.0762891,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre. Le message de code promo et le total attendus s'affichent à l'écran.",
+   "preuve": "Le panier contient Marteau × 1 et Mètre ruban × 1, soit 21,90 € avant remise. Après « Appliquer », le message vert « Code BIENVENUE appliqué : -10 % » apparaît. La ligne du panier affiche « 2 articles · Total : 19,71 € ».",
+   "passage": 1
+  },
+  {
+   "id": "panier.feature:Panier vide, commande impossible",
+   "duree_s": 9.64,
+   "cout_usd": 0.0545215,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "Sur la page Catalogue, le panier affiche 0 article et le bouton « Commander » est désactivé.",
+   "preuve": "Dans le bloc Panier, la ligne « 0 article · Total : 0,00 € » est visible. Le bouton « Commander » est grisé, et l'arbre d'accessibilité le marque [disabled].",
+   "passage": 1
+  },
+  {
+   "id": "panier.feature:Ajouter un produit épuisé",
+   "duree_s": 9.89,
+   "cout_usd": 0.06340230000000001,
+   "verdict": "echec",
+   "etape": 2,
+   "explication": "Le produit « Tournevis » est épuisé et son bouton « Ajouter » est désactivé. Je n'ai donc pas pu l'ajouter au panier, alors que le scénario attend 1 article. J'ai numéroté le Contexte comme étape 1, donc « Quand j'ajoute… » est l'étape 2.",
+   "preuve": "Sur la page Catalogue, la ligne « Tournevis 6,50 € » a un bouton « Ajouter Tournevis au panier » désactivé et la mention « Épuisé ». Le panier affiche « 0 article · Total : 0,00 € » et le bouton « Commander » est désactivé.",
+   "passage": 1
+  },
+  {
+   "id": "panier.feature:Un code inconnu retire la remise",
+   "duree_s": 18.21,
+   "cout_usd": 0.11076180000000001,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre. Après le code inconnu « FAUX », le message d'erreur s'affiche et la remise de 10 % disparaît.",
+   "preuve": "Après BIENVENUE, l'écran affichait « Code BIENVENUE appliqué : -10 % » et « Total : 10,80 € ». Après FAUX puis Appliquer, il affiche « Code promo inconnu. » et « 1 article · Total : 12,00 € » (Marteau × 1).",
+   "passage": 1
+  },
+  {
+   "id": "connexion.feature:Connexion réussie",
+   "duree_s": 9.41,
+   "cout_usd": 0.0488615,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre : page Connexion ouverte, email et mot de passe saisis, clic sur « Se connecter ». Le message attendu s'affiche.",
+   "preuve": "Après le clic, la capture et l'arbre d'accessibilité montrent « Bonjour demo@exemple.org » en haut à droite de l'en-tête. Aucune alerte d'erreur n'apparaît.",
+   "passage": 2
+  },
+  {
+   "id": "connexion.feature:Mauvais mot de passe",
+   "duree_s": 10.25,
+   "cout_usd": 0.033133499999999996,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué les étapes dans l'ordre : saisie de l'email, saisie du mot de passe « mauvais », puis clic sur « Se connecter ». Le message attendu s'affiche.",
+   "preuve": "La capture montre, sous le formulaire, le texte rouge « Email ou mot de passe incorrect. ». L'arbre d'accessibilité le confirme avec un élément alert portant le même texte.",
+   "passage": 2
+  },
+  {
+   "id": "connexion.feature:Compte bloqué après trois échecs",
+   "duree_s": 9.71,
+   "cout_usd": 0.025412300000000002,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "Après trois clics sur « Se connecter » avec un mauvais mot de passe, le message de blocage apparaît et le bouton est désactivé.",
+   "preuve": "La capture montre en rouge « Compte bloqué après 3 essais. Réessayez plus tard. ». Le bouton « Se connecter » est grisé. L'arbre d'accessibilité le marque [disabled].",
+   "passage": 2
+  },
+  {
+   "id": "connexion.feature:Message d'accueil personnalisé",
+   "duree_s": 9.21,
+   "cout_usd": 0.0491346,
+   "verdict": "echec",
+   "etape": 4,
+   "explication": "Après la connexion, l'application affiche « Bonjour demo@exemple.org » en haut à droite. Le texte « Bienvenue, Demo » attendu par le scénario n'apparaît nulle part.",
+   "preuve": "Les étapes 1 à 3 ont fonctionné : les champs Email et Mot de passe sont remplis et le clic sur « Se connecter » a été pris en compte. L'écran montre « Bonjour demo@exemple.org » dans l'en-tête, et aucun « Bienvenue, Demo » sur la page, ni dans la capture ni dans l'arbre d'accessibilité.",
+   "passage": 2
+  },
+  {
+   "id": "livraison-panier-vide.feature:Commande refusée quand le panier est vide",
+   "duree_s": 13.81,
+   "cout_usd": 0.06138590000000001,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai rempli le formulaire, coché la case et cliqué sur « Valider la commande ». Le message « Votre panier est vide. » s'est affiché et rien n'indiquait que la commande était confirmée.",
+   "preuve": "Page Livraison : Nom = Camille Martin, Code postal = 69003, case des conditions cochée. Après le clic, le texte rouge « Votre panier est vide. » apparaît sous les boutons. Aucun texte « Commande confirmée » n'est visible, ni sur la capture ni dans l'arbre d'accessibilité.",
+   "passage": 2
+  },
+  {
+   "id": "livraison.feature:Commande valide",
+   "duree_s": 16.17,
+   "cout_usd": 0.0705511,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes du contexte et du scénario dans l'ordre. Chaque élément ciblé était unique et utilisable. Après « Valider la commande », « Commande confirmée » s'affiche.",
+   "preuve": "Le catalogue contient un seul « Marteau », que j'ai ajouté au panier. « Commander » a ouvert la page Livraison. J'ai rempli Nom, Adresse et Code postal, puis coché les conditions : « Valider la commande » est alors devenu actif. Après le clic, l'écran montre un cadre vert avec le titre « Commande confirmée » et le texte « Merci, votre commande est en préparation. »",
+   "passage": 2
+  },
+  {
+   "id": "livraison.feature:Code postal invalide",
+   "duree_s": 13.82,
+   "cout_usd": 0.0374851,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué le scénario dans l'ordre. Le message d'erreur attendu s'affiche et « Adresse enregistrée. » n'apparaît pas.",
+   "preuve": "Après avoir saisi « Camille Martin » dans Nom et « 6900 » dans Code postal, puis cliqué sur « Enregistrer l'adresse », la capture et l'arbre d'accessibilité montrent en rouge « Le code postal doit contenir 5 chiffres. ». Aucun texte « Adresse enregistrée. » n'est visible, et la zone de statut est vide.",
+   "passage": 2
+  },
+  {
+   "id": "livraison.feature:Conditions de vente non acceptées",
+   "duree_s": 16.94,
+   "cout_usd": 0.0524589,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "Après avoir saisi le nom et le code postal sans cocher les conditions de vente, le bouton « Valider la commande » est désactivé et aucune confirmation de commande n'apparaît.",
+   "preuve": "Sur la page Livraison, Nom = « Camille Martin », Code postal = « 69003 », la case « J'accepte les conditions de vente » est décochée. Le bouton « Valider la commande » est grisé et marqué [disabled] dans l'arbre d'accessibilité. Le texte « Commande confirmée » n'apparaît nulle part sur la page, et les zones alert et status sont vides.",
+   "passage": 2
+  },
+  {
+   "id": "livraison.feature:Message quand les conditions ne sont pas cochées",
+   "duree_s": 18.14,
+   "cout_usd": 0.05880250000000001,
+   "verdict": "echec",
+   "etape": 3,
+   "explication": "Le bouton « Valider la commande » est grisé (désactivé) après la saisie du nom et du code postal, alors que les conditions ne sont pas cochées. Je ne peux donc pas cliquer dessus, et aucun message « Veuillez accepter les conditions de vente » ne peut s'afficher. Je n'ai pas forcé le clic.",
+   "preuve": "Page Livraison avec Nom = « Camille Martin », Code postal = « 69003 », case « J'accepte les conditions de vente » décochée. Le bouton « Valider la commande » est affiché en bleu pâle et marqué disabled dans l'arbre d'accessibilité. La zone d'alerte est vide et aucun message n'est visible.",
+   "passage": 2
+  },
+  {
+   "id": "livraison.feature:La commande est enregistrée",
+   "duree_s": 14.82,
+   "cout_usd": 0.0280013,
+   "verdict": "refus",
+   "etape": 6,
+   "explication": "L'étape « je valide » peut désigner deux boutons de la page Livraison : « Enregistrer l'adresse » et « Valider la commande ». Le résultat « la commande est enregistrée » n'est pas défini non plus, et le scénario ne dit pas quoi regarder à l'écran pour le constater. Il faudrait aussi dire si l'adresse et les conditions de vente sont à remplir, car « Valider la commande » est désactivé et ces deux éléments ne sont pas dans le scénario.",
+   "preuve": "Le contexte a été joué sans problème. Catalogue : « Marteau × 1 », total 12,00 €, puis « Commander » m'a mené à la page Livraison. Cette page affiche les champs Nom, Adresse et Code postal, la case « J'accepte les conditions de vente », le bouton « Enregistrer l'adresse » et le bouton « Valider la commande » (désactivé). Aucun message de confirmation de commande n'est visible. Je n'ai pas saisi Nom ni Code postal : je me suis arrêté avant, parce que le bouton à utiliser n'était pas déterminable.",
+   "passage": 2
+  },
+  {
+   "id": "panier.feature:Ajouter un produit",
+   "duree_s": 12.32,
+   "cout_usd": 0.0644228,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "Après avoir ajouté « Marteau » depuis la page Catalogue, le panier affiche 1 article et un total de 12,00 €, comme le dit le scénario.",
+   "preuve": "Le panier montre la ligne « Marteau × 1 » et le texte « 1 article · Total : 12,00 € ». Un seul bouton « Ajouter Marteau au panier » existait, donc l'étape ne pouvait désigner qu'un élément.",
+   "passage": 2
+  },
+  {
+   "id": "panier.feature:Code promo de bienvenue",
+   "duree_s": 12.65,
+   "cout_usd": 0.0321054,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre. Le message de confirmation et le total attendus s'affichent tous les deux.",
+   "preuve": "Le panier contient Marteau × 1 et Mètre ruban × 1. Après la saisie de BIENVENUE et le clic sur Appliquer, le message vert « Code BIENVENUE appliqué : -10 % » s'affiche. Le panier indique « 2 articles · Total : 19,71 € ». C'est cohérent avec (12,00 + 9,90) × 0,9 = 19,71.",
+   "passage": 2
+  },
+  {
+   "id": "panier.feature:Panier vide, commande impossible",
+   "duree_s": 9.74,
+   "cout_usd": 0.0333152,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "Sur la page Catalogue, le panier affiche « 0 article » et le bouton « Commander » est désactivé.",
+   "preuve": "Dans la section Panier, on lit « 0 article · Total : 0,00 € ». Le bouton « Commander » est grisé, et l'arbre d'accessibilité le marque [disabled].",
+   "passage": 2
+  },
+  {
+   "id": "panier.feature:Ajouter un produit épuisé",
+   "duree_s": 10.25,
+   "cout_usd": 0.0178571,
+   "verdict": "echec",
+   "etape": 2,
+   "explication": "Le bouton « Ajouter Tournevis au panier » est désactivé et le produit est marqué « Épuisé ». Je n'ai donc pas pu l'ajouter, et le panier ne peut pas contenir 1 article comme l'attend le scénario. Le scénario est probablement à corriger : il devrait vérifier que l'ajout est impossible et que le panier reste à 0.",
+   "preuve": "Dans le catalogue, la ligne Tournevis (6,50 €) affiche un bouton « Ajouter » grisé et le texte « Épuisé ». Le panier indique « 0 article · Total : 0,00 € » et je n'ai pas cliqué sur le bouton désactivé.",
+   "passage": 2
+  },
+  {
+   "id": "panier.feature:Ajouter au panier",
+   "duree_s": 11.44,
+   "cout_usd": 0.0391503,
+   "verdict": "refus",
+   "etape": 1,
+   "explication": "L'étape « je clique sur \"Ajouter\" » peut désigner trois boutons, tous nommés « Ajouter » : Marteau, Tournevis (désactivé) et Mètre ruban. Le scénario ne dit pas lequel choisir, donc je n'ai cliqué sur aucun. Il faut préciser l'article, par exemple « j'ajoute \"Marteau\" au panier ».",
+   "preuve": "Sur la page Catalogue, il y a trois boutons « Ajouter » : Marteau à 12,00 €, Tournevis à 6,50 € (désactivé, marqué « Épuisé ») et Mètre ruban à 9,90 €. Le panier affiche « 0 article · Total : 0,00 € ».",
+   "passage": 2
+  },
+  {
+   "id": "panier.feature:Un code inconnu retire la remise",
+   "duree_s": 13.26,
+   "cout_usd": 0.061155900000000006,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre. Après le code inconnu « FAUX », le message d'erreur s'affiche et la remise de 10 % disparaît.",
+   "preuve": "Après « BIENVENUE » : « Code BIENVENUE appliqué : -10 % » et « Total : 10,80 € ». Après « FAUX » : « Code promo inconnu. » et « 1 article · Total : 12,00 € ».",
+   "passage": 2
+  },
+  {
+   "id": "connexion.feature:Connexion réussie",
+   "duree_s": 14.6,
+   "cout_usd": 0.06406390000000001,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre. Après le clic sur « Se connecter », le texte attendu s'affiche.",
+   "preuve": "Le contexte est vérifié : la page « Connexion » est affichée. Après la saisie des deux champs et le clic, l'en-tête en haut à droite affiche « Bonjour demo@exemple.org », à l'écran et dans l'arbre d'accessibilité.",
+   "passage": 3
+  },
+  {
+   "id": "connexion.feature:Mauvais mot de passe",
+   "duree_s": 9.77,
+   "cout_usd": 0.034184799999999994,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué les étapes dans l'ordre : la page Connexion était déjà affichée, j'ai saisi l'email et le mot de passe, puis j'ai cliqué sur « Se connecter ». Le message attendu s'affiche.",
+   "preuve": "Sur la capture, sous le formulaire, le texte rouge « Email ou mot de passe incorrect. » apparaît. L'arbre d'accessibilité le montre aussi dans une zone d'alerte (alert).",
+   "passage": 3
+  },
+  {
+   "id": "connexion.feature:Compte bloqué après trois échecs",
+   "duree_s": 15.44,
+   "cout_usd": 0.0698752,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "Après trois clics sur « Se connecter » avec un mauvais mot de passe, le message de blocage s'affiche et le bouton est désactivé.",
+   "preuve": "La capture montre le message rouge « Compte bloqué après 3 essais. Réessayez plus tard. ». Le bouton « Se connecter » est grisé, et l'arbre d'accessibilité l'indique avec [disabled].",
+   "passage": 3
+  },
+  {
+   "id": "connexion.feature:Message d'accueil personnalisé",
+   "duree_s": 13.77,
+   "cout_usd": 0.061512399999999995,
+   "verdict": "echec",
+   "etape": 4,
+   "explication": "Après la connexion, l'application affiche « Bonjour demo@exemple.org » et non « Bienvenue, Demo » comme l'attend le scénario.",
+   "preuve": "J'ai saisi l'email et le mot de passe, puis cliqué sur « Se connecter ». Le seul changement à l'écran est « Bonjour demo@exemple.org » en haut à droite de l'en-tête. Le texte « Bienvenue, Demo » n'apparaît nulle part, ni dans la capture ni dans l'arbre d'accessibilité.",
+   "passage": 3
+  },
+  {
+   "id": "connexion.feature:Connexion rapide",
+   "duree_s": 8.27,
+   "cout_usd": 0.0414948,
+   "verdict": "refus",
+   "etape": 2,
+   "explication": "« Connexion » peut désigner plusieurs éléments, et le scénario ne dit pas à quoi on reconnaît « je suis connecté ». Il faudrait préciser l'élément à cliquer et un résultat visible à l'écran.",
+   "preuve": "La page affiche un lien « Connexion » dans la navigation et un titre « Connexion », qui ne se clique pas. Le bouton du formulaire s'appelle « Se connecter ». Les champs Email et Mot de passe sont vides. Aucun message ni indicateur d'état connecté n'est décrit. Je n'ai rien cliqué.",
+   "passage": 3
+  },
+  {
+   "id": "livraison-panier-vide.feature:Commande refusée quand le panier est vide",
+   "duree_s": 20.02,
+   "cout_usd": 0.07887939999999999,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre. Après le clic sur « Valider la commande », le message « Votre panier est vide. » s'affiche et aucune confirmation de commande n'apparaît.",
+   "preuve": "Page Livraison : Nom = « Camille Martin », Code postal = « 69003 », case des conditions de vente cochée. Le bouton « Valider la commande » était désactivé au départ et s'est activé après la saisie des champs et la case cochée. Après le clic, le texte rouge « Votre panier est vide. » apparaît sous les boutons. Le texte « Commande confirmée » n'apparaît ni sur la capture ni dans l'arbre d'accessibilité.",
+   "passage": 3
+  },
+  {
+   "id": "livraison.feature:Commande valide",
+   "duree_s": 25.47,
+   "cout_usd": 0.08261170000000001,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué le Contexte puis le scénario dans l'ordre, et chaque étape a eu l'effet attendu. Le message « Commande confirmée » s'affiche à la fin.",
+   "preuve": "Je suis passé par le lien Catalogue, j'ai ajouté Marteau au panier, puis « Commander » a ouvert la page Livraison. J'ai rempli Nom (Camille Martin), Adresse (12 rue des Lilas) et Code postal (69003), et j'ai coché les conditions de vente. « Valider la commande » est alors devenu actif. Après le clic, un encadré vert affiche le titre « Commande confirmée » et le texte « Merci, votre commande est en préparation. »",
+   "passage": 3
+  },
+  {
+   "id": "livraison.feature:Code postal invalide",
+   "duree_s": 12.93,
+   "cout_usd": 0.032333400000000005,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes dans l'ordre. Après l'enregistrement avec le code postal « 6900 », le message d'erreur attendu s'affiche et « Adresse enregistrée. » n'apparaît pas.",
+   "preuve": "Sur la capture, le texte rouge « Le code postal doit contenir 5 chiffres. » est affiché sous les boutons. Aucun message « Adresse enregistrée. » n'est visible : la zone d'état est vide, et le bouton « Valider la commande » reste désactivé.",
+   "passage": 3
+  },
+  {
+   "id": "livraison.feature:Conditions de vente non acceptées",
+   "duree_s": 16.56,
+   "cout_usd": 0.0690078,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué le contexte (Catalogue, ajout de Marteau, Commander), puis saisi le nom et le code postal. Le bouton « Valider la commande » est resté désactivé et « Commande confirmée » n'apparaît pas.",
+   "preuve": "Sur la page Livraison, le champ Nom contient « Camille Martin » et le champ Code postal contient « 69003 ». La case « J'accepte les conditions de vente » est décochée. Le bouton « Valider la commande » est grisé, et l'arbre d'accessibilité le marque [disabled]. Aucun texte « Commande confirmée » n'est visible sur la capture ni dans l'arbre. Les zones alert et status sont vides.",
+   "passage": 3
+  },
+  {
+   "id": "livraison.feature:Message quand les conditions ne sont pas cochées",
+   "duree_s": 12.76,
+   "cout_usd": 0.058160699999999996,
+   "verdict": "echec",
+   "etape": 3,
+   "explication": "Le bouton « Valider la commande » reste désactivé quand les conditions ne sont pas cochées. Je n'ai donc pas pu cliquer dessus, et le message attendu ne peut pas s'afficher.",
+   "preuve": "Après avoir saisi « Camille Martin » dans Nom et « 69003 » dans Code postal, la case « J'accepte les conditions de vente » est restée décochée. Le bouton « Valider la commande » est toujours affiché comme désactivé. Les zones d'alerte et de statut sont vides, et le texte « Veuillez accepter les conditions de vente » n'apparaît nulle part.",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Ajouter au panier",
+   "duree_s": 13.48,
+   "cout_usd": 0.127197,
+   "verdict": "refus",
+   "etape": 1,
+   "explication": "L'étape « Quand je clique sur \"Ajouter\" » peut désigner trois boutons (Marteau, Tournevis, Mètre ruban). Le scénario ne dit pas lequel, donc je ne peux pas savoir quel produit est ajouté. Il faut préciser le produit, par exemple « j'ajoute Marteau au panier ».",
+   "preuve": "Sur la page Catalogue, trois boutons portent le libellé « Ajouter » : Marteau (12,00 €), Tournevis (6,50 €, désactivé car Épuisé) et Mètre ruban (9,90 €). Le panier affiche « 0 article · Total : 0,00 € ». Je n'ai cliqué sur aucun bouton.",
+   "passage": 2
+  },
+  {
+   "id": "livraison.feature:La commande est enregistrée",
+   "duree_s": 16.99,
+   "cout_usd": 0.040790099999999996,
+   "verdict": "refus",
+   "etape": 6,
+   "explication": "L'étape « je valide » peut désigner deux boutons : « Enregistrer l'adresse » et « Valider la commande ». Le scénario ne dit pas lequel. « Valider la commande » est désactivé, et le formulaire demande aussi une Adresse et l'acceptation des conditions de vente, que le scénario ne mentionne pas. Il faut préciser le bouton visé et ces champs. Il faut aussi définir ce que « la commande est enregistrée » montre à l'écran, par exemple un message de confirmation.",
+   "preuve": "Après avoir ajouté Marteau et cliqué sur Commander, la page Livraison affiche les champs Nom, Adresse et Code postal, et la case « J'accepte les conditions de vente ». Elle affiche deux boutons : « Enregistrer l'adresse », actif, et « Valider la commande », désactivé. Les zones d'alerte et de statut sont vides.",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Ajouter un produit",
+   "duree_s": 14.91,
+   "cout_usd": 0.0710316,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "Après avoir ouvert la page Catalogue et cliqué sur « Ajouter » pour le Marteau, le panier affiche 1 article et un total de 12,00 €, comme dans le scénario.",
+   "preuve": "Le panier affiche la ligne « Marteau × 1 » puis « 1 article · Total : 12,00 € ». Avant le clic, il affichait « 0 article · Total : 0,00 € ».",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Code promo de bienvenue",
+   "duree_s": 11.9,
+   "cout_usd": 0.034225700000000005,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué toutes les étapes du scénario. Le message de code promo et le total attendus s'affichent tous les deux à l'écran.",
+   "preuve": "Le panier contient Marteau × 1 et Mètre ruban × 1. Le message vert « Code BIENVENUE appliqué : -10 % » est visible. Le texte « 2 articles · Total : 19,71 € » est affiché, ce qui correspond à (12,00 + 9,90) × 0,9 = 19,71 €.",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Panier vide, commande impossible",
+   "duree_s": 9.28,
+   "cout_usd": 0.031077800000000003,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "Sur la page Catalogue, le panier affiche « 0 article » et le bouton « Commander » est désactivé.",
+   "preuve": "Après un clic sur le lien « Catalogue », la section Panier affiche « 0 article · Total : 0,00 € ». Le bouton « Commander » apparaît grisé (désactivé dans l'arbre d'accessibilité). Je n'ai cliqué sur aucun autre élément.",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Ajouter un produit épuisé",
+   "duree_s": 12.5,
+   "cout_usd": 0.0576883,
+   "verdict": "echec",
+   "etape": 2,
+   "explication": "Le bouton « Ajouter » du Tournevis est désactivé parce que le produit est épuisé, donc je ne peux pas l'ajouter au panier. Le panier ne peut pas contenir 1 article comme l'annonce le scénario. Je n'ai pas forcé le clic, conformément aux règles.",
+   "preuve": "Sur la page Catalogue, la ligne « Tournevis 6,50 € » affiche un bouton « Ajouter » grisé (disabled) avec la mention « Épuisé ». Le panier reste à « 0 article · Total : 0,00 € ».",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Ajouter au panier",
+   "duree_s": 10.13,
+   "cout_usd": 0.0338327,
+   "verdict": "refus",
+   "etape": 1,
+   "explication": "L'étape « je clique sur \"Ajouter\" » peut désigner trois boutons (Marteau, Tournevis, Mètre ruban), dont un désactivé. Le scénario ne dit pas quel article ajouter, donc je n'ai pas cliqué.",
+   "preuve": "Sur la page Catalogue, trois boutons portent le libellé « Ajouter » : Marteau (12,00 €), Tournevis (6,50 €, désactivé, marqué « Épuisé ») et Mètre ruban (9,90 €). Le panier affiche « 0 article · Total : 0,00 € ». Le scénario devrait préciser l'article, par exemple « j'ajoute Marteau au panier ».",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Un code inconnu retire la remise",
+   "duree_s": 17.99,
+   "cout_usd": 0.0510481,
+   "verdict": "passe",
+   "etape": null,
+   "explication": "J'ai joué le scénario dans l'ordre. Avec BIENVENUE, le total est passé à 10,80 €. Avec FAUX, le message d'erreur s'affiche et la remise disparaît.",
+   "preuve": "Après BIENVENUE, l'écran affichait « Code BIENVENUE appliqué : -10 % » et « Total : 10,80 € ». Après FAUX, il affichait « Code promo inconnu. » et « 1 article · Total : 12,00 € ».",
+   "passage": 3
+  },
+  {
+   "id": "connexion.feature:Connexion rapide",
+   "duree_s": 9.82,
+   "cout_usd": 0.0372892,
+   "verdict": "refus",
+   "etape": 2,
+   "explication": "« Connexion » est ambigu : c'est à la fois le lien de navigation, le titre de la page et la région. Le vrai bouton de connexion s'appelle « Se connecter ». Le scénario ne dit pas non plus quels identifiants saisir, ni ce qui prouve à l'écran que « je suis connecté ».",
+   "preuve": "La page affiche un lien « Connexion » dans la navigation, un titre « Connexion » et un bouton « Se connecter ». Il y a deux champs vides (Email, Mot de passe) et une indication de compte de démo. Je n'ai trouvé aucun bouton de connexion rapide. Je n'ai cliqué sur rien.",
+   "passage": 3
+  }
+ ],
+ "erreurs": [],
+ "date": "2026-11-24",
+ "commande": "claude -p --output-format json --setting-sources project --model claude-sonnet-5-5 --strict-mcp-config --mcp-config <fichier temporaire> --allowedTools mcp__playwright",
+ "url": "docs/app/index.html",
+ "erreurs_ecartees": [
+  {
+   "id": "panier.feature:Ajouter au panier",
+   "duree_s": 12.13,
+   "cout_usd": 0.0579885,
+   "erreur": "code 0 ; sortie : 'sactivé et marqué « Épuisé ». Le panier indique « 0 article · Total : 0,00 € ».\\\\\"}\\\\n```\",\"ttft_ms\":1247,\"type\":\"result\",\"duration_ms\":10980,\"uuid\":\"c33d2651-40f1-4b13-9bb6-a468d32e1dd3\",\"ttft_stream_ms\":959,\"time_to_request_ms\":26,\"first_content_frame_ms\":959,\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 1
+  },
+  {
+   "id": "connexion.feature:Connexion rapide",
+   "duree_s": 8.89,
+   "cout_usd": 0.044448600000000005,
+   "erreur": "code 0 ; sortie : 'sse, alors que le compte de démo est affiché sur la page. Je n\\'ai rien cliqué.\\\\\"}\\\\n```\",\"ttft_ms\":1314,\"type\":\"result\",\"duration_ms\":7776,\"uuid\":\"7bc2bb2c-4fdd-4a7e-a227-11c691a06b95\",\"ttft_stream_ms\":1013,\"time_to_request_ms\":25,\"first_content_frame_ms\":1013,\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 2
+  },
+  {
+   "id": "livraison.feature:La commande est enregistrée",
+   "duree_s": 63.26,
+   "cout_usd": 0.0176791,
+   "erreur": "code 1 ; sortie : 's_error\":true,\"num_turns\":6,\"subtype\":\"success\",\"api_error_status\":null,\"api_error\":\"connection_failed\",\"result\":\"API Error: getaddrinfo ENOTFOUND <proxy d'entreprise>\",\"type\":\"result\",\"duration_ms\":62097,\"uuid\":\"05f38f61-7159-4003-8ad5-ae2938c8c9a7\",\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Ajouter un produit",
+   "duree_s": 34.5,
+   "cout_usd": 0.0,
+   "erreur": "code 1 ; sortie : 'is_error\":true,\"num_turns\":1,\"subtype\":\"success\",\"api_error_status\":null,\"api_error\":\"connection_failed\",\"result\":\"API Error: getaddrinfo ENOTFOUND <proxy d'entreprise>\",\"type\":\"result\",\"duration_ms\":3649,\"uuid\":\"9b8ab912-45fc-4378-a7a9-85812ffb6014\",\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Code promo de bienvenue",
+   "duree_s": 16.16,
+   "cout_usd": 0.0,
+   "erreur": "code 1 ; sortie : 'is_error\":true,\"num_turns\":1,\"subtype\":\"success\",\"api_error_status\":null,\"api_error\":\"connection_failed\",\"result\":\"API Error: getaddrinfo ENOTFOUND <proxy d'entreprise>\",\"type\":\"result\",\"duration_ms\":3733,\"uuid\":\"4b468a0e-3477-41ac-92be-800915f369a6\",\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Panier vide, commande impossible",
+   "duree_s": 4.86,
+   "cout_usd": 0.0,
+   "erreur": "code 1 ; sortie : 'is_error\":true,\"num_turns\":1,\"subtype\":\"success\",\"api_error_status\":null,\"api_error\":\"connection_failed\",\"result\":\"API Error: getaddrinfo ENOTFOUND <proxy d'entreprise>\",\"type\":\"result\",\"duration_ms\":3638,\"uuid\":\"ecca7650-2a29-4176-aa48-74334ecab153\",\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Ajouter un produit épuisé",
+   "duree_s": 5.53,
+   "cout_usd": 0.0,
+   "erreur": "code 1 ; sortie : 'is_error\":true,\"num_turns\":1,\"subtype\":\"success\",\"api_error_status\":null,\"api_error\":\"connection_failed\",\"result\":\"API Error: getaddrinfo ENOTFOUND <proxy d'entreprise>\",\"type\":\"result\",\"duration_ms\":3806,\"uuid\":\"eb957147-d7d9-4a45-b385-583b7523d206\",\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Ajouter au panier",
+   "duree_s": 7.79,
+   "cout_usd": 0.0,
+   "erreur": "code 1 ; sortie : 'is_error\":true,\"num_turns\":1,\"subtype\":\"success\",\"api_error_status\":null,\"api_error\":\"connection_failed\",\"result\":\"API Error: getaddrinfo ENOTFOUND <proxy d'entreprise>\",\"type\":\"result\",\"duration_ms\":3882,\"uuid\":\"aa3c65be-6cce-49b8-84a7-413b5507bb43\",\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 3
+  },
+  {
+   "id": "panier.feature:Un code inconnu retire la remise",
+   "duree_s": 5.3,
+   "cout_usd": 0.0,
+   "erreur": "code 1 ; sortie : 'is_error\":true,\"num_turns\":1,\"subtype\":\"success\",\"api_error_status\":null,\"api_error\":\"connection_failed\",\"result\":\"API Error: getaddrinfo ENOTFOUND <proxy d'entreprise>\",\"type\":\"result\",\"duration_ms\":3950,\"uuid\":\"8d1c1d31-714d-4f7e-a5d2-0ebaecda85c2\",\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 3
+  },
+  {
+   "id": "connexion.feature:Connexion rapide",
+   "duree_s": 10.04,
+   "cout_usd": 0.0442968,
+   "erreur": "code 0 ; sortie : 'nd à aucun indicateur visible (nom d\\'utilisateur, bouton « Déconnexion », message).\\\\\"}\",\"ttft_ms\":1306,\"type\":\"result\",\"duration_ms\":8912,\"uuid\":\"25034b67-8eb5-4c06-a0da-759c1ff577f7\",\"ttft_stream_ms\":1174,\"time_to_request_ms\":30,\"first_content_frame_ms\":1174,\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 3
+  },
+  {
+   "id": "connexion.feature:Connexion rapide",
+   "duree_s": 11.03,
+   "cout_usd": 0.021950200000000003,
+   "erreur": "code 0 ; sortie : 'n indicateur de connexion décrit, comme un message ou un nom d\\'utilisateur affiché.\\\\\"}\",\"ttft_ms\":1501,\"type\":\"result\",\"duration_ms\":8876,\"uuid\":\"2ba4a577-01cc-49af-bbd4-68d27608ce17\",\"ttft_stream_ms\":1168,\"time_to_request_ms\":30,\"first_content_frame_ms\":1168,\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 3
+  },
+  {
+   "id": "connexion.feature:Connexion rapide",
+   "duree_s": 9.64,
+   "cout_usd": 0.0154112,
+   "erreur": "code 0 ; sortie : ' n\\'ai rien cliqué, parce que cliquer sur le lien du menu ne connecte personne.\\\\\"}\\\\n```\",\"ttft_ms\":1311,\"type\":\"result\",\"duration_ms\":8138,\"uuid\":\"a337c99a-e026-40f0-95ca-ed8a63068bea\",\"ttft_stream_ms\":1142,\"time_to_request_ms\":29,\"first_content_frame_ms\":1142,\"queued_turn_count\":0,\"result_index\":0}\\n'",
+   "passage": 3
+  }
+ ]
+}
