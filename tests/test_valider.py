@@ -14,6 +14,7 @@ sys.path.insert(0, str(RACINE / "outils"))
 
 import comparer  # noqa: E402
 import construire_page  # noqa: E402
+import rapport_robustesse  # noqa: E402
 import valider  # noqa: E402
 import verifier_pieges  # noqa: E402
 
@@ -363,6 +364,40 @@ class PiegesCucumber(unittest.TestCase):
     def test_scenario_absent_du_rapport(self):
         texte = "\n".join(l for l in RAPPORT_SUREFIRE.splitlines() if "Connexion rapide" not in l)
         self.assertEqual(len(verifier_pieges.verifier(self.rapports(texte))), 1)
+
+
+class RobustesseCucumber(unittest.TestCase):
+    """outils/rapport_robustesse.py : les 17 scénarios rejoués sur une autre interface."""
+
+    JUSTES = ["Connexion - Connexion réussie", "Connexion - Mauvais mot de passe",
+              "Connexion - Compte bloqué après trois échecs", "Panier - Ajouter un produit",
+              "Panier - Code promo de bienvenue", "Panier - Panier vide, commande impossible",
+              "Panier - Un code inconnu retire la remise", "Livraison - Commande valide",
+              "Livraison - Code postal invalide", "Livraison - Conditions de vente non acceptées",
+              "Livraison sans panier - Commande refusée quand le panier est vide"]
+
+    def rapport(self, casses=()):
+        lignes = []
+        for nom in self.JUSTES:
+            echec = ('<failure type="com.microsoft.playwright.TimeoutError" message="Timeout 2000ms exceeded."/>'
+                     if nom in casses else "")
+            lignes.append(f' <testcase name="{nom}">{echec}</testcase>')
+        texte = RAPPORT_SUREFIRE.replace("</testsuite>", "\n".join(lignes) + "\n</testsuite>")
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        (Path(tmp) / "TEST-RunCucumberTest.xml").write_text(texte, encoding="utf-8")
+        return rapport_robustesse.comparer(verifier_pieges.lire_rapports(Path(tmp)))
+
+    def test_rien_ne_casse(self):
+        lignes = self.rapport()
+        self.assertEqual(len(lignes), 17)
+        self.assertTrue(all(ligne["conforme"] for ligne in lignes))
+
+    def test_un_scenario_juste_qui_echoue_est_casse(self):
+        lignes = self.rapport(casses=["Panier - Ajouter un produit"])
+        casses = [ligne["id"] for ligne in lignes if not ligne["conforme"]]
+        self.assertEqual(casses, ["panier.feature:Ajouter un produit"])
+        self.assertIn("1 scénario(s) cassé(s) sur 17", rapport_robustesse.resume_markdown(lignes))
 
 
 if __name__ == "__main__":

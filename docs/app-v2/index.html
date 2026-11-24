@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Quincaillerie · appli de démo</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body class="qc">
+<!-- Version 2 de l'appli de démo : même comportement, mêmes textes visibles, interface refondue
+     (identifiants, classes, structure, ordre). Chaque changement est décrit dans CHANGEMENTS.md.
+     Sert à mesurer la robustesse : Cucumber et l'agent rejouent les mêmes scénarios sur cette version. -->
+<header class="qc-entete">
+  <p class="qc-entete__marque"><strong>La Quincaillerie</strong></p>
+  <p id="qc-salut" class="qc-entete__salut"></p>
+  <nav class="qc-entete__nav" aria-label="Navigation principale">
+    <a href="#connexion">Connexion</a>
+    <a href="#catalogue">Catalogue</a>
+    <a href="#livraison">Livraison</a>
+  </nav>
+</header>
+
+<main class="qc-contenu">
+  <!-- Parcours « connexion » -->
+  <section id="qc-vue-connexion" class="qc-vue" data-vue="connexion" aria-labelledby="qc-titre-connexion">
+    <h1 id="qc-titre-connexion">Connexion</h1>
+    <p id="qc-connexion-erreur" class="qc-message qc-message--erreur" role="alert"></p>
+    <form id="qc-connexion-form" class="qc-form" novalidate>
+      <div class="qc-champ">
+        <label for="qc-connexion-email">Email</label>
+        <input id="qc-connexion-email" name="email" type="email" autocomplete="off">
+      </div>
+      <div class="qc-champ">
+        <label for="qc-connexion-mdp">Mot de passe</label>
+        <input id="qc-connexion-mdp" name="mdp" type="password" autocomplete="off">
+      </div>
+      <div class="qc-barre-actions">
+        <button type="submit" id="qc-connexion-envoyer" class="qc-bouton">Se connecter</button>
+      </div>
+    </form>
+    <p class="qc-aide">Compte de démo : demo@exemple.org / bonjour123</p>
+  </section>
+
+  <!-- Parcours « panier » -->
+  <section id="qc-vue-catalogue" class="qc-vue qc-vue--deux-colonnes" data-vue="catalogue" aria-labelledby="qc-titre-catalogue" hidden>
+    <h1 id="qc-titre-catalogue">Catalogue</h1>
+    <section class="qc-panier" aria-labelledby="qc-titre-panier">
+      <div class="qc-panier__entete">
+        <h2 id="qc-titre-panier">Panier</h2>
+        <button type="button" id="qc-panier-commander" class="qc-bouton" disabled>Commander</button>
+      </div>
+      <p class="qc-panier__resume"><span id="qc-panier-nb" data-testid="cart-count">0 article</span> · Total : <span id="qc-panier-total" data-testid="cart-total">0,00 €</span></p>
+      <ul id="qc-panier-lignes" class="qc-panier__lignes"></ul>
+      <div class="qc-promo">
+        <div class="qc-champ">
+          <label for="qc-promo-code">Code promo</label>
+          <input id="qc-promo-code" name="promo" autocomplete="off">
+        </div>
+        <button type="button" id="qc-promo-appliquer" class="qc-bouton qc-bouton--secondaire">Appliquer</button>
+        <p id="qc-promo-message" class="qc-message qc-message--info" role="status"></p>
+      </div>
+    </section>
+    <ul class="qc-catalogue">
+      <li class="qc-carte">
+        <p class="qc-carte__nom">Marteau</p>
+        <div class="qc-carte__pied">
+          <button type="button" class="qc-bouton" data-article="Marteau" aria-label="Ajouter au panier : Marteau">Ajouter</button>
+          <p class="qc-carte__prix">12,00 €</p>
+        </div>
+      </li>
+      <li class="qc-carte">
+        <p class="qc-carte__nom">Tournevis</p>
+        <p class="qc-carte__badge">Épuisé</p>
+        <div class="qc-carte__pied">
+          <button type="button" class="qc-bouton" data-article="Tournevis" aria-label="Ajouter au panier : Tournevis" disabled>Ajouter</button>
+          <p class="qc-carte__prix">6,50 €</p>
+        </div>
+      </li>
+      <li class="qc-carte">
+        <p class="qc-carte__nom">Mètre ruban</p>
+        <div class="qc-carte__pied">
+          <button type="button" class="qc-bouton" data-article="Mètre ruban" aria-label="Ajouter au panier : Mètre ruban">Ajouter</button>
+          <p class="qc-carte__prix">9,90 €</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Parcours « livraison » -->
+  <section id="qc-vue-livraison" class="qc-vue" data-vue="livraison" aria-labelledby="qc-titre-livraison" hidden>
+    <h1 id="qc-titre-livraison">Livraison</h1>
+    <ul id="qc-livraison-erreurs" class="qc-message qc-message--erreur" role="alert"></ul>
+    <p id="qc-livraison-info" class="qc-message qc-message--info" role="status"></p>
+    <form id="qc-livraison-form" class="qc-form" novalidate>
+      <div class="qc-champ">
+        <label for="qc-livraison-nom">Nom</label>
+        <input id="qc-livraison-nom" name="nom" autocomplete="off">
+      </div>
+      <div class="qc-champ">
+        <label for="qc-livraison-adresse">Adresse</label>
+        <input id="qc-livraison-adresse" name="adresse" autocomplete="off">
+      </div>
+      <div class="qc-champ">
+        <label for="qc-livraison-cp">Code postal</label>
+        <input id="qc-livraison-cp" name="cp" inputmode="numeric" autocomplete="off">
+      </div>
+      <div class="qc-case">
+        <input id="qc-livraison-cgv" name="cgv" type="checkbox">
+        <label for="qc-livraison-cgv">J'accepte les conditions de vente</label>
+      </div>
+      <div class="qc-barre-actions">
+        <button type="submit" id="qc-livraison-valider" class="qc-bouton" disabled>Valider la commande</button>
+        <button type="button" id="qc-livraison-enregistrer" class="qc-bouton qc-bouton--secondaire">Enregistrer l'adresse</button>
+      </div>
+    </form>
+    <!-- Piège conservé : ce texte est toujours dans le DOM, mais caché tant que la commande n'est pas validée. -->
+    <section id="qc-livraison-confirmation" class="qc-confirmation" hidden>
+      <h2>Commande confirmée</h2>
+      <p>Merci, votre commande est en préparation.</p>
+    </section>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

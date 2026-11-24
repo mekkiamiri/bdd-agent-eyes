@@ -24,7 +24,13 @@ import java.util.Locale;
  */
 public class Etapes {
 
-    private static final String APP = Path.of("docs/app/index.html").toAbsolutePath().toUri().toString();
+    /**
+     * Appli visée : propriété système {@code app.url} (mvn test -Dapp.url=...), sinon variable d'environnement
+     * {@code APP_URL}, sinon docs/app/index.html. Une valeur sans « :// » est un chemin depuis la racine du dépôt
+     * (ex. docs/app-v2/index.html, pour la mesure de robustesse).
+     */
+    private static final String APP = urlAppli();
+
     private static final double DELAI_MS = 2_000;
 
     private static Playwright playwright;
@@ -32,6 +38,14 @@ public class Etapes {
 
     private BrowserContext contexte;
     private Page page;
+
+    private static String urlAppli() {
+        String valeur = System.getProperty("app.url", System.getenv("APP_URL"));
+        if (valeur == null || valeur.isBlank()) {
+            valeur = "docs/app/index.html";
+        }
+        return valeur.contains("://") ? valeur : Path.of(valeur).toAbsolutePath().toUri().toString();
+    }
 
     @Before
     public void ouvrir() {

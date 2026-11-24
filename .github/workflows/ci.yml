@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [main]
+    branches: [main, mesures]
     tags: ["cfp-*"]
   pull_request:
 
@@ -56,3 +56,39 @@ jobs:
         run: mvn -B -q test-compile exec:java -Dexec.args="install --with-deps chromium"
       - name: Cucumber sur les pièges, puis vérification scénario par scénario
         run: python3 outils/verifier_pieges.py --lancer
+
+  reference-cucumber-v2:
+    # Robustesse : les 17 scénarios, avec les MÊMES step definitions, contre l'interface refondue
+    # docs/app-v2 (même comportement, voir docs/app-v2/CHANGEMENTS.md). On veut voir ce qui casse :
+    # ce job ne fait jamais échouer le workflow. Rapport : résumé du run et artefact robustesse-v2.
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Chromium pour Playwright
+        run: mvn -B -q test-compile exec:java -Dexec.args="install --with-deps chromium"
+      - name: Cucumber sur docs/app-v2 (17 scénarios, échecs tolérés ici)
+        run: >-
+          mvn -B test -Dapp.url=docs/app-v2/index.html
+          "-Dcucumber.filter.tags=@attendu:passe or @attendu:echec or @attendu:ambigu"
+          -Dmaven.test.failure.ignore=true
+      - name: Rapport de robustesse (scénarios cassés sur 17)
+        run: python3 outils/rapport_robustesse.py target/surefire-reports --resume "$GITHUB_STEP_SUMMARY" --json target/robustesse-v2.json
+      - name: Rapports Surefire et résumé
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: robustesse-v2
+          path: |
+            target/robustesse-v2.json
+            target/surefire-reports/
