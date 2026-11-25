@@ -376,7 +376,7 @@ class RobustesseCucumber(unittest.TestCase):
               "Livraison - Code postal invalide", "Livraison - Conditions de vente non acceptées",
               "Livraison sans panier - Commande refusée quand le panier est vide"]
 
-    def rapport(self, casses=()):
+    def rapport(self, casses=(), reference=None):
         lignes = []
         for nom in self.JUSTES:
             echec = ('<failure type="com.microsoft.playwright.TimeoutError" message="Timeout 2000ms exceeded."/>'
@@ -386,7 +386,7 @@ class RobustesseCucumber(unittest.TestCase):
         tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, tmp)
         (Path(tmp) / "TEST-RunCucumberTest.xml").write_text(texte, encoding="utf-8")
-        return rapport_robustesse.comparer(verifier_pieges.lire_rapports(Path(tmp)))
+        return rapport_robustesse.comparer(verifier_pieges.lire_rapports(Path(tmp)), reference)
 
     def test_rien_ne_casse(self):
         lignes = self.rapport()
@@ -398,6 +398,22 @@ class RobustesseCucumber(unittest.TestCase):
         casses = [ligne["id"] for ligne in lignes if not ligne["conforme"]]
         self.assertEqual(casses, ["panier.feature:Ajouter un produit"])
         self.assertIn("1 scénario(s) cassé(s) sur 17", rapport_robustesse.resume_markdown(lignes))
+
+    def test_etape_en_echec_lue_dans_la_pile(self):
+        detail = 'TimeoutError Timeout at \u273d.j\'ajoute "Marteau" au panier(file:///x/features/panier.feature:11)'
+        self.assertEqual(rapport_robustesse.etape_en_echec(detail), 'j\'ajoute "Marteau" au panier')
+        self.assertEqual(rapport_robustesse.etape_en_echec("The step 'je valide' is undefined."),
+                         "je valide (non définie)")
+
+    def test_piege_qui_echoue_sur_une_autre_etape(self):
+        nom = "Livraison - La commande est enregistrée"
+        cle = "livraison.feature:La commande est enregistrée"
+        meme = {nom: ("non définie", "The step 'je valide' is undefined.")}
+        ligne = {lg["id"]: lg for lg in self.rapport(reference=meme)}[cle]
+        self.assertEqual((ligne["conforme"], ligne["raison_changee"]), (True, False))
+        autre = {nom: ("echec", 'Timeout at \u273d.j\'ajoute "Marteau" au panier(file:///x/livraison.feature:8)')}
+        ligne = {lg["id"]: lg for lg in self.rapport(reference=autre)}[cle]
+        self.assertEqual((ligne["conforme"], ligne["raison_changee"]), (True, True))
 
 
 if __name__ == "__main__":

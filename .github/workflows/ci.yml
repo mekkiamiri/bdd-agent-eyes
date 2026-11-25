@@ -77,13 +77,22 @@ jobs:
           python-version: "3.12"
       - name: Chromium pour Playwright
         run: mvn -B -q test-compile exec:java -Dexec.args="install --with-deps chromium"
+      - name: Cucumber sur docs/app (17 scénarios, point de comparaison)
+        run: |
+          mvn -B test -Dapp.url=docs/app/index.html \
+            "-Dcucumber.filter.tags=@attendu:passe or @attendu:echec or @attendu:ambigu" \
+            -Dmaven.test.failure.ignore=true
+          mv target/surefire-reports target/surefire-reports-v1
       - name: Cucumber sur docs/app-v2 (17 scénarios, échecs tolérés ici)
-        run: >-
-          mvn -B test -Dapp.url=docs/app-v2/index.html
-          "-Dcucumber.filter.tags=@attendu:passe or @attendu:echec or @attendu:ambigu"
-          -Dmaven.test.failure.ignore=true
+        run: |
+          mvn -B test -Dapp.url=docs/app-v2/index.html \
+            "-Dcucumber.filter.tags=@attendu:passe or @attendu:echec or @attendu:ambigu" \
+            -Dmaven.test.failure.ignore=true
       - name: Rapport de robustesse (scénarios cassés sur 17)
-        run: python3 outils/rapport_robustesse.py target/surefire-reports --resume "$GITHUB_STEP_SUMMARY" --json target/robustesse-v2.json
+        run: >-
+          python3 outils/rapport_robustesse.py target/surefire-reports
+          --reference target/surefire-reports-v1
+          --resume "$GITHUB_STEP_SUMMARY" --json target/robustesse-v2.json
       - name: Rapports Surefire et résumé
         if: always()
         uses: actions/upload-artifact@v4
@@ -92,3 +101,4 @@ jobs:
           path: |
             target/robustesse-v2.json
             target/surefire-reports/
+            target/surefire-reports-v1/
