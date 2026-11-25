@@ -73,6 +73,13 @@ Modifier l'appli sans changer son comportement (renommer un `id`, déplacer un b
 `aria-label` mais pas le texte visible), puis rejouer les configurations sans toucher ni aux scénarios
 ni aux step definitions. Mesurer ce qui casse de chaque côté.
 
+Mis en œuvre : `docs/app-v2/` (changements dans `docs/app-v2/CHANGEMENTS.md`).
+- Cucumber : job CI `reference-cucumber-v2` (n'échoue pas le workflow) ; en local,
+  `mvn test -Dapp.url=docs/app-v2/index.html` (ou `APP_URL=…`), puis `python3 outils/rapport_robustesse.py`.
+- Agent : `python3 agent/lancer.py --config les-deux --sans-fenetre --url <file:// de docs/app-v2/index.html>
+  --sortie resultats/robustesse-v2`.
+Résultats : `resultats/LISEZMOI.md`, section « Robustesse (interface v2) ».
+
 ## Biais connus
 
 - L'appli est petite et écrite par l'auteur du protocole : les pièges sont connus d'avance.

@@ -10,7 +10,7 @@ Talk proposé à Devoxx France 2027 (Tools-in-Action, 30 min) par Mekki Amiri.
 - Slides : https://mekkiamiri.github.io/bdd-agent-eyes/slides/
 - Protocole de comparaison : [PROTOCOLE.md](PROTOCOLE.md)
 
-> **État : aucune mesure n'est publiée.** Les résultats de la comparaison agent contre Cucumber sont « à mesurer ». Le dépôt ne contient aucun chiffre de résultat.
+> **État : premières mesures sur la branche `mesures`** (agent sur l'appli, robustesse quand l'interface change) : voir [resultats/LISEZMOI.md](resultats/LISEZMOI.md).
 
 ## Démarrer (une commande)
 
@@ -74,7 +74,7 @@ Versions vérifiées sur Maven Central le 16/11/2026 : Cucumber-JVM 8.1.0, JUnit
 | Référence Cucumber-JVM + Playwright Java | écrite et compilée en local ; exécution non vérifiée en local (téléchargement de Chromium bloqué sur le poste) : **la CI fait foi** |
 | Vérification des pièges côté Cucumber (job CI `pieges-cucumber`) | écrite ; **la CI fait foi** (pas de Chromium en local) |
 | Lanceur de l'agent (`agent/lancer.py`) | écrit et testé avec un faux agent ; jamais lancé avec un vrai modèle |
-| Mesures agent contre Cucumber (réussite, faux positifs, temps, coût, robustesse) | **à mesurer** |
+| Mesures agent contre Cucumber (réussite, faux positifs, temps, coût, robustesse) | mesurées (branche `mesures`) : [resultats/LISEZMOI.md](resultats/LISEZMOI.md) ; appli refondue pour la robustesse : `docs/app-v2/` |
 | Conversion du rapport Cucumber en `resultats/cucumber/resultats.json` | à faire |
 
 ## Licence
