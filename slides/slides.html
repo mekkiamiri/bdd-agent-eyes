@@ -1,21 +1,21 @@
-<!-- Slides du talk « Vos scénarios Gherkin joués par un agent qui voit l'appli » (Tools-in-Action 30 min, 14 slides)
-     Construire : python3 <kit>/build_deck.py slides/slides.html docs/slides/index.html "Gherkin joué par un agent"
+<!-- Slides du talk « L'écran change : mes step definitions cassent, pas l'agent » (Tools-in-Action 30 min, 13 slides)
+     Construire : python3 <kit>/build_deck.py slides/slides.html docs/slides/index.html "Mes step definitions cassent, pas l'agent"
      Message : vos step definitions sont le code le plus fragile de votre projet. Un agent qui regarde l'écran joue
      vos scénarios Gherkin sans elles : 204 verdicts justes sur 204, et il survit à une refonte d'interface qui casse
      7 scénarios Cucumber sur 17. Mais il est lent et payant : voici où le mettre.
      Plan détaillé et minutage : slides/PLAN.md. Chiffres : resultats/LISEZMOI.md, resultats/synthese-agent.json,
      resultats/agent-*/resultats.json, resultats/robustesse-v2/agent-les-deux/resultats.json.
-     Arc : situation 1 · complication 2 (la colle casse) · résolution 3-9 · revers et prix 10-11 · où le mettre 12-13 · fin 14 -->
+     Arc : situation 1 · complication 2 (la colle casse) · résolution 3-8 · revers et prix 9-10 · où le mettre 11-12 · fin 13 -->
 
-<!-- Ce que je veux dire : on peut jouer des scénarios Gherkin sans écrire de step definitions, et je vais montrer jusqu'où ça tient, chiffres à l'appui. -->
+<!-- Ce que je veux dire : quand l'interface change, ce sont mes step definitions qui cassent, pas un agent qui regarde l'écran ; je vais le montrer, chiffres à l'appui, et dire où il ne faut pas le mettre. -->
 <section class="slide">
   {{RULER}}
   <div class="pad" style="top:230px">
     <div class="k reveal">Devoxx France 2027 · Tools-in-Action</div>
-    <h1 class="reveal" style="margin-top:40px;font-size:120px">Vos scénarios Gherkin<br>se jouent <em>sans<br>step definitions</em></h1>
+    <h1 class="reveal" style="margin-top:40px;font-size:112px">L'écran change :<br>mes step definitions<br><em>cassent</em>, pas l'agent.</h1>
   </div>
   <div style="position:absolute;right:120px;bottom:140px;text-align:right" class="reveal"><h3>Mekki Amiri</h3><p class="muted" style="font-size:24px;margin:8px 0 0">Tech Lead · architecte système</p></div>
-  <aside class="notes">Version Quickie 20 min, 9 slides : 1, 2, 3, 6, 7, 9, 11, 12, 14. On saute la démo 1 (slide 4) : la démo 2 porte le message, et la slide 6 montre déjà une vraie réponse de l'agent ; sur la 3, dire en une phrase qu'il joue « Commande valide » en 20 secondes. Ouverture : « Qui écrit du Gherkin ? Qui maintient le code derrière ? Gardez la main levée. » Transition : regardons ce code.</aside>
+  <aside class="notes">Version Quickie 20 min, 9 slides : 1, 2, 3, 6, 7, 8, 10, 11, 13. On saute la démo 1 (slide 4) et les pièges (slide 5) : la démo 2 porte le message, et la slide 6 montre déjà une vraie réponse de l'agent ; sur la 3, dire en une phrase qu'il joue « Commande valide » en une vingtaine de secondes, et sur la 7 que l'appli est la mienne. Ouverture : « Qui écrit du Gherkin ? Qui maintient le code derrière ? Gardez la main levée. » Transition : regardons ce code.</aside>
 </section>
 
 <!-- Ce que je veux dire : le scénario est lisible par tous, mais le code qui le relie à l'écran dépend d'un détail invisible, et c'est lui qui casse. -->
@@ -59,19 +59,20 @@ page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</
   <aside class="notes">Lancer la commande en direct, appli à gauche, terminal à droite. Plan B : la vidéo d'un passage enregistrée la veille (fichier prêt sur le bureau), à lancer si le modèle ne répond pas en 40 s. La réponse affichée est réelle : resultats/agent-les-deux/resultats.json, passage 1, 21 s, 0,055 $ ; les trois passages durent 19 à 25 s. Transition : facile, l'appli est gentille. Sauf qu'elle ne l'est pas.</aside>
 </section>
 
-<!-- Ce que je veux dire : l'appli est piégée exprès, avec ce qui fait tomber les tests naïfs ; l'agent ne tombe dans aucun des trois. -->
+<!-- Ce que je veux dire : l'appli est la mienne et piégée exprès, avec ce qui fait tomber les tests naïfs ; l'agent ne tombe dans aucun des trois. Je le dis tout de suite : je connaissais les pièges. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:72px">Trois pièges : un bouton grisé,<br>trois « Ajouter », un texte <em>caché</em>.</h2>
+    <h2 class="reveal" style="font-size:72px">J'ai piégé mon appli trois fois.<br>Il ne tombe dans <em>aucun</em> piège.</h2>
     <table class="m reveal" style="margin-top:40px">
       <tr><th>Piège</th><th>Ce que fait l'agent</th></tr>
       <tr><td>« Tournevis » épuisé, bouton grisé</td><td>« Je n'ai pas forcé le clic. » → <em>échec</em></td></tr>
       <tr><td>Trois boutons « Ajouter »</td><td>Il ne devine pas → <em>refus</em></td></tr>
       <tr><td>« Commande confirmée » caché dans la page</td><td>Il ne le voit pas → juste, 9 fois sur 9</td></tr>
     </table>
+    <p class="muted reveal" style="margin-top:32px;font-size:26px">L'appli et ses pièges sont écrits par moi : je les connaissais d'avance.</p>
   </div>
   {{CHROME}}
-  <aside class="notes">Citation réelle : « Ajouter un produit épuisé », resultats/agent-les-deux, passage 1. Le texte « Commande confirmée » est dans le HTML mais caché : un test qui lit le HTML brut passerait à tort ; l'agent juge « Conditions de vente non acceptées » juste dans les 9 passages (3 façons de voir × 3). Transition : le deuxième piège mérite qu'on s'y arrête.</aside>
+  <aside class="notes">Le dire tout de suite : c'est ma petite appli de démo, j'ai posé les pièges, donc je savais où regarder ; l'agent, lui, ne voit que le scénario sans la réponse. Citation réelle : « Ajouter un produit épuisé », resultats/agent-les-deux, passage 1. Le texte « Commande confirmée » est dans le HTML mais caché : un test qui lit le HTML brut passerait à tort ; l'agent juge « Conditions de vente non acceptées » juste dans les 9 passages (3 façons de voir × 3). Transition : le deuxième piège mérite qu'on s'y arrête.</aside>
 </section>
 
 <!-- Ce que je veux dire : la vraie valeur, c'est qu'il refuse un scénario mal écrit et qu'il explique quoi corriger, là où Cucumber échoue sans rien dire. -->
@@ -89,30 +90,20 @@ page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</
   <aside class="notes">Réponse réelle, « Panier · Ajouter au panier », resultats/agent-les-deux, passage 1, prix retirés pour tenir. Cucumber, lui, échoue en délai dépassé : il ne trouve pas de bouton nommé « Ajouter », et il ne dit pas pourquoi. Les 3 scénarios ambigus sont refusés dans les 27 passages. Transition : une jolie réponse ne fait pas une mesure. Voici la mesure.</aside>
 </section>
 
-<!-- Ce que je veux dire : sur 153 passages mesurés, il ne s'est jamais trompé, et surtout il n'a jamais dit « passe » à tort. -->
+<!-- Ce que je veux dire : sur 153 passages mesurés, il ne s'est jamais trompé, jamais un « passe » à tort, et ce qu'il voit (image, arbre ou les deux) ne change pas le résultat. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:76px"><em>153 verdicts justes sur 153</em>,<br>et jamais un « passe » à tort.</h2>
-    <div class="readouts reveal" style="margin-top:50px"><div><b>17</b><span>scénarios</span></div><div><b>× 3</b><span>façons de voir</span></div><div><b>× 3</b><span>passages</span></div></div>
-    <p class="reveal" style="margin-top:44px">11 justes à faire passer · 3 faux à faire échouer · 3 ambigus à refuser</p>
-  </div>
-  {{CHROME}}
-  <aside class="notes">Source : resultats/LISEZMOI.md et synthese-agent.json, mesure du 24/11/2026. 0 faux positif : jamais « passe » sur un scénario faux ou ambigu, l'erreur la plus grave, on croirait que c'est testé. 31 passages ont été écartés et relancés pour des pannes (accès au modèle, JSON mal échappé), aucun verdict corrigé à la main. Transition : trois façons de voir, ça change quoi ?</aside>
-</section>
-
-<!-- Ce que je veux dire : pas besoin de choisir finement ce que voit l'agent ; le résultat est le même, seuls la durée et le coût bougent un peu. -->
-<section class="slide">
-  <div class="pad">
-    <h2 class="reveal" style="font-size:72px">Capture, arbre ou les deux :<br>même résultat, <em>presque</em> même prix.</h2>
-    <table class="m reveal" style="margin-top:40px">
-      <tr><th>Ce que voit l'agent</th><th>Justes</th><th>Durée</th><th>Coût</th></tr>
-      <tr><td>Arbre d'accessibilité seul</td><td class="n">51 / 51</td><td class="n">13,9 s</td><td class="n">0,069 $</td></tr>
-      <tr><td>Capture d'écran seule</td><td class="n">51 / 51</td><td class="n">13,4 s</td><td class="n">0,062 $</td></tr>
-      <tr><td>Les deux</td><td class="n">51 / 51</td><td class="n">13,4 s</td><td class="n">0,059 $</td></tr>
+    <h2 class="reveal" style="font-size:72px"><em>153 verdicts justes sur 153</em>, jamais<br>un « passe » à tort, quoi qu'il voie.</h2>
+    <p class="reveal" style="margin-top:36px">17 scénarios (11 justes, 3 faux, 3 ambigus) × 3 passages, pour chaque façon de voir</p>
+    <table class="m reveal" style="margin-top:32px">
+      <tr><th>Ce que voit l'agent</th><th>Justes</th><th>« Passe » à tort</th><th>Durée</th><th>Coût</th></tr>
+      <tr><td>Arbre d'accessibilité seul</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,9 s</td><td class="n">0,069 $</td></tr>
+      <tr><td>Capture d'écran seule</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,4 s</td><td class="n">0,062 $</td></tr>
+      <tr><td>Les deux</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,4 s</td><td class="n">0,059 $</td></tr>
     </table>
   </div>
   {{CHROME}}
-  <aside class="notes">Moyennes par scénario, resultats/synthese-agent.json. Sur cette appli, voir l'image seule suffit autant que lire l'arbre. Je garde « les deux » pour la suite : c'est le moins cher ici, de peu. Transition : maintenant, la question du début. Que se passe-t-il quand l'écran change ?</aside>
+  <aside class="notes">Source : resultats/LISEZMOI.md et synthese-agent.json, mesure du 24/11/2026. Un « passe » à tort, c'est dire « ça marche » sur un scénario faux ou ambigu : l'erreur la plus grave, on croirait que c'est testé. Il n'y en a aucune. Ce qu'il voit ne change pas le résultat, à peine la durée et le coût (moyennes par scénario) : je garde « les deux » pour la suite. 31 passages ont été écartés et relancés pour des pannes (accès au modèle, JSON mal échappé), aucun verdict corrigé à la main. Transition : maintenant, la question du titre. Que se passe-t-il quand l'écran change ?</aside>
 </section>
 
 <!-- Ce que je veux dire : c'est le cœur du talk ; une refonte d'interface sans changement de comportement casse Cucumber et pas l'agent. -->
@@ -127,7 +118,7 @@ page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</
     </table>
   </div>
   {{CHROME}}
-  <aside class="notes">Montrer les deux applis côte à côte : mêmes textes, mêmes règles, mise en page refaite (10 changements, docs/app-v2/CHANGEMENTS.md). Les 7 cassés passent par deux étapes : le nom caché des boutons « Ajouter » reformulé, et un data-testid renommé (CI, job reference-cucumber-v2, run 45566605569). L'agent, 51 passages (les deux), même consigne : sur le produit épuisé, il cite le nouveau nom du bouton, il a bien lu la nouvelle interface. Plan B : capture du résumé du run CI et vidéo. Transition : et les 10 qui restent conformes ? Pas tous pour de bonnes raisons.</aside>
+  <aside class="notes">5 min 30 (la minute et demie gagnée sur l'ancienne slide « capture, arbre ou les deux » va ici). Montrer les deux applis côte à côte : mêmes textes, mêmes règles, mise en page refaite (10 changements, docs/app-v2/CHANGEMENTS.md). Puis lancer l'agent en direct sur la v2, scénario « Ajouter un produit épuisé » : python3 agent/lancer.py --config les-deux --passages 1 --scenario "panier.feature:Ajouter un produit épuisé" --url &lt;file:// de docs/app-v2/index.html&gt; --sortie /tmp/demo (une dizaine de secondes ; --sortie pour ne pas toucher aux résultats mesurés). Les 7 cassés passent par deux étapes : le nom caché des boutons « Ajouter » reformulé, et un data-testid renommé (CI, job reference-cucumber-v2, run 45566605569). L'agent, 51 passages (les deux), même consigne : sur le produit épuisé, il cite le nouveau nom du bouton, il a bien lu la nouvelle interface. Plan B : capture du résumé du run CI et vidéo. Transition : et les 10 qui restent conformes ? Pas tous pour de bonnes raisons.</aside>
 </section>
 
 <!-- Ce que je veux dire : le rouge se voit, le faux vert non ; trois pièges échouent toujours, mais plus là où il faut, donc ils ne testent plus rien. -->
@@ -169,7 +160,7 @@ après la refonte : <span class="h">✘ j'ajoute "Marteau" au panier</span>     
     </div>
   </div>
   {{CHROME}}
-  <aside class="notes">Cucumber en CI : rapide, déterministe, sans facture au scénario. L'agent, à la demande : les 17 scénarios coûtent 1 à 1,5 $ par passage, pas à chaque push. Chaque usage vient d'un résultat : les refus (slide 6), la démo 1, la refonte (slide 9). Transition : et pour que l'agent puisse jouer vos scénarios, il y a une façon de les écrire.</aside>
+  <aside class="notes">Cucumber en CI : rapide, déterministe, sans facture au scénario. L'agent, à la demande : les 17 scénarios coûtent 1 à 1,5 $ par passage, pas à chaque push. Chaque usage vient d'un résultat : les refus (slide 6), la démo 1, la refonte (slide 8). Transition : et pour que l'agent puisse jouer vos scénarios, il y a une façon de les écrire.</aside>
 </section>
 
 <!-- Ce que je veux dire : ses refus donnent trois règles d'écriture simples, utiles aussi aux humains. -->

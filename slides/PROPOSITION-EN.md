@@ -6,7 +6,7 @@
 
 ## Title
 
-Your Gherkin, played by an agent that sees the screen
+The screen changes: my step definitions break, the agent doesn't
 
 ## Abstract
 
@@ -21,7 +21,7 @@ You leave with where to put it (Cucumber in CI; the agent to review scenarios, e
 - **Everything shown is measured, and in the repo**: github.com/mekkiamiri/bdd-agent-eyes. 17 Gherkin scenarios on a small demo app (11 correct, 3 wrong, 3 ambiguous, ground truth tagged on each). Agent: 153 runs on the original app (3 ways of seeing the screen × 3 runs), 153 correct verdicts, 0 false positives; 51 runs on the redesigned app, 51 correct. Cucumber + Playwright reference in CI: 17/17 on the original app, 10/17 after the redesign (7 correct scenarios broken by two locator changes, plus 3 traps that still fail but for the wrong reason). Durations and costs per scenario are in the raw results.
 - **Two live demos, with a plan B**: the agent plays one scenario live (about 20 s); then the redesign, shown as a side-by-side table from the CI run and the agent results. A recorded video of both is ready in case the network or the model fails.
 - **Limits said on stage**: the app and the redesign were written by the speaker; one model (Sonnet 5.5); the agent ran on WebKit, Cucumber on Chromium; the step definitions already use roles and labels, so CSS or XPath selectors would likely break more (not measured).
-- **Quickie (20 min) variant**: 9 of the 14 slides, the first live demo is dropped, the redesign demo and the results stay.
+- **Quickie (20 min) variant**: 9 of the 13 slides, the first live demo is dropped, the redesign demo and the results stay.
 - **Not a product pitch**: the takeaway is where an agent pays off and where Cucumber stays better (speed, cost, determinism in CI).
 
 ## Bio
