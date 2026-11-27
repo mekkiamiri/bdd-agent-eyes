@@ -1,9 +1,9 @@
 # Protocole : un agent qui voit l'appli contre Cucumber classique
 
-**État : aucune mesure agent publiée** (prévues dans le dépôt en janvier 2027). Le talk et la page
-n'affichent qu'une ligne réelle : les verdicts de Cucumber dans la CI du 17/11/2026 (11 scénarios justes
-qui passent, 6 pièges qui échouent). Aucun autre chiffre tant que `resultats/` ne contient pas de fichier
-de résultats réel, produit par ce protocole.
+**État : mesures publiées** (24 et 25/11/2026, `resultats/LISEZMOI.md`). Agent (Sonnet 5.5) : 153 passages sur
+l'appli d'origine (3 façons de voir × 3 passages), 153 verdicts justes, 0 faux positif ; 51 passages sur l'interface
+v2 (`docs/app-v2/`), 51 justes. Cucumber + Playwright en CI : 17/17 conformes sur l'appli d'origine, 10/17 sur v2
+(run 45566605569). Le temps humain d'écriture des step definitions (déroulé, point 5) n'apparaît pas dans `resultats/`.
 
 ## Question
 

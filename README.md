@@ -29,7 +29,7 @@ python3 outils/construire_page.py            # régénère docs/scenarios.js apr
 mvn verify                                   # référence Cucumber-JVM + Playwright Java (Java 21, télécharge Chromium)
 python3 outils/verifier_pieges.py --lancer   # Cucumber sur les scénarios faux ou ambigus : chacun doit échouer comme étiqueté
 python3 agent/lancer.py --config les-deux    # l'agent joue les scénarios (appel payant, voir agent/lancer.py)
-python3 outils/comparer.py resultats/*/resultats.json   # tableau des mesures (quand il y aura des résultats)
+python3 outils/comparer.py resultats/*/resultats.json   # tableau des mesures (résultats dans resultats/)
 ```
 
 Après le clone, activer le hook pre-push (termes interdits, secrets, tests) :

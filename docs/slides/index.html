@@ -264,15 +264,16 @@ page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</
 <!-- Ce que je veux dire : ça marche pour de vrai, sur un scénario complet, sans une ligne de colle. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:72px">Démo : l'agent joue « Commande valide »<br>en <em>20 secondes</em>, sans une ligne de colle.</h2>
+    <h2 class="reveal" style="font-size:72px">Démo : l'agent joue « Commande valide »<br>en <em>une vingtaine de secondes</em>, sans colle.</h2>
     <pre class="code reveal" style="margin-top:40px;font-size:26px">python3 agent/lancer.py --config les-deux --passages 1 \
-  --scenario "livraison.feature:Commande valide"</pre>
+  --scenario "livraison.feature:Commande valide" --sortie /tmp/demo</pre>
     <pre class="code reveal" style="margin-top:24px;font-size:24px">{"verdict": "<span class="h">passe</span>",
- "preuve": "Après le clic sur « Valider la commande », la page
-  Livraison affiche le titre « Commande confirmée »…"}</pre>
+ "explication": "J'ai joué toutes les étapes dans l'ordre et
+  l'application a fait ce que dit le scénario. Après « Valider
+  la commande », « Commande confirmée » s'affiche."}</pre>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Lancer la commande en direct, appli à gauche, terminal à droite. Plan B : la vidéo d'un passage enregistrée la veille (fichier prêt sur le bureau), à lancer si le modèle ne répond pas en 40 s. La réponse affichée est réelle : resultats/agent-les-deux/resultats.json, passage 1, 21 s, 0,055 $ ; les trois passages durent 19 à 25 s. Transition : facile, l'appli est gentille. Sauf qu'elle ne l'est pas.</aside>
+  <aside class="notes">Lancer la commande en direct, appli à gauche, terminal à droite. Plan B : la vidéo d'un passage enregistrée la veille (fichier prêt sur le bureau), à lancer si le modèle ne répond pas en 40 s. --sortie /tmp/demo : sans elle, le passage live s'ajouterait au fichier des résultats mesurés. La réponse affichée est réelle, mot pour mot : resultats/agent-les-deux/resultats.json, « Commande valide », passage 3, 19 s, 0,056 $ ; les trois passages durent 19 à 25 s. Transition : facile, l'appli est gentille. Sauf qu'elle ne l'est pas.</aside>
 </section>
 
 <!-- Ce que je veux dire : l'appli est la mienne et piégée exprès, avec ce qui fait tomber les tests naïfs ; l'agent ne tombe dans aucun des trois. Je le dis tout de suite : je connaissais les pièges. -->
@@ -297,13 +298,13 @@ page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</
     <h2 class="reveal" style="font-size:76px">Devant un scénario ambigu,<br>il <em>refuse</em>, et il dit pourquoi.</h2>
     <pre class="code reveal" style="margin-top:36px;font-size:26px">Quand je clique sur "Ajouter"</pre>
     <pre class="code reveal" style="margin-top:24px;font-size:24px">{"verdict": "<span class="h">refus</span>",
- "explication": "L'étape peut désigner trois boutons : Marteau,
-  Mètre ruban et Tournevis (désactivé, épuisé). Le scénario ne
-  dit pas lequel choisir, et le total attendu en dépend.
-  Il manque le nom de l'article."}</pre>
+ "explication": "L'étape […] peut désigner trois boutons : Marteau
+  […], Mètre ruban […] et Tournevis (désactivé, épuisé). Le scénario
+  ne dit pas lequel choisir, et le total attendu en dépend.
+  Il manque le nom de l'article […]"}</pre>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Réponse réelle, « Panier · Ajouter au panier », resultats/agent-les-deux, passage 1, prix retirés pour tenir. Cucumber, lui, échoue en délai dépassé : il ne trouve pas de bouton nommé « Ajouter », et il ne dit pas pourquoi. Les 3 scénarios ambigus sont refusés dans les 27 passages. Transition : une jolie réponse ne fait pas une mesure. Voici la mesure.</aside>
+  <aside class="notes">Réponse réelle, « Panier · Ajouter au panier », resultats/agent-les-deux, passage 1, coupes marquées […] (le rappel de l'étape, les prix, et la fin : « par exemple « Ajouter le Marteau » »). Cucumber, lui, échoue au bout du délai de 2 s : il cherche un bouton nommé exactement « Ajouter » et n'en trouve aucun. Son message dit ce qu'il cherchait, pas ce qui manque au scénario. Les 3 scénarios ambigus sont refusés dans les 27 passages. Transition : une jolie réponse ne fait pas une mesure. Voici la mesure.</aside>
 </section>
 
 <!-- Ce que je veux dire : sur 153 passages mesurés, il ne s'est jamais trompé, jamais un « passe » à tort, et ce qu'il voit (image, arbre ou les deux) ne change pas le résultat. -->
@@ -334,7 +335,7 @@ page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</
     </table>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">5 min 30 (la minute et demie gagnée sur l'ancienne slide « capture, arbre ou les deux » va ici). Montrer les deux applis côte à côte : mêmes textes, mêmes règles, mise en page refaite (10 changements, docs/app-v2/CHANGEMENTS.md). Puis lancer l'agent en direct sur la v2, scénario « Ajouter un produit épuisé » : python3 agent/lancer.py --config les-deux --passages 1 --scenario "panier.feature:Ajouter un produit épuisé" --url &lt;file:// de docs/app-v2/index.html&gt; --sortie /tmp/demo (une dizaine de secondes ; --sortie pour ne pas toucher aux résultats mesurés). Les 7 cassés passent par deux étapes : le nom caché des boutons « Ajouter » reformulé, et un data-testid renommé (CI, job reference-cucumber-v2, run 45566605569). L'agent, 51 passages (les deux), même consigne : sur le produit épuisé, il cite le nouveau nom du bouton, il a bien lu la nouvelle interface. Plan B : capture du résumé du run CI et vidéo. Transition : et les 10 qui restent conformes ? Pas tous pour de bonnes raisons.</aside>
+  <aside class="notes">5 min 30 (la minute et demie gagnée sur l'ancienne slide « capture, arbre ou les deux » va ici). Montrer les deux applis côte à côte : mêmes textes, mêmes règles, mise en page refaite (10 changements, docs/app-v2/CHANGEMENTS.md). Puis lancer l'agent en direct sur la v2, scénario « Ajouter un produit épuisé » : python3 agent/lancer.py --config les-deux --passages 1 --scenario "panier.feature:Ajouter un produit épuisé" --url &lt;file:// de docs/app-v2/index.html&gt; --sortie /tmp/demo (une dizaine de secondes ; --sortie pour ne pas toucher aux résultats mesurés). Les 7 cassés passent par deux étapes : le nom caché des boutons « Ajouter » reformulé, et un data-testid renommé (un attribut posé exprès pour les tests ; CI, job reference-cucumber-v2, run 45566605569). L'agent, 51 passages (les deux), même consigne : sur le produit épuisé, il cite le nouveau nom du bouton, il a bien lu la nouvelle interface. Plan B : capture du résumé du run CI et vidéo. Transition : et les 10 qui restent conformes ? Pas tous pour de bonnes raisons.</aside>
 </section>
 
 <!-- Ce que je veux dire : le rouge se voit, le faux vert non ; trois pièges échouent toujours, mais plus là où il faut, donc ils ne testent plus rien. -->
@@ -347,7 +348,7 @@ après la refonte : <span class="h">✘ j'ajoute "Marteau" au panier</span>     
     <p class="reveal" style="margin-top:40px">Le rapport dit « conforme ». <em>Le piège n'est plus testé.</em></p>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Ces scénarios doivent échouer, et ils échouent : la suite les compte « conformes ». Mais ils tombent dans le Contexte, avant d'atteindre le piège. Trois cas : celui-ci, « La commande est enregistrée », et « Ajouter un produit épuisé », où l'étape est la même mais la cause a changé ; ce dernier, mon script ne le détecte pas, je l'ai vu dans le journal Playwright (resultats/LISEZMOI.md). Transition : alors on jette Cucumber ? Non : regardons la facture.</aside>
+  <aside class="notes">Ces scénarios doivent échouer, et ils échouent : la suite les compte « conformes ». Mais ils tombent dans le Contexte (en Gherkin, les étapes communes jouées avant chaque scénario du fichier, ici « j'ajoute "Marteau" au panier »), avant d'atteindre le piège. Trois cas : celui-ci, « La commande est enregistrée », et « Ajouter un produit épuisé », où l'étape est la même mais la cause a changé ; ce dernier, mon script ne le détecte pas, je l'ai vu dans le journal Playwright (resultats/LISEZMOI.md). Transition : alors on jette Cucumber ? Non : regardons la facture.</aside>
 </section>
 
 <!-- Ce que je veux dire : l'agent coûte cher en temps et en argent, et ma mesure a des limites que je dis franchement. -->
@@ -359,10 +360,10 @@ après la refonte : <span class="h">✘ j'ajoute "Marteau" au panier</span>     
       <tr><td>Durée</td><td class="n">1,4 s</td><td class="n">13,4 à 14,3 s</td></tr>
       <tr><td>Coût</td><td class="n">minutes de CI</td><td class="n">0,059 à 0,087 $</td></tr>
     </table>
-    <p class="muted reveal" style="margin-top:36px;font-size:26px">Limites : appli et refonte écrites par moi · un seul modèle · WebKit d'un côté, Chromium de l'autre.</p>
+    <p class="muted reveal" style="margin-top:36px;font-size:26px">Limites : appli et refonte écrites par moi · un seul modèle (Sonnet 5.5, novembre 2026) · WebKit d'un côté, Chromium de l'autre.</p>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Cucumber : 23,9 s pour les 17 scénarios en CI, soit 1,4 s chacun. Agent : 13,4 s et 0,059 $ avant la refonte, 14,3 s et 0,087 $ après (+47 %, cause non établie) ; la série de 51 passages coûte 4,44 $ et dure 12 min 8 s (resultats/LISEZMOI.md). Limites : j'ai écrit l'appli et la refonte en sachant quelles étapes Cucumber utilise ; mes step definitions visent déjà des rôles et des libellés, des sélecteurs CSS auraient cassé plus, mais je ne l'ai pas mesuré. Transition : lent et payant, donc pas partout. Où, alors ?</aside>
+  <aside class="notes">Cucumber : 23,9 s pour les 17 scénarios en CI, soit 1,4 s chacun en moyenne (les 6 pièges attendent chacun le délai de 2 s ou plus : les scénarios qui passent vont plus vite). Agent : 13,4 s et 0,059 $ avant la refonte, 14,3 s et 0,087 $ après (+47 %, cause non établie) ; la série de 51 passages coûte 4,44 $ et dure 12 min 8 s (resultats/LISEZMOI.md). Limites : j'ai écrit l'appli et la refonte en sachant quelles étapes Cucumber utilise ; mes step definitions visent déjà des rôles et des libellés, des sélecteurs CSS auraient cassé plus, mais je ne l'ai pas mesuré. Les modèles changent vite : la mesure est datée, et le banc du dépôt permet de la refaire avec celui du jour. Transition : lent et payant, donc pas partout. Où, alors ?</aside>
 </section>
 
 <!-- Ce que je veux dire : la recommandation ; Cucumber reste la base en CI, l'agent sert là où écrire ou réparer la colle coûte plus que ses centimes. -->
@@ -376,7 +377,7 @@ après la refonte : <span class="h">✘ j'ajoute "Marteau" au panier</span>     
     </div>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Cucumber en CI : rapide, déterministe, sans facture au scénario. L'agent, à la demande : les 17 scénarios coûtent 1 à 1,5 $ par passage, pas à chaque push. Chaque usage vient d'un résultat : les refus (slide 6), la démo 1, la refonte (slide 8). Transition : et pour que l'agent puisse jouer vos scénarios, il y a une façon de les écrire.</aside>
+  <aside class="notes">Cucumber en CI : rapide, déterministe, sans facture au scénario. L'agent, à la demande : les 17 scénarios coûtent 1 à 1,5 $ par passage, pas à chaque push. Chaque usage vient d'un résultat : les refus (slide 6) ; la refonte (slide 8). « Nouvel écran » est une déduction : tous les passages mesurés se font sans une ligne de colle, mais je n'ai pas mesuré à part un écran tout neuf. Transition : et pour que l'agent puisse jouer vos scénarios, il y a une façon de les écrire.</aside>
 </section>
 
 <!-- Ce que je veux dire : ses refus donnent trois règles d'écriture simples, utiles aussi aux humains. -->

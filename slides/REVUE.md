@@ -36,3 +36,32 @@ Titres seuls (voir `PLAN.md`) : la tension arrive à la slide 2, la résolution 
 
 - La démo 2 en live sur v2 ajoute un risque : plan B inchangé (capture du run CI, vidéo).
 - Vérification des chiffres et citations : revue 2.
+
+## Revue 2 : les preuves et l'honnêteté
+
+Revérifié dans le dépôt : chaque chiffre des slides, des notes et de la proposition anglaise, recalculé depuis `resultats/agent-*/resultats.json` et `resultats/robustesse-v2/agent-les-deux/resultats.json` (passages, verdicts par vérité terrain, durées et coûts moyens, coûts totaux), `resultats/synthese-agent.json`, `docs/app-v2/CHANGEMENTS.md`, `src/test/java/…/Etapes.java`, et le journal du job `reference-cucumber-v2` du run CI 45566605569 (lu avec `gh run view --log`) : v1 « Tests run: 17, Failures: 1, Errors: 5 » en 23,93 s (les 6 pièges), v2 « Failures: 2, Errors: 11 » en 35,13 s (6 pièges + 7 cassés).
+
+Justes : 153/153 (33 passe, 9 echec, 9 refus par vue), 51/51 sur v2, 0 faux positif ; 27 refus sur les 27 passages ambigus (v1) ; « Conditions de vente non acceptées » juste 9 fois sur 9 ; 13,9 / 13,4 / 13,4 s et 0,069 / 0,062 / 0,059 $ ; v2 14,3 s, 0,087 $, 4,44 $ ; 1,4 s = 23,9 s / 17 ; 17 × 0,059 à 0,087 $ = 1,00 à 1,48 $ ; citations des slides 5, 6, 12 présentes dans les explications des passages cités.
+
+### Problèmes trouvés
+
+| Gravité | Où | Problème | Correction |
+|---|---|---|---|
+| 🔴 | Slide 4 | La réponse affichée « preuve : Après le clic sur « Valider la commande », la page Livraison affiche le titre « Commande confirmée »… » n'existe dans aucun passage : le champ s'appelle `explication`, et le texte du passage 1 cité est autre. Une citation reformulée présentée comme réelle. | Remplacée par l'explication mot pour mot du passage 3 (19 s, 0,056 $) ; note corrigée. |
+| 🔴 | Slide 4 (démo live) | La commande de la démo écrit par défaut dans `resultats/agent-les-deux/resultats.json` (`agent/lancer.py`, `--sortie` vaut `resultats`) : le passage live s'ajoutait aux résultats mesurés et changeait leur date. | `--sortie /tmp/demo` dans la commande (slide 4 et démo 2), expliqué en note. |
+| 🟡 | Slide 4 | « en 20 secondes » : les passages durent 19 à 25 s. | « en une vingtaine de secondes ». |
+| 🟡 | Slide 6 | Citation coupée sans le signaler (prix, fin « par exemple « Ajouter le Marteau » »). « Cucumber ne dit pas pourquoi » : son message dit ce qu'il cherchait. | Coupes marquées « […] » ; note nuancée (délai de 2 s, message qui dit ce qu'il cherchait, pas ce qui manque au scénario). |
+| 🟡 | Slide 10 | « 1,4 s par scénario » est une moyenne qui inclut l'attente de 2 s des 6 pièges. | Dit en note. |
+| 🟡 | Slide 11 | « Nouvel écran » présenté comme tiré d'un résultat : aucune mesure dédiée. | Note : c'est une déduction (tous les passages se font sans colle), pas une mesure. Promesse 2 gardée, formulée « jouer un écran qui n'a pas encore de colle ». |
+| 🟡 | Proposition EN | « On 17 trapped scenarios it gave 204 correct verdicts » mélange scénarios et passages, et tait que l'appli est celle de l'auteur ; « 10/17 … plus 3 traps » laisse croire 10 + 3. | « On my own small demo app… 204 correct verdicts in 204 runs » ; « 3 of the 10 that still match only because… » ; mesure datée. |
+| 🟡 | « C'était avant » | Mesure de novembre 2026 avec Sonnet 5.5, talk en avril 2027 : le modèle aura changé. | Date et modèle sur la slide 10 ; note : le banc permet de refaire la mesure avec le modèle du jour. |
+| 🟡 | Jargon | « Contexte » (slide 9) et « data-testid » (slide 8) non expliqués. | Expliqués dans les notes (à dire à l'oral). |
+| 🟡 | `PROTOCOLE.md` | En-tête périmée « aucune mesure agent publiée ». | Remplacée par l'état réel (mesures du 24-25/11, chiffres, run CI ; temps humain d'écriture des step definitions absent de `resultats/`). README : « (quand il y aura des résultats) » retiré. |
+
+Densité : une idée par slide ; la slide 7 fusionnée tient (titre 2 lignes, une ligne, tableau de 3 lignes) ; aucune slide n'a plus de 4 lignes de corps hors code. Non vérifié dans un navigateur (consigne : aucun navigateur) : contrôle visuel à faire par Mekki.
+
+### Reste après la revue 2
+
+- La vidéo de plan B citée en note (slides 4 et 8) n'existe pas encore dans le dépôt : à enregistrer.
+- Le dépôt public ne montre les résultats que sur les branches `mesures` / `deck-v2` : `main` (et donc GitHub Pages, si Pages sert `main`) est encore à l'état d'avant les mesures. La proposition cite le dépôt comme preuve : décision de Mekki (fusion avant soumission).
+- Le surcoût de +47 % sur v2 reste inexpliqué (le résultat ne garde pas les jetons) : dit en note, sans nouvelle mesure.
