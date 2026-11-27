@@ -239,12 +239,12 @@ body.show-notes .slide.active .notes{display:block;position:absolute;left:120px;
   <div class="pad">
     <h2 class="reveal" style="font-size:76px">Deux lignes de Gherkin.<br>Derrière, du code qui <em>casse</em><br>au premier changement d'écran.</h2>
     <pre class="code reveal" style="margin-top:40px">Quand j'ajoute "Marteau" au panier</pre>
-    <pre class="code reveal" style="margin-top:24px"><span class="c">// step definition : traduit la phrase en clic</span>
+    <pre class="code reveal" style="margin-top:24px"><span class="c">// step definition, la « colle » : traduit la phrase en clic</span>
 page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</span>))
     .click();</pre>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">En haut, ce que lit le métier. En bas, la « step definition » : le code Java qui transforme chaque phrase en clic (src/test/java/…/Etapes.java, simplifié). Il cherche le bouton par un nom que personne ne voit à l'écran, l'aria-label. Un développeur front le reformule pour l'accessibilité : rouge, alors que l'appli marche. Transition : et si on n'écrivait plus ce code du tout ?</aside>
+  <aside class="notes">En haut, ce que lit le métier. En bas, la « step definition », que j'appellerai la colle : le code Java qui transforme chaque phrase en clic (src/test/java/…/Etapes.java, simplifié). Il cherche le bouton par un nom que personne ne voit à l'écran, l'aria-label. Un développeur front le reformule pour l'accessibilité : rouge, alors que l'appli marche. Transition : et si on n'écrivait plus ce code du tout ?</aside>
 </section>
 
 <!-- Ce que je veux dire : l'idée tient en trois verbes ; l'agent fait ce que ferait un testeur humain avec le scénario imprimé à côté de l'écran. -->
@@ -314,8 +314,8 @@ page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</
     <p class="reveal" style="margin-top:36px">17 scénarios (11 justes, 3 faux, 3 ambigus) × 3 passages, pour chaque façon de voir</p>
     <table class="m reveal" style="margin-top:32px">
       <tr><th>Ce que voit l'agent</th><th>Justes</th><th>« Passe » à tort</th><th>Durée</th><th>Coût</th></tr>
-      <tr><td>Arbre d'accessibilité seul</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,9 s</td><td class="n">0,069 $</td></tr>
-      <tr><td>Capture d'écran seule</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,4 s</td><td class="n">0,062 $</td></tr>
+      <tr><td>Ce que lit un lecteur d'écran</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,9 s</td><td class="n">0,069 $</td></tr>
+      <tr><td>Une capture d'écran</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,4 s</td><td class="n">0,062 $</td></tr>
       <tr><td>Les deux</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,4 s</td><td class="n">0,059 $</td></tr>
     </table>
   </div>
@@ -344,7 +344,7 @@ page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</
     <h2 class="reveal" style="font-size:72px">Pire que le rouge : 3 tests échouent<br>encore, mais <em>plus pour la bonne raison</em>.</h2>
     <pre class="code reveal" style="margin-top:40px;font-size:24px"><span class="c"># « Message quand les conditions ne sont pas cochées »</span>
 avant la refonte : ✘ je clique sur "Valider la commande"  <span class="c">← le piège</span>
-après la refonte : <span class="h">✘ j'ajoute "Marteau" au panier</span>      <span class="c">← le Contexte</span></pre>
+après la refonte : <span class="h">✘ j'ajoute "Marteau" au panier</span>      <span class="c">← le Contexte (étapes communes)</span></pre>
     <p class="reveal" style="margin-top:40px">Le rapport dit « conforme ». <em>Le piège n'est plus testé.</em></p>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
@@ -360,7 +360,7 @@ après la refonte : <span class="h">✘ j'ajoute "Marteau" au panier</span>     
       <tr><td>Durée</td><td class="n">1,4 s</td><td class="n">13,4 à 14,3 s</td></tr>
       <tr><td>Coût</td><td class="n">minutes de CI</td><td class="n">0,059 à 0,087 $</td></tr>
     </table>
-    <p class="muted reveal" style="margin-top:36px;font-size:26px">Limites : appli et refonte écrites par moi · un seul modèle (Sonnet 5.5, novembre 2026) · WebKit d'un côté, Chromium de l'autre.</p>
+    <p class="muted reveal" style="margin-top:36px;font-size:26px">Limites : appli et refonte écrites par moi · un seul modèle (Sonnet 5.5, novembre 2026) · deux navigateurs différents (WebKit, Chromium).</p>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
   <aside class="notes">Cucumber : 23,9 s pour les 17 scénarios en CI, soit 1,4 s chacun en moyenne (les 6 pièges attendent chacun le délai de 2 s ou plus : les scénarios qui passent vont plus vite). Agent : 13,4 s et 0,059 $ avant la refonte, 14,3 s et 0,087 $ après (+47 %, cause non établie) ; la série de 51 passages coûte 4,44 $ et dure 12 min 8 s (resultats/LISEZMOI.md). Limites : j'ai écrit l'appli et la refonte en sachant quelles étapes Cucumber utilise ; mes step definitions visent déjà des rôles et des libellés, des sélecteurs CSS auraient cassé plus, mais je ne l'ai pas mesuré. Les modèles changent vite : la mesure est datée, et le banc du dépôt permet de la refaire avec celui du jour. Transition : lent et payant, donc pas partout. Où, alors ?</aside>

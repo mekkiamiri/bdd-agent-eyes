@@ -65,3 +65,65 @@ Densité : une idée par slide ; la slide 7 fusionnée tient (titre 2 lignes, un
 - La vidéo de plan B citée en note (slides 4 et 8) n'existe pas encore dans le dépôt : à enregistrer.
 - Le dépôt public ne montre les résultats que sur les branches `mesures` / `deck-v2` : `main` (et donc GitHub Pages, si Pages sert `main`) est encore à l'état d'avant les mesures. La proposition cite le dépôt comme preuve : décision de Mekki (fusion avant soumission).
 - Le surcoût de +47 % sur v2 reste inexpliqué (le résultat ne garde pas les jetons) : dit en note, sans nouvelle mesure.
+
+## Revue 3 : le comité
+
+Nouvelle `slides/PROPOSITION-FR.md` (titre, abstract de 1 061 caractères en 3 paragraphes avec « Vous repartirez avec : », notes au comité au format du coach, bio à la 3e personne de 377 caractères, format, track) ; `PROPOSITION-EN.md` alignée.
+
+### Test des 30 secondes
+
+Titre + 1re phrase : « L'écran change : mes step definitions cassent, pas l'agent » / « Quand l'interface change sans que le comportement change, ce sont les step definitions qui cassent… ». On comprend le problème (la colle casse sur une refonte) et la piste (un agent qui voit l'écran) sans lire la suite. Avant correction, la 1re phrase anglaise parlait de « code le plus fragile » sans lien avec le titre : réalignée sur la refonte.
+
+### Le débutant comprend-il chaque slide ?
+
+| Slide | Obstacle | Correction |
+|---|---|---|
+| 2 | « step definition » expliqué, mais le mot « colle », utilisé dès la 4 et jusqu'à la 11, n'était jamais défini | Commentaire du code : « step definition, la « colle » » + note |
+| 7 | « Arbre d'accessibilité » dans le tableau | Lignes renommées « Ce que lit un lecteur d'écran » / « Une capture d'écran », les mots de la slide 3 |
+| 9 | « le Contexte » (mot Gherkin) | « le Contexte (étapes communes) » sur la slide + note |
+| 10 | « WebKit, Chromium » | « deux navigateurs différents (WebKit, Chromium) » |
+| 3, 6, 8, 11 | « agent », « refus », « data-testid », « CI » | Agent et refus définis à la 3 ; data-testid en note de la 8 ; CI connu du public visé. Laissé. |
+
+### Grille du comité (après corrections)
+
+| Critère | Note | Pourquoi |
+|---|---|---|
+| Unicité | 4 | « Agent + tests » sera vu souvent en 2027 ; mesuré contre Cucumber, avec une refonte et le faux vert, beaucoup moins. |
+| Légitimité | 3 | 18 ans de BDD et un banc construit soi-même, mais aucune contribution BDD publique ni retour de production. |
+| Promesse | 4 | 3 éléments concrets (où le mettre, 3 règles, le banc) ; « où le mettre » reste une recommandation, pas une mesure en équipe. |
+| Concret | 5 | Deux démos live, chiffres datés, dépôt public, run CI citable. |
+| Actualité | 4 | Agents de test et MCP navigateur : sujet chaud, vu sous l'angle mûr « où ne pas le mettre ». |
+| Clarté | 4 | Titre + 1re phrase compris en 30 s ; « step definitions » suppose de connaître Cucumber, ce qui est le public visé. |
+| Risque speaker | 3 | Slides en ligne, dépôt soigné, CI verte ; aucune vidéo ni meetup cité (à compléter dans les notes). |
+| Format | 5 | Tools-in-Action : un outil, deux démos, minutage qui tombe à 30 min ; variante Quickie listée. |
+| **Total** | **32/40** | Seuil atteint de justesse, aucun critère sous 3. |
+
+### Trois membres du comité, en réunion
+
+- **L'expert blasé** : « Encore un agent qui clique ; mais il a mis Cucumber en face, une refonte et le faux vert, et il dit lui-même de garder Cucumber en CI. Je prends si l'appli à lui ne cache pas tout : il le dit dès les pièges. »
+- **Le généraliste** : « Je comprends le titre sans connaître l'outil : la refonte casse les tests, pas l'agent. Le prix au scénario me dit qu'il ne vend rien. »
+- **Le défenseur de la diversité des sujets** : « Un talk sur le BDD et la maintenance des tests, pas un énième talk IA : je le pousse, surtout s'il n'est pas rangé dans le track IA. »
+
+### Problèmes trouvés
+
+| Gravité | Où | Problème | Correction |
+|---|---|---|---|
+| 🔴 | Proposition FR | Absente. | Écrite (format du coach, chiffres repris de la revue 2). |
+| 🟡 | Slides 2 → 11 | « Colle » jamais défini. | Défini à la slide 2. |
+| 🟡 | Proposition EN | 1re phrase décalée du titre ; « You leave with » sans les deux-points ni les 3 éléments séparés. | Réécrite. |
+| 🟡 | Track | « Development practices » sans dire pourquoi ; le track IA serait le plus évident et le plus saturé. | Track tests et qualité recommandé, raison notée. |
+| 🟡 | Légitimité et risque speaker à 3 | Rien de citable sur la scène ni sur le BDD en public. | Non réparable sans Mekki : champs « à compléter » dans les notes au comité. |
+
+### Ce qui reste, et pourquoi
+
+- Pas de nouvelle mesure : la cause du +47 % de coût sur v2, l'effet de sélecteurs CSS, le temps humain d'écriture des step definitions restent non mesurés et sont dits comme tels.
+- Rendu visuel non contrôlé (aucun navigateur pendant la revue).
+
+## Points qui demandent une décision de Mekki
+
+1. **Titre** : B retenu (« L'écran change : mes step definitions cassent, pas l'agent », 58 caractères) ; A (64 caractères, plus oral) reste possible.
+2. **Fusionner `mesures` / `deck-v2` dans `main` avant de soumettre** : la proposition cite le dépôt comme preuve, et `main` n'a pas encore les résultats.
+3. **Expérience de scène et accord employeur** : à remplir dans les notes au comité ; c'est le levier pour passer Risque speaker et Légitimité au-dessus de 3 (un passage en meetup ou JUG avant le CFP).
+4. **Passage live sur v2 dans la démo 2** (ajouté pour utiliser la minute et demie gagnée) : le garder, ou montrer seulement le tableau et le résumé du run CI.
+5. **Vidéo de plan B** : à enregistrer (démo 1 et démo 2).
+6. **Track** : vérifier les noms des tracks du CFP visé et choisir celui des tests et de la qualité plutôt que celui de l'IA.

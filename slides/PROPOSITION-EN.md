@@ -1,7 +1,7 @@
 # Proposal (English)
 
 **Format**: Tools-in-Action (30 min). Also available as a Quickie (20 min), see the notes.
-**Track**: Development practices
+**Track**: Development practices / testing and quality (rather than the AI track)
 **Level**: Intermediate
 
 ## Title
@@ -10,11 +10,11 @@ The screen changes: my step definitions break, the agent doesn't
 
 ## Abstract
 
-Step definitions are the most fragile code in a BDD project: the Gherkin reads fine, but the glue behind it breaks on a renamed label or a moved button, while the app still works.
+When the UI changes but the behaviour doesn't, the step definitions are what breaks: the Gherkin still reads fine, but the glue behind it was looking for a reworded label or a renamed test attribute, while the app still works.
 
 Live, an agent reads each scenario, looks at the screen (screenshot and accessibility tree), clicks, and returns pass, fail or refuse, with no step definitions. On my own small demo app, with 17 scenarios (some deliberately wrong or ambiguous), it gave 204 correct verdicts in 204 runs, refused every ambiguous one with a reason, and survived a UI redesign that broke 7 of 17 Cucumber scenarios. It also costs 14 s and 6 to 9 cents per scenario, against 1.4 s for Cucumber.
 
-You leave with where to put it (Cucumber in CI; the agent to review scenarios, explore a new screen, cover a redesign), three rules for Gherkin an agent can play, and a public repo with the app, the scenarios and the raw results.
+You leave with: where to put it (Cucumber in CI; the agent to review scenarios, play a screen that has no glue yet, hold during a redesign); three rules for Gherkin an agent can play; a public repo with the app, the scenarios and the raw results, to rerun the measurement yourself.
 
 ## Notes for the committee
 
