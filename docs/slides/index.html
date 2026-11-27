@@ -214,281 +214,204 @@ body.show-notes .slide.active .notes{display:block;position:absolute;left:120px;
 </head>
 <body>
 <div class="deck-viewport"><main class="deck-stage" id="deckStage">
-<!-- Slides du talk « Vos scénarios Gherkin joués par un agent qui voit l'appli » (Tools-in-Action 30 min)
+<!-- Slides du talk « Vos scénarios Gherkin joués par un agent qui voit l'appli » (Tools-in-Action 30 min, 14 slides)
      Construire : python3 <kit>/build_deck.py slides/slides.html docs/slides/index.html "Gherkin joué par un agent"
-     Règle : aucun chiffre de résultat inventé. Les mesures agent ne sont pas faites : on montre le protocole,
-     les hypothèses (marquées comme telles) et les vraies sorties de la CI (run 44152005490, 17/11/2026).
-     Plan : 0-3 problème · 3-7 l'idée · 7-17 démo · 17-24 mesures · 24-28 quand quoi · 28-30 questions -->
+     Message : vos step definitions sont le code le plus fragile de votre projet. Un agent qui regarde l'écran joue
+     vos scénarios Gherkin sans elles : 204 verdicts justes sur 204, et il survit à une refonte d'interface qui casse
+     7 scénarios Cucumber sur 17. Mais il est lent et payant : voici où le mettre.
+     Plan détaillé et minutage : slides/PLAN.md. Chiffres : resultats/LISEZMOI.md, resultats/synthese-agent.json,
+     resultats/agent-*/resultats.json, resultats/robustesse-v2/agent-les-deux/resultats.json.
+     Arc : situation 1 · complication 2 (la colle casse) · résolution 3-9 · revers et prix 10-11 · où le mettre 12-13 · fin 14 -->
 
-<!-- 1. Titre -->
+<!-- Ce que je veux dire : on peut jouer des scénarios Gherkin sans écrire de step definitions, et je vais montrer jusqu'où ça tient, chiffres à l'appui. -->
 <section class="slide">
   <div class="ruler"><i style="left:0px;height:40px"></i><i style="left:28px;height:12px"></i><i style="left:56px;height:12px"></i><i style="left:84px;height:12px"></i><i style="left:112px;height:12px"></i><i style="left:140px;height:24px"></i><i style="left:168px;height:12px"></i><i style="left:196px;height:12px"></i><i style="left:224px;height:12px"></i><i style="left:252px;height:12px"></i><i style="left:280px;height:40px"></i><i style="left:308px;height:12px"></i><i style="left:336px;height:12px"></i><i style="left:364px;height:12px"></i><i style="left:392px;height:12px"></i><i style="left:420px;height:24px"></i><i style="left:448px;height:12px"></i><i style="left:476px;height:12px"></i><i style="left:504px;height:12px"></i><i style="left:532px;height:12px"></i><i style="left:560px;height:40px"></i><i style="left:588px;height:12px"></i><i style="left:616px;height:12px"></i><i style="left:644px;height:12px"></i><i style="left:672px;height:12px"></i><i style="left:700px;height:24px"></i><i style="left:728px;height:12px"></i><i style="left:756px;height:12px"></i><i style="left:784px;height:12px"></i><i style="left:812px;height:12px"></i><i style="left:840px;height:40px"></i><i style="left:868px;height:12px"></i><i style="left:896px;height:12px"></i><i style="left:924px;height:12px"></i><i style="left:952px;height:12px"></i><i style="left:980px;height:24px"></i><i style="left:1008px;height:12px"></i><i style="left:1036px;height:12px"></i><i style="left:1064px;height:12px"></i><i style="left:1092px;height:12px"></i><i style="left:1120px;height:40px"></i><i style="left:1148px;height:12px"></i><i style="left:1176px;height:12px"></i><i style="left:1204px;height:12px"></i><i style="left:1232px;height:12px"></i><i style="left:1260px;height:24px"></i><i style="left:1288px;height:12px"></i><i style="left:1316px;height:12px"></i><i style="left:1344px;height:12px"></i><i style="left:1372px;height:12px"></i><i style="left:1400px;height:40px"></i><i style="left:1428px;height:12px"></i><i style="left:1456px;height:12px"></i><i style="left:1484px;height:12px"></i><i style="left:1512px;height:12px"></i><i style="left:1540px;height:24px"></i><i style="left:1568px;height:12px"></i><i style="left:1596px;height:12px"></i><i style="left:1624px;height:12px"></i><i style="left:1652px;height:12px"></i></div><div class="needle"></div>
-  <div class="pad" style="top:250px">
+  <div class="pad" style="top:230px">
     <div class="k reveal">Devoxx France 2027 · Tools-in-Action</div>
-    <h1 class="reveal" style="margin-top:40px;font-size:128px">Vos scénarios Gherkin<br>joués par un agent<br>qui <em>voit l'appli</em></h1>
+    <h1 class="reveal" style="margin-top:40px;font-size:120px">Vos scénarios Gherkin<br>se jouent <em>sans<br>step definitions</em></h1>
   </div>
   <div style="position:absolute;right:120px;bottom:140px;text-align:right" class="reveal"><h3>Mekki Amiri</h3><p class="muted" style="font-size:24px;margin:8px 0 0">Tech Lead · architecte système</p></div>
-  <aside class="notes">Version 30 min : toutes les diapos. Version Quickie 20 min (Nantes, Strasbourg) : sauter 5, 12, 14, 16 et 20 ; dire le piège 3 en une phrase sur la 11, et donner le dépôt sur la dernière. Dire en ouverture : bonjour, une démo, une CI qui prouve la vérité terrain, et un protocole plutôt que des impressions.</aside>
+  <aside class="notes">Version Quickie 20 min, 9 slides : 1, 2, 3, 6, 7, 9, 11, 12, 14. On saute la démo 1 (slide 4) : la démo 2 porte le message, et la slide 6 montre déjà une vraie réponse de l'agent ; sur la 3, dire en une phrase qu'il joue « Commande valide » en 20 secondes. Ouverture : « Qui écrit du Gherkin ? Qui maintient le code derrière ? Gardez la main levée. » Transition : regardons ce code.</aside>
 </section>
 
-<!-- 2. Le problème (0-3) -->
-<section class="slide">
-  <div class="pad" style="top:260px">
-    <div class="k reveal">Le problème</div>
-    <h2 class="reveal" style="margin-top:30px">Le scénario se lit.<br><em>La colle, beaucoup moins.</em></h2>
-  </div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Qui écrit du Gherkin ici ? Qui maintient les step definitions ? Voilà.</aside>
-</section>
-
-<!-- 3. Le scénario et sa colle -->
+<!-- Ce que je veux dire : le scénario est lisible par tous, mais le code qui le relie à l'écran dépend d'un détail invisible, et c'est lui qui casse. -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">features/panier.feature → Etapes.java</div>
-    <pre class="code reveal" style="margin-top:40px">Quand j'ajoute "Marteau" au panier
-Alors le panier contient 1 article</pre>
-    <pre class="code reveal" style="margin-top:30px"><span class="h">@Quand("j'ajoute {string} au panier")</span>
-void jAjoute(String produit) {
-  page.getByRole(BUTTON, nom("Ajouter " + produit + " au panier")).click();
-}</pre>
+    <h2 class="reveal" style="font-size:76px">Deux lignes de Gherkin.<br>Derrière, du code qui <em>casse</em><br>au premier changement d'écran.</h2>
+    <pre class="code reveal" style="margin-top:40px">Quand j'ajoute "Marteau" au panier</pre>
+    <pre class="code reveal" style="margin-top:24px"><span class="c">// step definition : traduit la phrase en clic</span>
+page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</span>))
+    .click();</pre>
   </div>
   <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Deux lignes lisibles par le métier. Et derrière, du code qui dépend d'un aria-label. Renommez-le : rouge.</aside>
+  <aside class="notes">En haut, ce que lit le métier. En bas, la « step definition » : le code Java qui transforme chaque phrase en clic (src/test/java/…/Etapes.java, simplifié). Il cherche le bouton par un nom que personne ne voit à l'écran, l'aria-label. Un développeur front le reformule pour l'accessibilité : rouge, alors que l'appli marche. Transition : et si on n'écrivait plus ce code du tout ?</aside>
 </section>
 
-<!-- 4. La question (3-7) -->
-<section class="slide">
-  <div class="pad" style="top:220px">
-    <div class="k reveal">La question</div>
-    <h2 class="reveal" style="margin-top:30px">Et si personne<br>n'écrivait <em>la colle</em> ?</h2>
-    <p class="muted reveal" style="margin-top:50px">Un agent lit le scénario, regarde l'écran, et le joue.</p>
-  </div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-</section>
-
-<!-- 5. Section : l'idée -->
-<section class="slide">
-  <div class="ruler"><i style="left:0px;height:40px"></i><i style="left:28px;height:12px"></i><i style="left:56px;height:12px"></i><i style="left:84px;height:12px"></i><i style="left:112px;height:12px"></i><i style="left:140px;height:24px"></i><i style="left:168px;height:12px"></i><i style="left:196px;height:12px"></i><i style="left:224px;height:12px"></i><i style="left:252px;height:12px"></i><i style="left:280px;height:40px"></i><i style="left:308px;height:12px"></i><i style="left:336px;height:12px"></i><i style="left:364px;height:12px"></i><i style="left:392px;height:12px"></i><i style="left:420px;height:24px"></i><i style="left:448px;height:12px"></i><i style="left:476px;height:12px"></i><i style="left:504px;height:12px"></i><i style="left:532px;height:12px"></i><i style="left:560px;height:40px"></i><i style="left:588px;height:12px"></i><i style="left:616px;height:12px"></i><i style="left:644px;height:12px"></i><i style="left:672px;height:12px"></i><i style="left:700px;height:24px"></i><i style="left:728px;height:12px"></i><i style="left:756px;height:12px"></i><i style="left:784px;height:12px"></i><i style="left:812px;height:12px"></i><i style="left:840px;height:40px"></i><i style="left:868px;height:12px"></i><i style="left:896px;height:12px"></i><i style="left:924px;height:12px"></i><i style="left:952px;height:12px"></i><i style="left:980px;height:24px"></i><i style="left:1008px;height:12px"></i><i style="left:1036px;height:12px"></i><i style="left:1064px;height:12px"></i><i style="left:1092px;height:12px"></i><i style="left:1120px;height:40px"></i><i style="left:1148px;height:12px"></i><i style="left:1176px;height:12px"></i><i style="left:1204px;height:12px"></i><i style="left:1232px;height:12px"></i><i style="left:1260px;height:24px"></i><i style="left:1288px;height:12px"></i><i style="left:1316px;height:12px"></i><i style="left:1344px;height:12px"></i><i style="left:1372px;height:12px"></i><i style="left:1400px;height:40px"></i><i style="left:1428px;height:12px"></i><i style="left:1456px;height:12px"></i><i style="left:1484px;height:12px"></i><i style="left:1512px;height:12px"></i><i style="left:1540px;height:24px"></i><i style="left:1568px;height:12px"></i><i style="left:1596px;height:12px"></i><i style="left:1624px;height:12px"></i><i style="left:1652px;height:12px"></i></div><div class="needle"></div>
-  <div class="pad" style="top:320px"><div class="k reveal">Partie 1</div><h1 class="reveal" style="margin-top:30px">L'agent <em>testeur</em></h1></div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-</section>
-
-<!-- 6. Ce que fait l'agent -->
+<!-- Ce que je veux dire : l'idée tient en trois verbes ; l'agent fait ce que ferait un testeur humain avec le scénario imprimé à côté de l'écran. -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">Pas de step definitions</div>
+    <h2 class="reveal" style="font-size:76px">Un agent lit le scénario,<br>regarde l'écran, clique,<br>et rend un <em>verdict</em>.</h2>
     <ul class="steps reveal">
-      <li data-n="01">Il lit <span class="muted">· le scénario, sans les tags ni la réponse</span></li>
-      <li data-n="02">Il regarde <span class="muted">· capture d'écran + arbre d'accessibilité</span></li>
-      <li data-n="03">Il rend un verdict <span class="muted">· passe, échec ou <em>refus</em></span></li>
+      <li data-n="01">Il lit <span class="muted">· le scénario seul, sans la réponse</span></li>
+      <li data-n="02">Il regarde <span class="muted">· une capture, et ce que lit un lecteur d'écran</span></li>
+      <li data-n="03">Il répond <span class="muted">· passe, échec, ou <em>refus</em></span></li>
     </ul>
   </div>
   <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Outil de navigation : par exemple Playwright MCP (browser_snapshot, browser_take_screenshot). Consigne dans agent/CONSIGNE.md : pas de clic forcé, pas de script.</aside>
+  <aside class="notes">Un modèle de langage (Sonnet 5.5) pilote un vrai navigateur via Playwright MCP. « Ce que lit un lecteur d'écran », c'est l'arbre d'accessibilité : la liste des boutons, champs et textes avec leur nom. Sa consigne (agent/CONSIGNE.md) : pas de clic forcé, pas de script, et le droit de refuser. Transition : voyons-le jouer.</aside>
 </section>
 
-<!-- 7. La vérité terrain -->
+<!-- Ce que je veux dire : ça marche pour de vrai, sur un scénario complet, sans une ligne de colle. -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">La vérité terrain</div>
-    <div class="readouts reveal" style="margin-top:60px"><div><b>11</b><span>justes · doivent passer</span></div><div><b>3</b><span>faux · doivent échouer</span></div><div><b>3</b><span>ambigus · à refuser</span></div></div>
-    <p class="reveal" style="margin-top:60px">Un tag <em>@attendu</em> par scénario, et le piège écrit noir sur blanc.<br><span class="muted">Un validateur vérifie chaque libellé contre l'appli.</span></p>
+    <h2 class="reveal" style="font-size:72px">Démo : l'agent joue « Commande valide »<br>en <em>20 secondes</em>, sans une ligne de colle.</h2>
+    <pre class="code reveal" style="margin-top:40px;font-size:26px">python3 agent/lancer.py --config les-deux --passages 1 \
+  --scenario "livraison.feature:Commande valide"</pre>
+    <pre class="code reveal" style="margin-top:24px;font-size:24px">{"verdict": "<span class="h">passe</span>",
+ "preuve": "Après le clic sur « Valider la commande », la page
+  Livraison affiche le titre « Commande confirmée »…"}</pre>
   </div>
   <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
+  <aside class="notes">Lancer la commande en direct, appli à gauche, terminal à droite. Plan B : la vidéo d'un passage enregistrée la veille (fichier prêt sur le bureau), à lancer si le modèle ne répond pas en 40 s. La réponse affichée est réelle : resultats/agent-les-deux/resultats.json, passage 1, 21 s, 0,055 $ ; les trois passages durent 19 à 25 s. Transition : facile, l'appli est gentille. Sauf qu'elle ne l'est pas.</aside>
 </section>
 
-<!-- 8. Section : démo (7-17) -->
-<section class="slide">
-  <div class="ruler"><i style="left:0px;height:40px"></i><i style="left:28px;height:12px"></i><i style="left:56px;height:12px"></i><i style="left:84px;height:12px"></i><i style="left:112px;height:12px"></i><i style="left:140px;height:24px"></i><i style="left:168px;height:12px"></i><i style="left:196px;height:12px"></i><i style="left:224px;height:12px"></i><i style="left:252px;height:12px"></i><i style="left:280px;height:40px"></i><i style="left:308px;height:12px"></i><i style="left:336px;height:12px"></i><i style="left:364px;height:12px"></i><i style="left:392px;height:12px"></i><i style="left:420px;height:24px"></i><i style="left:448px;height:12px"></i><i style="left:476px;height:12px"></i><i style="left:504px;height:12px"></i><i style="left:532px;height:12px"></i><i style="left:560px;height:40px"></i><i style="left:588px;height:12px"></i><i style="left:616px;height:12px"></i><i style="left:644px;height:12px"></i><i style="left:672px;height:12px"></i><i style="left:700px;height:24px"></i><i style="left:728px;height:12px"></i><i style="left:756px;height:12px"></i><i style="left:784px;height:12px"></i><i style="left:812px;height:12px"></i><i style="left:840px;height:40px"></i><i style="left:868px;height:12px"></i><i style="left:896px;height:12px"></i><i style="left:924px;height:12px"></i><i style="left:952px;height:12px"></i><i style="left:980px;height:24px"></i><i style="left:1008px;height:12px"></i><i style="left:1036px;height:12px"></i><i style="left:1064px;height:12px"></i><i style="left:1092px;height:12px"></i><i style="left:1120px;height:40px"></i><i style="left:1148px;height:12px"></i><i style="left:1176px;height:12px"></i><i style="left:1204px;height:12px"></i><i style="left:1232px;height:12px"></i><i style="left:1260px;height:24px"></i><i style="left:1288px;height:12px"></i><i style="left:1316px;height:12px"></i><i style="left:1344px;height:12px"></i><i style="left:1372px;height:12px"></i><i style="left:1400px;height:40px"></i><i style="left:1428px;height:12px"></i><i style="left:1456px;height:12px"></i><i style="left:1484px;height:12px"></i><i style="left:1512px;height:12px"></i><i style="left:1540px;height:24px"></i><i style="left:1568px;height:12px"></i><i style="left:1596px;height:12px"></i><i style="left:1624px;height:12px"></i><i style="left:1652px;height:12px"></i></div><div class="needle"></div>
-  <div class="pad" style="top:320px"><div class="k reveal">Partie 2</div><h1 class="reveal" style="margin-top:30px"><em>Démo</em></h1></div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Basculer sur la page de démo : appli à gauche, scénario à droite. Terminal prêt avec mvn verify.</aside>
-</section>
-
-<!-- 9. Démo : même scénario, deux joueurs -->
+<!-- Ce que je veux dire : l'appli est piégée exprès, avec ce qui fait tomber les tests naïfs ; l'agent ne tombe dans aucun des trois. -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">Démo · « Commande valide » · features/livraison.feature</div>
-    <div class="cols reveal" style="margin-top:60px">
-      <div class="panel"><h3>Cucumber + Playwright</h3><p class="muted" style="font-size:28px">step definitions écrites à la main</p><pre class="code" style="font-size:22px;padding:24px 28px">mvn -B verify
-Tests run: 17, Failures: 0,
-  Skipped: 6
-BUILD SUCCESS</pre></div>
-      <div class="panel"><h3>Agent</h3><p class="muted" style="font-size:28px">capture + arbre d'accessibilité, rien d'autre</p><pre class="code" style="font-size:22px;padding:24px 28px">python3 agent/lancer.py \
-  --config les-deux \
-  --scenario "livraison.feature:
-    Commande valide"</pre></div>
-    </div>
-  </div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">À gauche, la vraie sortie de la CI : les 11 scénarios justes passent, les 6 pièges sont mis de côté. À droite, la commande qui donne le même scénario à l'agent, sans tags ni ligne « Piège ». Démo agent à venir : le premier passage réel n'est pas encore fait ; plan B, la vidéo de ce passage, enregistrée avant la conférence.</aside>
-</section>
-
-<!-- 10. Piège 1 : bouton désactivé -->
-<section class="slide">
-  <div class="pad">
-    <div class="k reveal">Piège 1 · @attendu:echec · « Ajouter un produit épuisé »</div>
-    <h2 class="reveal" style="margin-top:30px;font-size:84px">Le bouton est là. <em>Il est désactivé.</em></h2>
-    <pre class="code reveal" style="margin-top:40px;font-size:24px"><span class="c"># CI · job pieges-cucumber · 17/11/2026 (extrait)</span>
-<span class="h">✘ Quand j'ajoute "Tournevis" au panier</span>
-  locator resolved to &lt;button <span class="h">disabled</span> … aria-label="Ajouter Tournevis au panier"&gt;
-  element is not enabled
-  TimeoutError: Timeout 2000ms exceeded.</pre>
-    <p class="muted reveal" style="margin-top:30px">Cucumber échoue, comme prévu. L'agent, lui, va-t-il forcer le clic ?</p>
-  </div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Vraie sortie de la CI, pas une maquette. Playwright attend que le bouton soit cliquable, il ne l'est jamais, le scénario échoue au bout de 2 secondes. C'est la vérité terrain : ce scénario est faux, il doit échouer.</aside>
-</section>
-
-<!-- 11. Piège 2 : libellé ambigu -->
-<section class="slide">
-  <div class="pad" style="top:220px">
-    <div class="k reveal">Piège 2 · @attendu:ambigu</div>
-    <h2 class="reveal" style="margin-top:30px">« Je clique sur <em>Ajouter</em> »</h2>
-    <p class="reveal" style="margin-top:40px">Trois boutons portent ce texte.</p>
-    <p class="muted reveal">Cucumber échoue : aucun nom accessible n'est exactement « Ajouter ».<br>Il échoue juste, mais <em>sans dire pourquoi</em>. Et l'agent : il devine, ou il refuse ?</p>
-  </div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">En CI, Cucumber attend un bouton nommé « Ajouter » et tombe en délai dépassé : les vrais noms sont « Ajouter Marteau au panier »… Le total attendu, 12,00 €, laisse deviner Marteau. Deviner n'est pas tester. (Version 20 min : dire ici en une phrase que « Commande confirmée » est caché dans le DOM.)</aside>
-</section>
-
-<!-- 12. Piège 3 : texte caché dans le DOM -->
-<section class="slide">
-  <div class="pad">
-    <div class="k reveal">Piège 3 · le DOM ment</div>
-    <pre class="code reveal" style="margin-top:40px"><span class="c">&lt;!-- docs/app/index.html --&gt;</span>
-&lt;div id="confirmation" <span class="h">hidden</span>&gt;
-  &lt;h2&gt;Commande confirmée&lt;/h2&gt;
-&lt;/div&gt;</pre>
-    <h3 class="reveal" style="margin-top:50px">Toujours dans le HTML. <em>Visible seulement après validation.</em></h3>
-  </div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Un test qui cherche le texte dans le HTML brut passe à tort. Un œil, humain ou agent, ne le voit pas.</aside>
-</section>
-
-<!-- 13. Le refus -->
-<section class="slide">
-  <div class="pad">
-    <div class="k reveal">Ce qu'on attend d'un bon testeur</div>
-    <pre class="code reveal" style="margin-top:40px"><span class="c"># CI · Cucumber · « La commande est enregistrée »</span>
-  ✔ Et je saisis "69003" dans le champ "Code postal"
-  <span class="h">■ Et je valide</span>                     <span class="c">← étape non définie</span>
-  ↷ Alors la commande est enregistrée</pre>
-    <pre class="code reveal" style="margin-top:30px"><span class="c"># agent/CONSIGNE.md · règle 3 · réponse demandée</span>
-{"verdict": "<span class="h">refus</span>", "etape": …, "explication": "…", "preuve": "…"}</pre>
-    <p class="muted reveal" style="margin-top:30px">Cucumber s'arrête. Un bon testeur dit <em>ce qui manque</em>.</p>
-  </div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">En haut, la vraie sortie de la CI : personne n'a écrit la colle de « je valide », Cucumber s'arrête. En bas, le format que la consigne impose à l'agent : refuser et dire ce qui manque. Que l'agent le fasse vraiment, c'est ce que le protocole mesure.</aside>
-</section>
-
-<!-- 14. Section : mesures (17-24) -->
-<section class="slide">
-  <div class="ruler"><i style="left:0px;height:40px"></i><i style="left:28px;height:12px"></i><i style="left:56px;height:12px"></i><i style="left:84px;height:12px"></i><i style="left:112px;height:12px"></i><i style="left:140px;height:24px"></i><i style="left:168px;height:12px"></i><i style="left:196px;height:12px"></i><i style="left:224px;height:12px"></i><i style="left:252px;height:12px"></i><i style="left:280px;height:40px"></i><i style="left:308px;height:12px"></i><i style="left:336px;height:12px"></i><i style="left:364px;height:12px"></i><i style="left:392px;height:12px"></i><i style="left:420px;height:24px"></i><i style="left:448px;height:12px"></i><i style="left:476px;height:12px"></i><i style="left:504px;height:12px"></i><i style="left:532px;height:12px"></i><i style="left:560px;height:40px"></i><i style="left:588px;height:12px"></i><i style="left:616px;height:12px"></i><i style="left:644px;height:12px"></i><i style="left:672px;height:12px"></i><i style="left:700px;height:24px"></i><i style="left:728px;height:12px"></i><i style="left:756px;height:12px"></i><i style="left:784px;height:12px"></i><i style="left:812px;height:12px"></i><i style="left:840px;height:40px"></i><i style="left:868px;height:12px"></i><i style="left:896px;height:12px"></i><i style="left:924px;height:12px"></i><i style="left:952px;height:12px"></i><i style="left:980px;height:24px"></i><i style="left:1008px;height:12px"></i><i style="left:1036px;height:12px"></i><i style="left:1064px;height:12px"></i><i style="left:1092px;height:12px"></i><i style="left:1120px;height:40px"></i><i style="left:1148px;height:12px"></i><i style="left:1176px;height:12px"></i><i style="left:1204px;height:12px"></i><i style="left:1232px;height:12px"></i><i style="left:1260px;height:24px"></i><i style="left:1288px;height:12px"></i><i style="left:1316px;height:12px"></i><i style="left:1344px;height:12px"></i><i style="left:1372px;height:12px"></i><i style="left:1400px;height:40px"></i><i style="left:1428px;height:12px"></i><i style="left:1456px;height:12px"></i><i style="left:1484px;height:12px"></i><i style="left:1512px;height:12px"></i><i style="left:1540px;height:24px"></i><i style="left:1568px;height:12px"></i><i style="left:1596px;height:12px"></i><i style="left:1624px;height:12px"></i><i style="left:1652px;height:12px"></i></div><div class="needle"></div>
-  <div class="pad" style="top:320px"><div class="k reveal">Partie 3</div><h1 class="reveal" style="margin-top:30px">Les <em>mesures</em></h1></div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Ce qui est prouvé aujourd'hui, et comment on mesurera le reste.</aside>
-</section>
-
-<!-- 15. Ce que la CI prouve déjà -->
-<section class="slide">
-  <div class="pad">
-    <div class="k reveal">Déjà prouvé · CI du 17/11/2026 · outils/verifier_pieges.py</div>
-    <pre class="code reveal" style="margin-top:40px;font-size:24px">ok  @attendu:echec  echec        Connexion - Message d'accueil personnalisé
-ok  @attendu:ambigu echec        Connexion - Connexion rapide
-ok  @attendu:echec  echec        Livraison - Message quand les conditions…
-ok  @attendu:ambigu non définie  Livraison - La commande est enregistrée
-ok  @attendu:echec  echec        Panier - Ajouter un produit épuisé
-ok  @attendu:ambigu echec        Panier - Ajouter au panier</pre>
-    <h3 class="reveal" style="margin-top:50px"><em>6 pièges sur 6</em> font échouer Cucumber.</h3>
-    <p class="muted reveal">Et les 11 scénarios justes passent. La vérité terrain tient.</p>
-  </div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Avant de mesurer un agent, il faut une vérité terrain fiable. À chaque push, la CI joue les 6 scénarios faux ou ambigus et vérifie un par un qu'ils échouent pour la bonne raison. Si un piège passait, la CI serait rouge.</aside>
-</section>
-
-<!-- 16. Le protocole -->
-<section class="slide">
-  <div class="pad">
-    <div class="k reveal">PROTOCOLE.md · ce qu'on mesure, et comment</div>
-    <ul class="steps reveal">
-      <li data-n="01">17 scénarios, <em>sans</em> tags ni « Piège : » <span class="muted">· agent/lancer.py les retire</span></li>
-      <li data-n="02">4 configurations × 3 passages <span class="muted">· navigateur neuf à chaque fois</span></li>
-      <li data-n="03">Verdict, temps, tokens, coût <span class="muted">· modèle et date notés</span></li>
-    </ul>
-    <p class="reveal" style="margin-top:40px"><em>Faux positif</em> : « passe » sur un scénario faux ou ambigu.<br><span class="muted">Puis on renomme un aria-label, et on rejoue sans toucher à rien.</span></p>
-  </div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Quatre configurations : Cucumber, et l'agent avec l'arbre seul, la capture seule, ou les deux. Chaque scénario trois fois, pour voir si l'agent change d'avis. Le faux positif est le pire : on croit que c'est testé. Deuxième passage : on change l'interface sans changer le comportement, et on compte ce qui casse de chaque côté.</aside>
-</section>
-
-<!-- 17. La grille -->
-<section class="slide">
-  <div class="pad">
-    <div class="k reveal">La grille · lignes agent publiées dans le dépôt en janvier 2027</div>
+    <h2 class="reveal" style="font-size:72px">Trois pièges : un bouton grisé,<br>trois « Ajouter », un texte <em>caché</em>.</h2>
     <table class="m reveal" style="margin-top:40px">
-      <tr><th>Configuration</th><th>Réussite</th><th>Faux positifs</th><th>Faux négatifs</th><th>Refus justes</th></tr>
-      <tr><td>Cucumber + Playwright</td><td class="n">17 / 17</td><td class="n">0</td><td class="n">0</td><td class="muted" style="text-align:right">impossible</td></tr>
-      <tr><td>Agent · arbre</td><td class="muted" colspan="4" style="text-align:right">janvier 2027</td></tr>
-      <tr><td>Agent · capture</td><td class="muted" colspan="4" style="text-align:right">janvier 2027</td></tr>
-      <tr><td>Agent · les deux</td><td class="muted" colspan="4" style="text-align:right">janvier 2027</td></tr>
+      <tr><th>Piège</th><th>Ce que fait l'agent</th></tr>
+      <tr><td>« Tournevis » épuisé, bouton grisé</td><td>« Je n'ai pas forcé le clic. » → <em>échec</em></td></tr>
+      <tr><td>Trois boutons « Ajouter »</td><td>Il ne devine pas → <em>refus</em></td></tr>
+      <tr><td>« Commande confirmée » caché dans la page</td><td>Il ne le voit pas → juste, 9 fois sur 9</td></tr>
     </table>
-    <p class="muted reveal" style="margin-top:36px;font-size:28px">Ligne Cucumber : CI du 17/11/2026, 1 passage. Sa colle a été écrite pour ces 17 scénarios.</p>
   </div>
   <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">La ligne Cucumber est réelle : 11 justes qui passent, 6 pièges qui échouent. 17 sur 17, mais attention : j'ai écrit la colle en connaissant les scénarios, et Cucumber ne sait pas refuser, il échoue sans dire pourquoi. Les lignes agent seront publiées dans le dépôt, et si l'agent fait moins bien, je le dirai ici.</aside>
+  <aside class="notes">Citation réelle : « Ajouter un produit épuisé », resultats/agent-les-deux, passage 1. Le texte « Commande confirmée » est dans le HTML mais caché : un test qui lit le HTML brut passerait à tort ; l'agent juge « Conditions de vente non acceptées » juste dans les 9 passages (3 façons de voir × 3). Transition : le deuxième piège mérite qu'on s'y arrête.</aside>
 </section>
 
-<!-- 18. Quand quoi : trois hypothèses -->
+<!-- Ce que je veux dire : la vraie valeur, c'est qu'il refuse un scénario mal écrit et qu'il explique quoi corriger, là où Cucumber échoue sans rien dire. -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">Cucumber ou agent, quand ? · trois hypothèses, pas des résultats</div>
+    <h2 class="reveal" style="font-size:76px">Devant un scénario ambigu,<br>il <em>refuse</em>, et il dit pourquoi.</h2>
+    <pre class="code reveal" style="margin-top:36px;font-size:26px">Quand je clique sur "Ajouter"</pre>
+    <pre class="code reveal" style="margin-top:24px;font-size:24px">{"verdict": "<span class="h">refus</span>",
+ "explication": "L'étape peut désigner trois boutons : Marteau,
+  Mètre ruban et Tournevis (désactivé, épuisé). Le scénario ne
+  dit pas lequel choisir, et le total attendu en dépend.
+  Il manque le nom de l'article."}</pre>
+  </div>
+  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
+  <aside class="notes">Réponse réelle, « Panier · Ajouter au panier », resultats/agent-les-deux, passage 1, prix retirés pour tenir. Cucumber, lui, échoue en délai dépassé : il ne trouve pas de bouton nommé « Ajouter », et il ne dit pas pourquoi. Les 3 scénarios ambigus sont refusés dans les 27 passages. Transition : une jolie réponse ne fait pas une mesure. Voici la mesure.</aside>
+</section>
+
+<!-- Ce que je veux dire : sur 153 passages mesurés, il ne s'est jamais trompé, et surtout il n'a jamais dit « passe » à tort. -->
+<section class="slide">
+  <div class="pad">
+    <h2 class="reveal" style="font-size:76px"><em>153 verdicts justes sur 153</em>,<br>et jamais un « passe » à tort.</h2>
+    <div class="readouts reveal" style="margin-top:50px"><div><b>17</b><span>scénarios</span></div><div><b>× 3</b><span>façons de voir</span></div><div><b>× 3</b><span>passages</span></div></div>
+    <p class="reveal" style="margin-top:44px">11 justes à faire passer · 3 faux à faire échouer · 3 ambigus à refuser</p>
+  </div>
+  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
+  <aside class="notes">Source : resultats/LISEZMOI.md et synthese-agent.json, mesure du 24/11/2026. 0 faux positif : jamais « passe » sur un scénario faux ou ambigu, l'erreur la plus grave, on croirait que c'est testé. 31 passages ont été écartés et relancés pour des pannes (accès au modèle, JSON mal échappé), aucun verdict corrigé à la main. Transition : trois façons de voir, ça change quoi ?</aside>
+</section>
+
+<!-- Ce que je veux dire : pas besoin de choisir finement ce que voit l'agent ; le résultat est le même, seuls la durée et le coût bougent un peu. -->
+<section class="slide">
+  <div class="pad">
+    <h2 class="reveal" style="font-size:72px">Capture, arbre ou les deux :<br>même résultat, <em>presque</em> même prix.</h2>
+    <table class="m reveal" style="margin-top:40px">
+      <tr><th>Ce que voit l'agent</th><th>Justes</th><th>Durée</th><th>Coût</th></tr>
+      <tr><td>Arbre d'accessibilité seul</td><td class="n">51 / 51</td><td class="n">13,9 s</td><td class="n">0,069 $</td></tr>
+      <tr><td>Capture d'écran seule</td><td class="n">51 / 51</td><td class="n">13,4 s</td><td class="n">0,062 $</td></tr>
+      <tr><td>Les deux</td><td class="n">51 / 51</td><td class="n">13,4 s</td><td class="n">0,059 $</td></tr>
+    </table>
+  </div>
+  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
+  <aside class="notes">Moyennes par scénario, resultats/synthese-agent.json. Sur cette appli, voir l'image seule suffit autant que lire l'arbre. Je garde « les deux » pour la suite : c'est le moins cher ici, de peu. Transition : maintenant, la question du début. Que se passe-t-il quand l'écran change ?</aside>
+</section>
+
+<!-- Ce que je veux dire : c'est le cœur du talk ; une refonte d'interface sans changement de comportement casse Cucumber et pas l'agent. -->
+<section class="slide">
+  <div class="pad">
+    <h2 class="reveal" style="font-size:68px">Démo : je refonds l'interface.<br>Cucumber casse <em>7 scénarios sur 17</em>, l'agent aucun.</h2>
+    <table class="m reveal" style="margin-top:40px">
+      <tr><th></th><th>Cucumber + Playwright</th><th>Agent</th></tr>
+      <tr><td>Avant la refonte</td><td class="n">17 / 17</td><td class="n">51 / 51</td></tr>
+      <tr><td>Après la refonte</td><td class="n">10 / 17</td><td class="n">51 / 51</td></tr>
+      <tr><td>Ce qu'il a fallu toucher</td><td>2 step definitions</td><td><em>rien</em></td></tr>
+    </table>
+  </div>
+  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
+  <aside class="notes">Montrer les deux applis côte à côte : mêmes textes, mêmes règles, mise en page refaite (10 changements, docs/app-v2/CHANGEMENTS.md). Les 7 cassés passent par deux étapes : le nom caché des boutons « Ajouter » reformulé, et un data-testid renommé (CI, job reference-cucumber-v2, run 45566605569). L'agent, 51 passages (les deux), même consigne : sur le produit épuisé, il cite le nouveau nom du bouton, il a bien lu la nouvelle interface. Plan B : capture du résumé du run CI et vidéo. Transition : et les 10 qui restent conformes ? Pas tous pour de bonnes raisons.</aside>
+</section>
+
+<!-- Ce que je veux dire : le rouge se voit, le faux vert non ; trois pièges échouent toujours, mais plus là où il faut, donc ils ne testent plus rien. -->
+<section class="slide">
+  <div class="pad">
+    <h2 class="reveal" style="font-size:72px">Pire que le rouge : 3 tests échouent<br>encore, mais <em>plus pour la bonne raison</em>.</h2>
+    <pre class="code reveal" style="margin-top:40px;font-size:24px"><span class="c"># « Message quand les conditions ne sont pas cochées »</span>
+avant la refonte : ✘ je clique sur "Valider la commande"  <span class="c">← le piège</span>
+après la refonte : <span class="h">✘ j'ajoute "Marteau" au panier</span>      <span class="c">← le Contexte</span></pre>
+    <p class="reveal" style="margin-top:40px">Le rapport dit « conforme ». <em>Le piège n'est plus testé.</em></p>
+  </div>
+  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
+  <aside class="notes">Ces scénarios doivent échouer, et ils échouent : la suite les compte « conformes ». Mais ils tombent dans le Contexte, avant d'atteindre le piège. Trois cas : celui-ci, « La commande est enregistrée », et « Ajouter un produit épuisé », où l'étape est la même mais la cause a changé ; ce dernier, mon script ne le détecte pas, je l'ai vu dans le journal Playwright (resultats/LISEZMOI.md). Transition : alors on jette Cucumber ? Non : regardons la facture.</aside>
+</section>
+
+<!-- Ce que je veux dire : l'agent coûte cher en temps et en argent, et ma mesure a des limites que je dis franchement. -->
+<section class="slide">
+  <div class="pad">
+    <h2 class="reveal" style="font-size:72px">Le prix : <em>14 s et 6 à 9 centimes</em><br>par scénario, contre 1,4 s et aucune facture.</h2>
+    <table class="m reveal" style="margin-top:40px">
+      <tr><th>Par scénario</th><th>Cucumber</th><th>Agent</th></tr>
+      <tr><td>Durée</td><td class="n">1,4 s</td><td class="n">13,4 à 14,3 s</td></tr>
+      <tr><td>Coût</td><td class="n">minutes de CI</td><td class="n">0,059 à 0,087 $</td></tr>
+    </table>
+    <p class="muted reveal" style="margin-top:36px;font-size:26px">Limites : appli et refonte écrites par moi · un seul modèle · WebKit d'un côté, Chromium de l'autre.</p>
+  </div>
+  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
+  <aside class="notes">Cucumber : 23,9 s pour les 17 scénarios en CI, soit 1,4 s chacun. Agent : 13,4 s et 0,059 $ avant la refonte, 14,3 s et 0,087 $ après (+47 %, cause non établie) ; la série de 51 passages coûte 4,44 $ et dure 12 min 8 s (resultats/LISEZMOI.md). Limites : j'ai écrit l'appli et la refonte en sachant quelles étapes Cucumber utilise ; mes step definitions visent déjà des rôles et des libellés, des sélecteurs CSS auraient cassé plus, mais je ne l'ai pas mesuré. Transition : lent et payant, donc pas partout. Où, alors ?</aside>
+</section>
+
+<!-- Ce que je veux dire : la recommandation ; Cucumber reste la base en CI, l'agent sert là où écrire ou réparer la colle coûte plus que ses centimes. -->
+<section class="slide">
+  <div class="pad">
+    <h2 class="reveal" style="font-size:72px">Gardez Cucumber en CI.<br>Envoyez l'agent là où <em>la colle ne suit pas</em>.</h2>
     <div class="cols reveal" style="margin-top:50px;grid-template-columns:1fr 1fr 1fr;gap:40px">
-      <div class="panel"><h3>Non-régression en CI</h3><p class="muted" style="font-size:26px">Je m'attends à ce que Cucumber reste devant, parce qu'il est déterministe et ne coûte aucun token.</p></div>
-      <div class="panel"><h3>Nouveau scénario</h3><p class="muted" style="font-size:26px">Je m'attends à ce que l'agent le joue tout de suite, parce qu'il n'a pas besoin de colle.</p></div>
-      <div class="panel"><h3>Relire les scénarios</h3><p class="muted" style="font-size:26px">Je m'attends à ce que l'agent dise pourquoi un scénario est ambigu, là où Cucumber échoue sans explication.</p></div>
+      <div class="panel"><h3>Relire les scénarios</h3><p class="muted" style="font-size:26px">Il refuse les ambigus et dit quoi corriger.</p></div>
+      <div class="panel"><h3>Nouvel écran</h3><p class="muted" style="font-size:26px">Il joue le scénario avant que la colle existe.</p></div>
+      <div class="panel"><h3>Après une refonte</h3><p class="muted" style="font-size:26px">Il dit si l'appli marche pendant qu'on répare la colle.</p></div>
     </div>
   </div>
   <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Ce sont des hypothèses, je les annonce avant les mesures pour ne pas les ajuster après coup. La troisième est la plus intéressante : Cucumber fait déjà échouer les ambigus, mais il ne sait pas dire pourquoi.</aside>
+  <aside class="notes">Cucumber en CI : rapide, déterministe, sans facture au scénario. L'agent, à la demande : les 17 scénarios coûtent 1 à 1,5 $ par passage, pas à chaque push. Chaque usage vient d'un résultat : les refus (slide 6), la démo 1, la refonte (slide 9). Transition : et pour que l'agent puisse jouer vos scénarios, il y a une façon de les écrire.</aside>
 </section>
 
-<!-- 19. Écrire du Gherkin jouable -->
+<!-- Ce que je veux dire : ses refus donnent trois règles d'écriture simples, utiles aussi aux humains. -->
 <section class="slide">
   <div class="pad">
-    <div class="k reveal">Du Gherkin qu'un agent peut jouer</div>
+    <h2 class="reveal" style="font-size:72px">Ses refus donnent 3 règles :<br>nommez l'objet, le bouton, et <em>ce qu'on voit</em>.</h2>
     <ul class="steps reveal">
-      <li data-n="01">Un libellé <em>visible</em> par élément</li>
-      <li data-n="02">Un <em>Alors</em> qui se voit à l'écran</li>
-      <li data-n="03">Pas de « je valide » <span class="muted">· nommer le bouton</span></li>
+      <li data-n="01">« j'ajoute "Marteau" » <span class="muted">· pas « je clique sur Ajouter »</span></li>
+      <li data-n="02">« Valider la commande » <span class="muted">· pas « je valide »</span></li>
+      <li data-n="03">« je vois "Commande confirmée" » <span class="muted">· pas « elle est enregistrée »</span></li>
     </ul>
   </div>
   <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Ces règles viennent des pièges de la démo. Bonus : elles rendent aussi les scénarios plus clairs pour les humains.</aside>
+  <aside class="notes">Règle 1 : refus sur « Ajouter au panier », trois boutons. Règle 2 : refus sur « La commande est enregistrée », « je valide » vise deux boutons ; et sur « Connexion rapide », le bouton s'appelle « Se connecter ». Règle 3 : même refus, « la commande est enregistrée » n'a aucun signe visible (explications dans resultats/agent-les-deux/resultats.json). Transition : je termine par une phrase.</aside>
 </section>
 
-<!-- 20. Chez vous, demain -->
-<section class="slide">
-  <div class="pad">
-    <div class="k reveal">Chez vous, demain</div>
-    <pre class="code reveal" style="margin-top:40px">git clone https://github.com/mekkiamiri/bdd-agent-eyes
-python3 outils/valider.py
-mvn verify</pre>
-    <p class="reveal" style="margin-top:40px">Remplacez l'appli de démo par la vôtre, et les pièges par vos vrais scénarios.</p>
-  </div>
-  <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
-  <aside class="notes">Le validateur tourne avec Python seul. mvn verify joue la référence Cucumber. Le protocole est dans PROTOCOLE.md : prenez-le pour tester l'idée sur vos propres scénarios.</aside>
-</section>
-
-<!-- 21. Fin -->
+<!-- Ce que je veux dire : la phrase à retenir, et où trouver le code et les chiffres. -->
 <section class="slide">
   <div class="ruler"><i style="left:0px;height:40px"></i><i style="left:28px;height:12px"></i><i style="left:56px;height:12px"></i><i style="left:84px;height:12px"></i><i style="left:112px;height:12px"></i><i style="left:140px;height:24px"></i><i style="left:168px;height:12px"></i><i style="left:196px;height:12px"></i><i style="left:224px;height:12px"></i><i style="left:252px;height:12px"></i><i style="left:280px;height:40px"></i><i style="left:308px;height:12px"></i><i style="left:336px;height:12px"></i><i style="left:364px;height:12px"></i><i style="left:392px;height:12px"></i><i style="left:420px;height:24px"></i><i style="left:448px;height:12px"></i><i style="left:476px;height:12px"></i><i style="left:504px;height:12px"></i><i style="left:532px;height:12px"></i><i style="left:560px;height:40px"></i><i style="left:588px;height:12px"></i><i style="left:616px;height:12px"></i><i style="left:644px;height:12px"></i><i style="left:672px;height:12px"></i><i style="left:700px;height:24px"></i><i style="left:728px;height:12px"></i><i style="left:756px;height:12px"></i><i style="left:784px;height:12px"></i><i style="left:812px;height:12px"></i><i style="left:840px;height:40px"></i><i style="left:868px;height:12px"></i><i style="left:896px;height:12px"></i><i style="left:924px;height:12px"></i><i style="left:952px;height:12px"></i><i style="left:980px;height:24px"></i><i style="left:1008px;height:12px"></i><i style="left:1036px;height:12px"></i><i style="left:1064px;height:12px"></i><i style="left:1092px;height:12px"></i><i style="left:1120px;height:40px"></i><i style="left:1148px;height:12px"></i><i style="left:1176px;height:12px"></i><i style="left:1204px;height:12px"></i><i style="left:1232px;height:12px"></i><i style="left:1260px;height:24px"></i><i style="left:1288px;height:12px"></i><i style="left:1316px;height:12px"></i><i style="left:1344px;height:12px"></i><i style="left:1372px;height:12px"></i><i style="left:1400px;height:40px"></i><i style="left:1428px;height:12px"></i><i style="left:1456px;height:12px"></i><i style="left:1484px;height:12px"></i><i style="left:1512px;height:12px"></i><i style="left:1540px;height:24px"></i><i style="left:1568px;height:12px"></i><i style="left:1596px;height:12px"></i><i style="left:1624px;height:12px"></i><i style="left:1652px;height:12px"></i></div><div class="needle"></div>
-  <div class="pad" style="top:300px">
-    <h2 class="reveal">Un bon testeur sait <em>dire non</em>.</h2>
-    <p class="reveal" style="margin-top:50px">mekkiamiri.github.io/bdd-agent-eyes</p>
+  <div class="pad" style="top:280px">
+    <h2 class="reveal">Un bon testeur sait <em>dire non</em>.<br>Et il ne casse pas quand l'écran change.</h2>
+    <p class="reveal" style="margin-top:50px">github.com/mekkiamiri/bdd-agent-eyes</p>
     <p class="muted reveal">Questions ?</p>
   </div>
   <div class="chrome"><span>Gherkin joué par un agent</span><span class="n"></span></div>
+  <aside class="notes">204 verdicts justes sur 204 : les 153 sur l'appli d'origine et les 51 sur la refonte. Tout est dans le dépôt : appli, scénarios, step definitions, lanceur de l'agent, résultats bruts et PROTOCOLE.md. Prenez vos propres scénarios et refaites la mesure.</aside>
 </section>
 
 </main></div>
