@@ -216,194 +216,216 @@ body.show-notes .slide.active .notes{display:block;position:absolute;left:120px;
 <div class="deck-viewport"><main class="deck-stage" id="deckStage">
 <!-- Slides du talk « L'écran change : mes step definitions cassent, pas l'agent » (Tools-in-Action 30 min, 13 slides)
      Construire : python3 <kit>/build_deck.py slides/slides.html docs/slides/index.html "Mes step definitions cassent, pas l'agent"
-     Message : vos step definitions sont le code le plus fragile de votre projet. Un agent qui regarde l'écran joue
-     vos scénarios Gherkin sans elles : 204 verdicts justes sur 204, et il survit à une refonte d'interface qui casse
-     7 scénarios Cucumber sur 17. Mais il est lent et payant : voici où le mettre.
-     Plan détaillé et minutage : slides/PLAN.md. Chiffres : resultats/LISEZMOI.md, resultats/synthese-agent.json,
-     resultats/agent-*/resultats.json, resultats/robustesse-v2/agent-les-deux/resultats.json.
-     Arc : situation 1 · complication 2 (la colle casse) · résolution 3-8 · revers et prix 9-10 · où le mettre 11-12 · fin 13 -->
+     Fil : DÉPART (1-2) → PROBLÈME (3-4) → CIBLE (5-7) → COMMENT (8-13). Le surtitre de chaque slide dit l'étape.
+     Départ : on écrit du Gherkin, Cucumber le joue grâce à des step definitions (la colle).
+     Problème : une refonte d'écran sans changement de comportement casse 7 scénarios sur 17, et 3 tests restent « conformes » sans plus rien tester.
+     Cible : des scénarios qui survivent aux refontes, avec un verdict expliqué (passe, échec, refus), sans réécrire la colle.
+     Comment : l'outil gherkin-eyes (dossier outil/) + 3 gestes : Cucumber en CI ; gherkin-eyes après une refonte ou pour relire ; 3 règles d'écriture.
+     Plan et minutage : slides/PLAN.md. Chiffres : resultats/LISEZMOI.md, outil/exemple/, revue/juge-aveugle.json, slides/REVUE.md. -->
 
-<!-- Ce que je veux dire : quand l'interface change, ce sont mes step definitions qui cassent, pas un agent qui regarde l'écran ; je vais le montrer, chiffres à l'appui, et dire où il ne faut pas le mettre. -->
+<!-- Ce que je veux dire : je vais partir de ce que vous faites déjà (Gherkin + Cucumber), montrer ce qui casse, où on veut aller, et vous donner l'outil pour y aller. -->
 <section class="slide">
   <div class="ruler"><i style="left:0px;height:40px"></i><i style="left:28px;height:12px"></i><i style="left:56px;height:12px"></i><i style="left:84px;height:12px"></i><i style="left:112px;height:12px"></i><i style="left:140px;height:24px"></i><i style="left:168px;height:12px"></i><i style="left:196px;height:12px"></i><i style="left:224px;height:12px"></i><i style="left:252px;height:12px"></i><i style="left:280px;height:40px"></i><i style="left:308px;height:12px"></i><i style="left:336px;height:12px"></i><i style="left:364px;height:12px"></i><i style="left:392px;height:12px"></i><i style="left:420px;height:24px"></i><i style="left:448px;height:12px"></i><i style="left:476px;height:12px"></i><i style="left:504px;height:12px"></i><i style="left:532px;height:12px"></i><i style="left:560px;height:40px"></i><i style="left:588px;height:12px"></i><i style="left:616px;height:12px"></i><i style="left:644px;height:12px"></i><i style="left:672px;height:12px"></i><i style="left:700px;height:24px"></i><i style="left:728px;height:12px"></i><i style="left:756px;height:12px"></i><i style="left:784px;height:12px"></i><i style="left:812px;height:12px"></i><i style="left:840px;height:40px"></i><i style="left:868px;height:12px"></i><i style="left:896px;height:12px"></i><i style="left:924px;height:12px"></i><i style="left:952px;height:12px"></i><i style="left:980px;height:24px"></i><i style="left:1008px;height:12px"></i><i style="left:1036px;height:12px"></i><i style="left:1064px;height:12px"></i><i style="left:1092px;height:12px"></i><i style="left:1120px;height:40px"></i><i style="left:1148px;height:12px"></i><i style="left:1176px;height:12px"></i><i style="left:1204px;height:12px"></i><i style="left:1232px;height:12px"></i><i style="left:1260px;height:24px"></i><i style="left:1288px;height:12px"></i><i style="left:1316px;height:12px"></i><i style="left:1344px;height:12px"></i><i style="left:1372px;height:12px"></i><i style="left:1400px;height:40px"></i><i style="left:1428px;height:12px"></i><i style="left:1456px;height:12px"></i><i style="left:1484px;height:12px"></i><i style="left:1512px;height:12px"></i><i style="left:1540px;height:24px"></i><i style="left:1568px;height:12px"></i><i style="left:1596px;height:12px"></i><i style="left:1624px;height:12px"></i><i style="left:1652px;height:12px"></i></div><div class="needle"></div>
-  <div class="pad" style="top:230px">
+  <div class="pad" style="top:200px">
     <div class="k reveal">Devoxx France 2027 · Tools-in-Action</div>
-    <h1 class="reveal" style="margin-top:40px;font-size:112px">L'écran change :<br>mes step definitions<br><em>cassent</em>, pas l'agent.</h1>
+    <h1 class="reveal" style="margin-top:40px;font-size:104px">L'écran change :<br>mes step definitions<br><em>cassent</em>, pas l'agent.</h1>
+    <p class="reveal" style="margin-top:44px;font-size:30px">Départ → problème → cible → comment : un outil open source, <em>gherkin-eyes</em></p>
   </div>
-  <div style="position:absolute;right:120px;bottom:140px;text-align:right" class="reveal"><h3>Mekki Amiri</h3><p class="muted" style="font-size:24px;margin:8px 0 0">Tech Lead · architecte système</p></div>
-  <aside class="notes">Version Quickie 20 min, 9 slides : 1, 2, 3, 6, 7, 8, 10, 11, 13. On saute la démo 1 (slide 4) et les pièges (slide 5) : la démo 2 porte le message, et la slide 6 montre déjà une vraie réponse de l'agent ; sur la 3, dire en une phrase qu'il joue « Commande valide » en une vingtaine de secondes, et sur la 7 que l'appli est la mienne. Ouverture : « Qui écrit du Gherkin ? Qui maintient le code derrière ? Gardez la main levée. » Transition : regardons ce code.</aside>
+  <div style="position:absolute;right:120px;bottom:120px;text-align:right" class="reveal"><h3>Mekki Amiri</h3><p class="muted" style="font-size:24px;margin:8px 0 0">Tech Lead · architecte système</p></div>
+  <aside class="notes">Ouverture : « Qui écrit du Gherkin ? Qui maintient le code derrière ? Gardez la main levée. » Annoncer le chemin en une phrase : d'où vous partez, ce qui fait mal, où on veut aller, et l'outil pour y aller, que vous pourrez installer en sortant. Version Quickie : voir PLAN.md. Transition : partons de votre quotidien.</aside>
 </section>
 
-<!-- Ce que je veux dire : le scénario est lisible par tous, mais le code qui le relie à l'écran dépend d'un détail invisible, et c'est lui qui casse. -->
+<!-- Ce que je veux dire : le point de départ, c'est vous : du Gherkin lisible par tous, et derrière chaque phrase, du code Java qui cherche un élément de l'écran. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:76px">Deux lignes de Gherkin.<br>Derrière, du code qui <em>casse</em><br>au premier changement d'écran.</h2>
-    <pre class="code reveal" style="margin-top:40px">Quand j'ajoute "Marteau" au panier</pre>
-    <pre class="code reveal" style="margin-top:24px"><span class="c">// step definition, la « colle » : traduit la phrase en clic</span>
+    <div class="k reveal" style="font-size:20px;opacity:.75">1 · Départ</div>
+    <h2 class="reveal" style="font-size:70px;margin-top:20px">Vous écrivez du Gherkin. Cucumber le joue<br>grâce à du code de <em>colle</em> : les step definitions.</h2>
+    <pre class="code reveal" style="margin-top:36px">Quand j'ajoute "Marteau" au panier</pre>
+    <pre class="code reveal" style="margin-top:24px"><span class="c">// step definition (la « colle ») : traduit la phrase en clic</span>
 page.getByRole(BUTTON, nom(<span class="h">"Ajouter " + produit + " au panier"</span>))
     .click();</pre>
+    <p class="muted reveal" style="margin-top:28px;font-size:26px">Mon banc : une appli de démo, 17 scénarios (11 justes, 6 faux ou ambigus exprès), chacun avec son verdict attendu.</p>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">En haut, ce que lit le métier. En bas, la « step definition », que j'appellerai la colle : le code Java qui transforme chaque phrase en clic (src/test/java/…/Etapes.java, simplifié). Il cherche le bouton par un nom que personne ne voit à l'écran, l'aria-label. Un développeur front le reformule pour l'accessibilité : rouge, alors que l'appli marche. Transition : et si on n'écrivait plus ce code du tout ?</aside>
+  <aside class="notes">En haut, ce que lit le métier. En bas, la step definition, que j'appellerai la colle : le code Java qui transforme la phrase en clic (src/test/java/…/Etapes.java, ligne 96, simplifiée). Elle cherche le bouton par un nom que personne ne voit à l'écran (l'aria-label, le nom donné aux lecteurs d'écran). Mon banc : « La Quincaillerie », une petite appli écrite par moi, 17 scénarios dont 6 faux ou ambigus exprès, chacun étiqueté avec le verdict attendu. Transition : tout va bien, jusqu'au jour où le front refait l'écran.</aside>
 </section>
 
-<!-- Ce que je veux dire : l'idée tient en trois verbes ; l'agent fait ce que ferait un testeur humain avec le scénario imprimé à côté de l'écran. -->
+<!-- Ce que je veux dire : le problème, chiffré : une refonte qui ne change aucun comportement casse 7 scénarios sur 17 ; l'appli marche, ce sont les tests qui sont rouges. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:76px">Un agent lit le scénario,<br>regarde l'écran, clique,<br>et rend un <em>verdict</em>.</h2>
+    <div class="k reveal" style="font-size:20px;opacity:.75">2 · Problème</div>
+    <h2 class="reveal" style="font-size:68px;margin-top:20px">Une refonte d'écran, aucun comportement changé :<br>Cucumber casse <em>7 scénarios sur 17</em>.</h2>
+    <table class="m reveal" style="margin-top:40px">
+      <tr><th>Cucumber + Playwright</th><th>Avant la refonte</th><th>Après la refonte</th></tr>
+      <tr><td>Scénarios justes qui passent</td><td class="n">11 / 11</td><td class="n">4 / 11</td></tr>
+      <tr><td>Verdicts conformes (= le verdict attendu)</td><td class="n">17 / 17</td><td class="n">10 / 17</td></tr>
+      <tr><td>Colle à réécrire</td><td class="n">—</td><td class="n">2 step definitions</td></tr>
+    </table>
+    <p class="muted reveal" style="margin-top:30px;font-size:26px">Mêmes textes visibles, mêmes règles. Un nom de bouton caché reformulé, un attribut de test renommé.</p>
+  </div>
+  <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
+  <aside class="notes">Refonte réaliste en 10 changements (docs/app-v2/CHANGEMENTS.md) : id et classes renommés, boutons regroupés, ordre changé, aria-label des boutons « Ajouter » reformulé pour l'accessibilité, data-testid renommé (un attribut posé exprès pour les tests). Les textes à l'écran et le comportement ne bougent pas. CI, job reference-cucumber-v2, run 45566605569 du 25/11/2026 : 17/17 avant, 10/17 après ; les 7 cassés passent tous par deux étapes, et seulement elles (resultats/LISEZMOI.md). Je ne chiffre pas le temps de réparation : je ne l'ai pas mesuré. Transition : le rouge, au moins, se voit.</aside>
+</section>
+
+<!-- Ce que je veux dire : plus grave que le rouge, le faux vert ; 3 tests sont comptés conformes alors qu'ils ne testent plus leur piège. -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal" style="font-size:20px;opacity:.75">2 · Problème</div>
+    <h2 class="reveal" style="font-size:70px;margin-top:20px">Pire que le rouge : 3 tests restent « conformes »<br>mais <em>ne testent plus rien</em>.</h2>
+    <p class="reveal" style="margin-top:36px">Un scénario faux doit échouer sur son piège (ici, un bouton grisé).</p>
+    <pre class="code reveal" style="margin-top:28px;font-size:24px">avant la refonte : ✘ échoue sur le piège       <span class="c">← il teste le bouton grisé</span>
+après la refonte : <span class="h">✘ échoue plus tôt</span>          <span class="c">← sur une étape commune, avant le piège</span></pre>
+    <p class="reveal" style="margin-top:36px">Toujours rouge comme prévu, donc « conforme ». Mais le piège n'est plus testé.</p>
+  </div>
+  <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
+  <aside class="notes">Exemple : « Message quand les conditions ne sont pas cochées » échouait sur « je clique sur "Valider la commande" » (bouton grisé, le piège) ; après la refonte, il échoue sur « j'ajoute "Marteau" au panier ». Ces scénarios faux doivent échouer, et ils échouent : la suite les compte conformes. Mais ils tombent dans le Contexte (en Gherkin, les étapes communes jouées avant chaque scénario du fichier), avant d'atteindre leur piège. Trois cas sur six : celui-ci, « La commande est enregistrée », et « Ajouter un produit épuisé » (même étape, autre cause ; mon script ne le détecte pas, je l'ai lu dans le journal Playwright). Source : resultats/LISEZMOI.md. Transition : alors, où veut-on arriver ?</aside>
+</section>
+
+<!-- Ce que je veux dire : la cible en une phrase, et la preuve qu'elle est atteignable : sur la même refonte, l'agent garde tous ses verdicts justes. -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal" style="font-size:20px;opacity:.75">3 · Cible</div>
+    <h2 class="reveal" style="font-size:70px;margin-top:20px">La cible : des scénarios qui <em>survivent</em> aux refontes,<br>avec un verdict expliqué, sans réécrire la colle.</h2>
+    <div class="readouts reveal" style="margin-top:50px">
+      <div><b>51 / 51</b><span>verdicts justes après la refonte (17 scénarios × 3)</span></div>
+      <div><b>0</b><span>ligne de colle touchée</span></div>
+      <div><b>3</b><span>verdicts : passe · échec · refus (scénario ambigu)</span></div>
+    </div>
+  </div>
+  <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
+  <aside class="notes">Ce qu'on veut : quand l'écran change sans que le comportement change, les scénarios gardent le même verdict ; quand un scénario est faux, on sait pourquoi ; quand il est ambigu, on nous le dit au lieu de deviner. C'est atteignable : un agent qui regarde l'écran, sur l'interface refondue, 17 scénarios × 3 passages, 51 verdicts justes sur 51, rien à toucher (25/11/2026, Sonnet 5.5, resultats/robustesse-v2/). « Refus » : le scénario est ambigu, l'agent refuse de deviner. Transition : comment ça marche ?</aside>
+</section>
+
+<!-- Ce que je veux dire : le mécanisme en trois verbes, et la mesure qui dit que ce n'est pas un coup de chance. -->
+<section class="slide">
+  <div class="pad">
+    <div class="k reveal" style="font-size:20px;opacity:.75">3 · Cible</div>
+    <h2 class="reveal" style="font-size:70px;margin-top:20px">Un agent lit le scénario, regarde l'écran, clique :<br><em>204 verdicts justes sur 204</em> passages.</h2>
     <ul class="steps reveal">
-      <li data-n="01">Il lit <span class="muted">· le scénario seul, sans la réponse</span></li>
+      <li data-n="01">Il lit <span class="muted">· le scénario seul, sans la réponse attendue</span></li>
       <li data-n="02">Il regarde <span class="muted">· une capture, et ce que lit un lecteur d'écran</span></li>
-      <li data-n="03">Il répond <span class="muted">· passe, échec, ou <em>refus</em></span></li>
+      <li data-n="03">Il répond <span class="muted">· passe, échec, ou refus, avec ce qu'il a vu</span></li>
     </ul>
+    <p class="muted reveal" style="margin-top:30px;font-size:26px">204 = les 17 scénarios joués 12 fois : 9 avant la refonte, 3 après. Juste = le verdict attendu.</p>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Un modèle de langage (Sonnet 5.5) pilote un vrai navigateur via Playwright MCP. « Ce que lit un lecteur d'écran », c'est l'arbre d'accessibilité : la liste des boutons, champs et textes avec leur nom. Sa consigne (agent/CONSIGNE.md) : pas de clic forcé, pas de script, et le droit de refuser. Transition : voyons-le jouer.</aside>
+  <aside class="notes">Un modèle de langage (Sonnet 5.5) pilote un vrai navigateur via Playwright MCP (Microsoft, open source). « Ce que lit un lecteur d'écran » : l'arbre d'accessibilité, la liste des boutons, champs et textes avec leur nom. Consigne (agent/CONSIGNE.md) : pas de clic forcé, pas de script, le droit de refuser. 204 = 153 passages sur l'appli d'origine (17 scénarios × 3 façons de voir × 3 passages) + 51 sur la refonte ; 0 « passe » à tort (resultats/LISEZMOI.md, 24-25/11/2026). Transition : « juste », même quand l'appli est piégée ?</aside>
 </section>
 
-<!-- Ce que je veux dire : ça marche pour de vrai, sur un scénario complet, sans une ligne de colle. -->
+<!-- Ce que je veux dire : il ne tombe pas dans les pièges et refuse l'ambigu ; je dis tout de suite que l'appli et les pièges sont les miens. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:72px">Démo : l'agent joue « Commande valide »<br>en <em>une vingtaine de secondes</em>, sans colle.</h2>
-    <pre class="code reveal" style="margin-top:40px;font-size:26px">python3 agent/lancer.py --config les-deux --passages 1 \
-  --scenario "livraison.feature:Commande valide" --sortie /tmp/demo</pre>
-    <pre class="code reveal" style="margin-top:24px;font-size:24px">{"verdict": "<span class="h">passe</span>",
- "explication": "J'ai joué toutes les étapes dans l'ordre et
-  l'application a fait ce que dit le scénario. Après « Valider
-  la commande », « Commande confirmée » s'affiche."}</pre>
+    <div class="k reveal" style="font-size:20px;opacity:.75">3 · Cible</div>
+    <h2 class="reveal" style="font-size:66px;margin-top:20px">Bouton grisé, trois boutons « Ajouter » :<br>il ne force pas, il ne <em>devine</em> pas.</h2>
+    <div class="cols reveal" style="margin-top:36px;grid-template-columns:1fr 1fr;gap:48px;align-items:start">
+      <img src="ecran-epuise.png" alt="Écran final capturé par l'agent : Tournevis épuisé, bouton Ajouter grisé, panier à 0 article" style="width:100%;border:2px solid #2a2e31">
+      <table class="m" style="font-size:26px">
+        <tr><th>Piège</th><th>Verdict</th></tr>
+        <tr><td>Produit épuisé, bouton grisé</td><td><em>échec</em> · « je n'ai pas forcé le clic »</td></tr>
+        <tr><td>Trois boutons « Ajouter »</td><td><em>refus</em> · « je ne l'ai pas deviné »</td></tr>
+        <tr><td>Ambigus, 27 passages</td><td>27 refus</td></tr>
+      </table>
+    </div>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Lancer la commande en direct, appli à gauche, terminal à droite. Plan B : la vidéo d'un passage enregistrée la veille (fichier prêt sur le bureau), à lancer si le modèle ne répond pas en 40 s. --sortie /tmp/demo : sans elle, le passage live s'ajouterait au fichier des résultats mesurés. La réponse affichée est réelle, mot pour mot : resultats/agent-les-deux/resultats.json, « Commande valide », passage 3, 19 s, 0,056 $ ; les trois passages durent 19 à 25 s. Transition : facile, l'appli est gentille. Sauf qu'elle ne l'est pas.</aside>
+  <aside class="notes">À gauche : la capture de l'écran final prise par l'agent pendant la série gherkin-eyes du 28/11/2026 (outil/exemple/). Citations mot pour mot de cette série : « Je n'ai pas forcé le clic sur le bouton désactivé. » (Ajouter un produit épuisé) ; « Le total attendu de « 12,00 € » laisse penser au Marteau, mais je ne l'ai pas deviné. » (Ajouter au panier). 27 refus sur les 27 passages des scénarios ambigus : mesure du 24/11. Le dire : l'appli et ses pièges sont écrits par moi, je les connaissais d'avance ; l'agent, lui, ne voit que le scénario. Transition : comment l'utiliser chez vous ? J'en ai fait un outil.</aside>
 </section>
 
-<!-- Ce que je veux dire : l'appli est la mienne et piégée exprès, avec ce qui fait tomber les tests naïfs ; l'agent ne tombe dans aucun des trois. Je le dis tout de suite : je connaissais les pièges. -->
+<!-- Ce que je veux dire : voici l'outil, une commande, et sa vraie sortie : 17 sur 17 conformes, un rapport HTML et un fichier JUnit que la CI lit. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:72px">J'ai piégé mon appli trois fois.<br>Il ne tombe dans <em>aucun</em> piège.</h2>
-    <table class="m reveal" style="margin-top:40px">
-      <tr><th>Piège</th><th>Ce que fait l'agent</th></tr>
-      <tr><td>« Tournevis » épuisé, bouton grisé</td><td>« Je n'ai pas forcé le clic. » → <em>échec</em></td></tr>
-      <tr><td>Trois boutons « Ajouter »</td><td>Il ne devine pas → <em>refus</em></td></tr>
-      <tr><td>« Commande confirmée » caché dans la page</td><td>Il ne le voit pas → juste, 9 fois sur 9</td></tr>
-    </table>
-    <p class="muted reveal" style="margin-top:32px;font-size:26px">L'appli et ses pièges sont écrits par moi : je les connaissais d'avance.</p>
+    <div class="k reveal" style="font-size:20px;opacity:.75">4 · Comment</div>
+    <h2 class="reveal" style="font-size:66px;margin-top:20px">L'outil : <em>gherkin-eyes</em>. Une commande,<br>un rapport HTML et un fichier JUnit.</h2>
+    <pre class="code reveal" style="margin-top:32px;font-size:25px">$ gherkin-eyes features/ --url docs/app/index.html --sans-fenetre -j 4
+  panier.feature:Ajouter un produit épuisé · passage 1 · <span class="h">echec</span> · 31.76 s
+  panier.feature:Ajouter au panier · passage 1 · <span class="h">refus</span> · 32.96 s
+  panier.feature:Un code inconnu retire la remise · passage 1 · <span class="h">passe</span> · 40.29 s
+17 passages : 11 passe, 3 échec, 3 refus, 0 erreur · 473.1 s · 1.98 $
+  · conformes à l'attendu : <span class="h">17/17</span>
+rapport : gherkin-eyes-rapport/rapport.html · JUnit : gherkin-eyes-rapport/junit.xml</pre>
+    <p class="muted reveal" style="margin-top:26px;font-size:24px">-j 4 : 4 scénarios en parallèle · il faut Python, Node.js (pour Playwright MCP, qui pilote le navigateur) et une CLI d'agent avec sa clé (modèle par défaut : Sonnet 5.5) · Apache-2.0</p>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Le dire tout de suite : c'est ma petite appli de démo, j'ai posé les pièges, donc je savais où regarder ; l'agent, lui, ne voit que le scénario sans la réponse. Citation réelle : « Ajouter un produit épuisé », resultats/agent-les-deux, passage 1. Le texte « Commande confirmée » est dans le HTML mais caché : un test qui lit le HTML brut passerait à tort ; l'agent juge « Conditions de vente non acceptées » juste dans les 9 passages (3 façons de voir × 3). Transition : le deuxième piège mérite qu'on s'y arrête.</aside>
+  <aside class="notes">DÉMO (4 min). Installer : pipx install "git+https://github.com/mekkiamiri/bdd-agent-eyes#subdirectory=outil". Lancer sur un seul scénario en direct : gherkin-eyes features/livraison.feature --url docs/app/index.html --scenario "Commande valide" --sortie /tmp/demo (une vingtaine de secondes), puis ouvrir /tmp/demo/rapport.html : verdict, explication, capture de l'écran final. Sortie affichée : vraie, série du 28/11/2026 sur les 17 scénarios (outil/exemple/), 2 min 24 s de bout en bout avec 4 passages en parallèle. JUnit : échec et refus deviennent des failures, que GitHub Actions ou GitLab affichent. Plan B : outil/exemple/rapport.html ouvert à l'avance. Transition : et sur l'interface refondue ?</aside>
 </section>
 
-<!-- Ce que je veux dire : la vraie valeur, c'est qu'il refuse un scénario mal écrit et qu'il explique quoi corriger, là où Cucumber échoue sans rien dire. -->
+<!-- Ce que je veux dire : la même commande, sur l'interface refondue, sans rien changer : c'est la réponse au problème de la slide 3. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:76px">Devant un scénario ambigu,<br>il <em>refuse</em>, et il dit pourquoi.</h2>
-    <pre class="code reveal" style="margin-top:36px;font-size:26px">Quand je clique sur "Ajouter"</pre>
-    <pre class="code reveal" style="margin-top:24px;font-size:24px">{"verdict": "<span class="h">refus</span>",
- "explication": "L'étape […] peut désigner trois boutons : Marteau
-  […], Mètre ruban […] et Tournevis (désactivé, épuisé). Le scénario
-  ne dit pas lequel choisir, et le total attendu en dépend.
-  Il manque le nom de l'article […]"}</pre>
-  </div>
-  <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Réponse réelle, « Panier · Ajouter au panier », resultats/agent-les-deux, passage 1, coupes marquées […] (le rappel de l'étape, les prix, et la fin : « par exemple « Ajouter le Marteau » »). Cucumber, lui, échoue au bout du délai de 2 s : il cherche un bouton nommé exactement « Ajouter » et n'en trouve aucun. Son message dit ce qu'il cherchait, pas ce qui manque au scénario. Les 3 scénarios ambigus sont refusés dans les 27 passages. Transition : une jolie réponse ne fait pas une mesure. Voici la mesure.</aside>
-</section>
-
-<!-- Ce que je veux dire : sur 153 passages mesurés, il ne s'est jamais trompé, jamais un « passe » à tort, et ce qu'il voit (image, arbre ou les deux) ne change pas le résultat. -->
-<section class="slide">
-  <div class="pad">
-    <h2 class="reveal" style="font-size:72px"><em>153 verdicts justes sur 153</em>, jamais<br>un « passe » à tort, quoi qu'il voie.</h2>
-    <p class="reveal" style="margin-top:36px">17 scénarios (11 justes, 3 faux, 3 ambigus) × 3 passages, pour chaque façon de voir</p>
+    <div class="k reveal" style="font-size:20px;opacity:.75">4 · Comment</div>
+    <h2 class="reveal" style="font-size:66px;margin-top:20px">Après la refonte, même commande, rien à réparer :<br><em>17/17 conformes</em>, contre 10/17 pour Cucumber.</h2>
+    <pre class="code reveal" style="margin-top:36px;font-size:25px">$ gherkin-eyes features/ --url docs/app-v2/index.html --sans-fenetre -j 4
+  panier.feature:Ajouter un produit épuisé · passage 1 · <span class="h">echec</span> · 22.08 s
+17 passages : 11 passe, 3 échec, 3 refus, 0 erreur · 388.7 s · 2.22 $
+  · conformes à l'attendu : <span class="h">17/17</span></pre>
     <table class="m reveal" style="margin-top:32px">
-      <tr><th>Ce que voit l'agent</th><th>Justes</th><th>« Passe » à tort</th><th>Durée</th><th>Coût</th></tr>
-      <tr><td>Ce que lit un lecteur d'écran</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,9 s</td><td class="n">0,069 $</td></tr>
-      <tr><td>Une capture d'écran</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,4 s</td><td class="n">0,062 $</td></tr>
-      <tr><td>Les deux</td><td class="n">51 / 51</td><td class="n">0</td><td class="n">13,4 s</td><td class="n">0,059 $</td></tr>
-    </table>
-  </div>
-  <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Source : resultats/LISEZMOI.md et synthese-agent.json, mesure du 24/11/2026. Un « passe » à tort, c'est dire « ça marche » sur un scénario faux ou ambigu : l'erreur la plus grave, on croirait que c'est testé. Il n'y en a aucune. Ce qu'il voit ne change pas le résultat, à peine la durée et le coût (moyennes par scénario) : je garde « les deux » pour la suite. 31 passages ont été écartés et relancés pour des pannes (accès au modèle, JSON mal échappé), aucun verdict corrigé à la main. Transition : maintenant, la question du titre. Que se passe-t-il quand l'écran change ?</aside>
-</section>
-
-<!-- Ce que je veux dire : c'est le cœur du talk ; une refonte d'interface sans changement de comportement casse Cucumber et pas l'agent. -->
-<section class="slide">
-  <div class="pad">
-    <h2 class="reveal" style="font-size:68px">Démo : je refonds l'interface.<br>Cucumber casse <em>7 scénarios sur 17</em>, l'agent aucun.</h2>
-    <table class="m reveal" style="margin-top:40px">
-      <tr><th></th><th>Cucumber + Playwright</th><th>Agent</th></tr>
-      <tr><td>Avant la refonte</td><td class="n">17 / 17</td><td class="n">51 / 51</td></tr>
-      <tr><td>Après la refonte</td><td class="n">10 / 17</td><td class="n">51 / 51</td></tr>
+      <tr><th>Après la refonte</th><th>Cucumber + Playwright</th><th>gherkin-eyes</th></tr>
+      <tr><td>Verdicts conformes</td><td class="n">10 / 17</td><td class="n">17 / 17</td></tr>
       <tr><td>Ce qu'il a fallu toucher</td><td>2 step definitions</td><td><em>rien</em></td></tr>
     </table>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">5 min 30 (la minute et demie gagnée sur l'ancienne slide « capture, arbre ou les deux » va ici). Montrer les deux applis côte à côte : mêmes textes, mêmes règles, mise en page refaite (10 changements, docs/app-v2/CHANGEMENTS.md). Puis lancer l'agent en direct sur la v2, scénario « Ajouter un produit épuisé » : python3 agent/lancer.py --config les-deux --passages 1 --scenario "panier.feature:Ajouter un produit épuisé" --url &lt;file:// de docs/app-v2/index.html&gt; --sortie /tmp/demo (une dizaine de secondes ; --sortie pour ne pas toucher aux résultats mesurés). Les 7 cassés passent par deux étapes : le nom caché des boutons « Ajouter » reformulé, et un data-testid renommé (un attribut posé exprès pour les tests ; CI, job reference-cucumber-v2, run 45566605569). L'agent, 51 passages (les deux), même consigne : sur le produit épuisé, il cite le nouveau nom du bouton, il a bien lu la nouvelle interface. Plan B : capture du résumé du run CI et vidéo. Transition : et les 10 qui restent conformes ? Pas tous pour de bonnes raisons.</aside>
+  <aside class="notes">Montrer les deux applis côte à côte : mêmes textes, mise en page refaite. Sortie affichée : vraie, série gherkin-eyes du 28/11/2026 sur docs/app-v2 (outil/exemple-v2/). Honnêteté : 10 passages sur 17 ont été relancés une fois parce que le navigateur piloté ne répondait plus (l'agent répond alors « erreur », jamais un verdict) ; la relance a coûté 0,70 $ de plus. Elle confirme la mesure du 25/11 faite avec le lanceur du banc (51 passages, 51 justes). Cucumber : CI run 45566605569. Transition : alors on jette Cucumber ? Non. Voici les 3 gestes.</aside>
 </section>
 
-<!-- Ce que je veux dire : le rouge se voit, le faux vert non ; trois pièges échouent toujours, mais plus là où il faut, donc ils ne testent plus rien. -->
+<!-- Ce que je veux dire : geste 1, garder Cucumber en CI, parce que l'agent est lent et payant ; je donne les vrais chiffres. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:72px">Pire que le rouge : 3 tests échouent<br>encore, mais <em>plus pour la bonne raison</em>.</h2>
-    <pre class="code reveal" style="margin-top:40px;font-size:24px"><span class="c"># « Message quand les conditions ne sont pas cochées »</span>
-avant la refonte : ✘ je clique sur "Valider la commande"  <span class="c">← le piège</span>
-après la refonte : <span class="h">✘ j'ajoute "Marteau" au panier</span>      <span class="c">← le Contexte (étapes communes)</span></pre>
-    <p class="reveal" style="margin-top:40px">Le rapport dit « conforme ». <em>Le piège n'est plus testé.</em></p>
-  </div>
-  <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Ces scénarios doivent échouer, et ils échouent : la suite les compte « conformes ». Mais ils tombent dans le Contexte (en Gherkin, les étapes communes jouées avant chaque scénario du fichier, ici « j'ajoute "Marteau" au panier »), avant d'atteindre le piège. Trois cas : celui-ci, « La commande est enregistrée », et « Ajouter un produit épuisé », où l'étape est la même mais la cause a changé ; ce dernier, mon script ne le détecte pas, je l'ai vu dans le journal Playwright (resultats/LISEZMOI.md). Transition : alors on jette Cucumber ? Non : regardons la facture.</aside>
-</section>
-
-<!-- Ce que je veux dire : l'agent coûte cher en temps et en argent, et ma mesure a des limites que je dis franchement. -->
-<section class="slide">
-  <div class="pad">
-    <h2 class="reveal" style="font-size:72px">Le prix : <em>14 s et 6 à 9 centimes</em><br>par scénario, contre 1,4 s et aucune facture.</h2>
+    <div class="k reveal" style="font-size:20px;opacity:.75">4 · Comment · geste 1</div>
+    <h2 class="reveal" style="font-size:70px;margin-top:20px">Gardez Cucumber en CI : l'agent prend<br><em>20 fois plus de temps</em>, et coûte.</h2>
     <table class="m reveal" style="margin-top:40px">
-      <tr><th>Par scénario</th><th>Cucumber</th><th>Agent</th></tr>
-      <tr><td>Durée</td><td class="n">1,4 s</td><td class="n">13,4 à 14,3 s</td></tr>
-      <tr><td>Coût</td><td class="n">minutes de CI</td><td class="n">0,059 à 0,087 $</td></tr>
+      <tr><th>Par scénario</th><th>Cucumber</th><th>gherkin-eyes</th></tr>
+      <tr><td>Durée</td><td class="n">1,4 s</td><td class="n">13 à 43 s (moyenne 28 s)</td></tr>
+      <tr><td>Coût</td><td class="n">minutes de CI</td><td class="n">6 à 16 centimes (moyenne 12)</td></tr>
     </table>
-    <p class="muted reveal" style="margin-top:36px;font-size:26px">Limites : appli et refonte écrites par moi · un seul modèle (Sonnet 5.5, novembre 2026) · deux navigateurs différents (WebKit, Chromium).</p>
+    <p class="muted reveal" style="margin-top:36px;font-size:26px">Limites : appli et refonte écrites par moi · un seul modèle (Sonnet 5.5, novembre 2026).</p>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Cucumber : 23,9 s pour les 17 scénarios en CI, soit 1,4 s chacun en moyenne (les 6 pièges attendent chacun le délai de 2 s ou plus : les scénarios qui passent vont plus vite). Agent : 13,4 s et 0,059 $ avant la refonte, 14,3 s et 0,087 $ après (+47 %, cause non établie) ; la série de 51 passages coûte 4,44 $ et dure 12 min 8 s (resultats/LISEZMOI.md). Limites : j'ai écrit l'appli et la refonte en sachant quelles étapes Cucumber utilise ; mes step definitions visent déjà des rôles et des libellés, des sélecteurs CSS auraient cassé plus, mais je ne l'ai pas mesuré. Les modèles changent vite : la mesure est datée, et le banc du dépôt permet de la refaire avec celui du jour. Transition : lent et payant, donc pas partout. Où, alors ?</aside>
+  <aside class="notes">Cucumber : 23,9 s pour 17 scénarios en CI (1,4 s en moyenne, pièges compris). gherkin-eyes : série du 28/11 sur 17 scénarios, 473 s cumulés (28 s en moyenne, de 13,4 à 43,0 s ; « 20 fois » = 28 / 1,4), 1,98 $ (0,117 $ en moyenne, de 0,057 à 0,158 $). La mesure du banc du 24/11 était plus rapide (13,4 s, 0,059 $) : l'outil demande en plus une capture finale et joue 4 passages en parallèle. Les modèles changent vite : refaites la mesure avec celui du jour. Transition : donc l'agent, mais pas partout.</aside>
 </section>
 
-<!-- Ce que je veux dire : la recommandation ; Cucumber reste la base en CI, l'agent sert là où écrire ou réparer la colle coûte plus que ses centimes. -->
+<!-- Ce que je veux dire : geste 2, lancer gherkin-eyes à trois moments précis, là où la colle ne suit pas. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:72px">Gardez Cucumber en CI.<br>Envoyez l'agent là où <em>la colle ne suit pas</em>.</h2>
+    <div class="k reveal" style="font-size:20px;opacity:.75">4 · Comment · geste 2</div>
+    <h2 class="reveal" style="font-size:70px;margin-top:20px">Lancez gherkin-eyes là où <em>la colle ne suit pas</em>.</h2>
     <div class="cols reveal" style="margin-top:50px;grid-template-columns:1fr 1fr 1fr;gap:40px">
-      <div class="panel"><h3>Relire les scénarios</h3><p class="muted" style="font-size:26px">Il refuse les ambigus et dit quoi corriger.</p></div>
-      <div class="panel"><h3>Nouvel écran</h3><p class="muted" style="font-size:26px">Il joue le scénario avant que la colle existe.</p></div>
-      <div class="panel"><h3>Après une refonte</h3><p class="muted" style="font-size:26px">Il dit si l'appli marche pendant qu'on répare la colle.</p></div>
+      <div class="panel"><h3>Après une refonte</h3><p class="muted" style="font-size:26px">Savoir si l'appli marche pendant qu'on répare la colle.</p></div>
+      <div class="panel"><h3>Scénarios neufs</h3><p class="muted" style="font-size:26px">Il refuse les ambigus et dit quoi corriger.</p></div>
+      <div class="panel"><h3>Écran sans colle</h3><p class="muted" style="font-size:26px">Jouer le scénario avant d'écrire les step definitions.</p></div>
     </div>
+    <p class="muted reveal" style="margin-top:40px;font-size:26px">Vérifiable : le rapport montre l'écran final. Un 2e modèle, qui ne voit que cet écran et pas le verdict, arrive au même verdict 9 fois sur 10.</p>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Cucumber en CI : rapide, déterministe, sans facture au scénario. L'agent, à la demande : les 17 scénarios coûtent 1 à 1,5 $ par passage, pas à chaque push. Chaque usage vient d'un résultat : les refus (slide 6) ; la refonte (slide 8). « Nouvel écran » est une déduction : tous les passages mesurés se font sans une ligne de colle, mais je n'ai pas mesuré à part un écran tout neuf. Transition : et pour que l'agent puisse jouer vos scénarios, il y a une façon de les écrire.</aside>
+  <aside class="notes">Après une refonte : slides 3 et 9. Scénarios neufs : les refus (slide 7). Écran sans colle : déduction, tous les passages se font sans colle, mais je n'ai pas mesuré un écran tout neuf à part. Peut-on croire ses verdicts ? Revue à l'aveugle (revue/GRILLE-JUGE.md, écrite avant) : 10 passages (les 6 scénarios pièges et 4 justes tirés au hasard), un autre modèle (Opus 5.5) ne voit que le scénario et la capture finale, pas le verdict : 9 accords ; 1 désaccord sur « La commande est enregistrée », refus pour l'agent, échec pour le juge (aucun ne dit passe) ; la preuve écrite de l'agent est conforme à la capture 10 fois sur 10. Transition : dernier geste, le moins cher.</aside>
 </section>
 
-<!-- Ce que je veux dire : ses refus donnent trois règles d'écriture simples, utiles aussi aux humains. -->
+<!-- Ce que je veux dire : geste 3, les refus de l'agent donnent trois règles d'écriture, utiles même sans agent. -->
 <section class="slide">
   <div class="pad">
-    <h2 class="reveal" style="font-size:72px">Ses refus donnent 3 règles :<br>nommez l'objet, le bouton, et <em>ce qu'on voit</em>.</h2>
+    <div class="k reveal" style="font-size:20px;opacity:.75">4 · Comment · geste 3</div>
+    <h2 class="reveal" style="font-size:70px;margin-top:20px">Écrivez le Gherkin avec 3 règles :<br>nommez l'objet, le bouton, et <em>ce qu'on voit</em>.</h2>
     <ul class="steps reveal">
       <li data-n="01">« j'ajoute "Marteau" » <span class="muted">· pas « je clique sur Ajouter »</span></li>
-      <li data-n="02">« Valider la commande » <span class="muted">· pas « je valide »</span></li>
+      <li data-n="02">« je clique sur "Valider la commande" » <span class="muted">· pas « je valide »</span></li>
       <li data-n="03">« je vois "Commande confirmée" » <span class="muted">· pas « elle est enregistrée »</span></li>
     </ul>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">Règle 1 : refus sur « Ajouter au panier », trois boutons. Règle 2 : refus sur « La commande est enregistrée », « je valide » vise deux boutons ; et sur « Connexion rapide », le bouton s'appelle « Se connecter ». Règle 3 : même refus, « la commande est enregistrée » n'a aucun signe visible (explications dans resultats/agent-les-deux/resultats.json). Transition : je termine par une phrase.</aside>
+  <aside class="notes">Chaque règle vient d'un refus réel. Règle 1 : « Ajouter au panier », trois boutons « Ajouter ». Règle 2 : « La commande est enregistrée », « je valide » peut viser deux boutons ; et « Connexion rapide », le bouton s'appelle « Se connecter ». Règle 3 : même scénario, « la commande est enregistrée » n'a aucun signe visible à l'écran (explications dans outil/exemple/resultats.json et resultats/agent-les-deux/resultats.json). Ces règles rendent aussi les step definitions plus simples. Transition : je termine.</aside>
 </section>
 
-<!-- Ce que je veux dire : la phrase à retenir, et où trouver le code et les chiffres. -->
+<!-- Ce que je veux dire : la phrase à retenir, et les deux commandes à taper en sortant. -->
 <section class="slide">
   <div class="ruler"><i style="left:0px;height:40px"></i><i style="left:28px;height:12px"></i><i style="left:56px;height:12px"></i><i style="left:84px;height:12px"></i><i style="left:112px;height:12px"></i><i style="left:140px;height:24px"></i><i style="left:168px;height:12px"></i><i style="left:196px;height:12px"></i><i style="left:224px;height:12px"></i><i style="left:252px;height:12px"></i><i style="left:280px;height:40px"></i><i style="left:308px;height:12px"></i><i style="left:336px;height:12px"></i><i style="left:364px;height:12px"></i><i style="left:392px;height:12px"></i><i style="left:420px;height:24px"></i><i style="left:448px;height:12px"></i><i style="left:476px;height:12px"></i><i style="left:504px;height:12px"></i><i style="left:532px;height:12px"></i><i style="left:560px;height:40px"></i><i style="left:588px;height:12px"></i><i style="left:616px;height:12px"></i><i style="left:644px;height:12px"></i><i style="left:672px;height:12px"></i><i style="left:700px;height:24px"></i><i style="left:728px;height:12px"></i><i style="left:756px;height:12px"></i><i style="left:784px;height:12px"></i><i style="left:812px;height:12px"></i><i style="left:840px;height:40px"></i><i style="left:868px;height:12px"></i><i style="left:896px;height:12px"></i><i style="left:924px;height:12px"></i><i style="left:952px;height:12px"></i><i style="left:980px;height:24px"></i><i style="left:1008px;height:12px"></i><i style="left:1036px;height:12px"></i><i style="left:1064px;height:12px"></i><i style="left:1092px;height:12px"></i><i style="left:1120px;height:40px"></i><i style="left:1148px;height:12px"></i><i style="left:1176px;height:12px"></i><i style="left:1204px;height:12px"></i><i style="left:1232px;height:12px"></i><i style="left:1260px;height:24px"></i><i style="left:1288px;height:12px"></i><i style="left:1316px;height:12px"></i><i style="left:1344px;height:12px"></i><i style="left:1372px;height:12px"></i><i style="left:1400px;height:40px"></i><i style="left:1428px;height:12px"></i><i style="left:1456px;height:12px"></i><i style="left:1484px;height:12px"></i><i style="left:1512px;height:12px"></i><i style="left:1540px;height:24px"></i><i style="left:1568px;height:12px"></i><i style="left:1596px;height:12px"></i><i style="left:1624px;height:12px"></i><i style="left:1652px;height:12px"></i></div><div class="needle"></div>
-  <div class="pad" style="top:280px">
+  <div class="pad" style="top:220px">
     <h2 class="reveal">Un bon testeur sait <em>dire non</em>.<br>Et il ne casse pas quand l'écran change.</h2>
-    <p class="reveal" style="margin-top:50px">github.com/mekkiamiri/bdd-agent-eyes</p>
-    <p class="muted reveal">Questions ?</p>
+    <pre class="code reveal" style="margin-top:50px;font-size:26px">pipx install "git+https://github.com/mekkiamiri/bdd-agent-eyes#subdirectory=outil"
+gherkin-eyes features/ --url http://localhost:8080</pre>
+    <p class="muted reveal" style="margin-top:30px">Dépôt du talk (outil, appli, mesures) : github.com/mekkiamiri/bdd-agent-eyes · Questions ?</p>
   </div>
   <div class="chrome"><span>Mes step definitions cassent, pas l'agent</span><span class="n"></span></div>
-  <aside class="notes">204 verdicts justes sur 204 : les 153 sur l'appli d'origine et les 51 sur la refonte. Tout est dans le dépôt : appli, scénarios, step definitions, lanceur de l'agent, résultats bruts et PROTOCOLE.md. Prenez vos propres scénarios et refaites la mesure.</aside>
+  <aside class="notes">Récapituler le chemin : vous partez de Cucumber et de sa colle ; la colle casse quand l'écran change (7 sur 17) ; la cible, des verdicts qui survivent et s'expliquent ; le comment, gherkin-eyes et 3 gestes. Tout est dans le dépôt : appli, scénarios, step definitions, outil, résultats bruts, revue à l'aveugle. Prenez vos propres scénarios et lancez-le.</aside>
 </section>
 
 </main></div>

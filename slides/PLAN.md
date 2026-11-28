@@ -1,52 +1,55 @@
 # Plan du deck : Tools-in-Action 30 min (variante Quickie 20 min)
 
-Titre : **L'écran change : mes step definitions cassent, pas l'agent** (choix et autres options : `slides/REVUE.md`, revue 1).
+Titre : **L'écran change : mes step definitions cassent, pas l'agent**
 
-**Objectif du talk** (ce que le public fera lundi) : chacun sait où un agent qui voit l'écran remplace ses step definitions, et où il ne faut surtout pas le mettre ; il peut refaire la mesure sur ses propres scénarios avec le banc du dépôt.
+Le deck suit 4 étapes, affichées en surtitre sur chaque slide : **DÉPART → PROBLÈME → CIBLE → COMMENT**.
+
+| Étape | En une phrase |
+|---|---|
+| **Départ** | Votre équipe écrit des scénarios Gherkin ; Cucumber les joue grâce à des step definitions, le code de « colle » qui cherche chaque bouton à l'écran. |
+| **Problème** | Cette colle casse quand l'écran change, même sans changement de comportement : sur l'appli de démo, une refonte casse 7 scénarios sur 17 (2 step definitions à réécrire), et 3 tests restent « conformes » sans plus tester leur piège. |
+| **Cible** | Des scénarios qui survivent aux refontes, avec un verdict expliqué (passe, échec, ou refus quand le scénario est ambigu), sans réécrire la colle. Atteignable : un agent qui regarde l'écran garde 51 verdicts justes sur 51 après la refonte (204 sur 204 en tout). |
+| **Comment** | L'outil **gherkin-eyes** + 3 gestes : 1. garder Cucumber en CI (rapide, gratuit) ; 2. lancer gherkin-eyes après une refonte, sur des scénarios neufs ou un écran sans colle ; 3. écrire le Gherkin avec 3 règles (nommer l'objet, le bouton, ce qu'on voit). |
+| **Outil** | `gherkin-eyes features/ --url <appli>` (dossier `outil/`, Python sans dépendance, Apache-2.0, sur Playwright MCP) → `rapport.html` (verdict, explication, capture de l'écran final) + `junit.xml` pour la CI. Installation : `pipx install "git+https://github.com/mekkiamiri/bdd-agent-eyes#subdirectory=outil"`. |
+
+**Objectif du talk** (ce que le public fera lundi) : installer gherkin-eyes, le lancer sur ses propres scénarios après la prochaine refonte (ou sur ses scénarios neufs), et garder Cucumber en CI.
 
 **Promesse** (« vous repartirez avec ») :
-1. Les chiffres : 204 verdicts justes sur 204 passages de l'agent, et une refonte d'interface qui casse 7 scénarios Cucumber sur 17 mais aucun verdict de l'agent.
-2. Une règle de placement : Cucumber en CI ; l'agent pour relire les scénarios, jouer un écran qui n'a pas encore de colle, et dire si l'appli marche pendant qu'on répare la colle après une refonte.
-3. Trois règles pour écrire du Gherkin qu'un agent (et un humain) peut jouer, et le banc pour refaire la mesure chez vous.
+1. **L'outil** gherkin-eyes : une commande, un rapport HTML et un fichier JUnit ; sortie réelle sur l'exemple : 17 verdicts conformes sur 17.
+2. **Les chiffres** : une refonte casse 7 scénarios Cucumber sur 17 et aucun verdict de l'agent ; mais l'agent coûte 28 s et 12 centimes par scénario, contre 1,4 s pour Cucumber.
+3. **Trois gestes** : Cucumber en CI ; l'agent là où la colle ne suit pas ; trois règles d'écriture.
 
-**Le message en une phrase** : quand l'interface change sans que le comportement change, ce sont les step definitions qui cassent ; un agent qui regarde l'écran joue les mêmes scénarios Gherkin sans elles (204 verdicts justes sur 204), mais il est lent et payant : voici où le mettre.
+**Le message en une phrase** : quand l'écran change sans que le comportement change, ce sont les step definitions qui cassent ; gherkin-eyes joue les mêmes scénarios en regardant l'écran et dit pourquoi, mais il est lent et payant : gardez Cucumber en CI et lancez-le là où la colle ne suit pas.
 
-Public : développeurs et testeurs qui écrivent ou maintiennent du Gherkin (Cucumber, Playwright), niveau intermédiaire.
+Public : développeurs Java et testeurs qui écrivent ou maintiennent du Gherkin (Cucumber, Playwright), niveau intermédiaire.
 
-Arc : situation (1) · complication : la colle casse au moindre changement d'écran (2) · résolution : l'agent joue sans colle, refuse quand il faut, et tient la refonte (3-8) · revers honnête : le faux vert de Cucumber, puis le prix et les limites (9-10) · recommandation, ancrée sur la complication (11-12) · fin (13).
+| n° | étape | titre-phrase | objectif : le public doit penser… | preuve | durée |
+|---|---|---|---|---|---|
+| 1 | départ | L'écran change : mes step definitions cassent, pas l'agent | « Il va partir de mon quotidien et me donner un outil. » | annonce du chemin et de l'outil | 1 min |
+| 2 | départ | Vous écrivez du Gherkin ; Cucumber le joue grâce à du code de colle | « C'est exactement ce que je fais. » | vrai scénario + sa step definition (`Etapes.java`, l. 96, simplifiée) ; banc : 17 scénarios | 2 min |
+| 3 | problème | Une refonte d'écran, aucun comportement changé : Cucumber casse 7 scénarios sur 17 | « C'est ma douleur, chiffrée. » | CI run 45566605569 : 17/17 → 10/17, 11/11 → 4/11, 2 step definitions | 2 min 30 |
+| 4 | problème | Pire que le rouge : 3 tests restent « conformes » mais ne testent plus rien | « Mes tests verts peuvent mentir. » | les 3 pièges qui échouent ailleurs (`resultats/LISEZMOI.md`) | 2 min |
+| 5 | cible | La cible : des scénarios qui survivent aux refontes, avec un verdict expliqué | « Voilà ce que je veux. » | agent sur v2 : 51/51, 0 ligne de colle | 1 min 30 |
+| 6 | cible | Un agent lit le scénario, regarde l'écran, clique : 204 verdicts justes sur 204 | « J'ai compris le mécanisme, et ce n'est pas un coup de chance. » | 153 (3 vues × 3 passages) + 51 ; 0 passe à tort | 2 min |
+| 7 | cible | Bouton grisé, trois « Ajouter » : il ne force pas, il ne devine pas | « Il ne clique pas au hasard ; l'appli est la sienne, il le dit. » | capture réelle de l'écran final + citations mot pour mot (série du 28/11) ; 27 refus sur 27 | 2 min |
+| 8 | comment | L'outil : gherkin-eyes. Une commande, un rapport HTML et un fichier JUnit | « Je peux l'installer en sortant. » | sortie réelle : 17/17 conformes, 2 min 24 s, 1,98 $ ; **démo live** | 4 min |
+| 9 | comment | Après la refonte, même commande, rien à réparer | « Mon problème de la slide 3 est réglé. » | sortie réelle de gherkin-eyes sur v2 contre 10/17 pour Cucumber | 3 min |
+| 10 | comment · geste 1 | Gardez Cucumber en CI : l'agent prend 20 fois plus de temps, et coûte | « Il ne remplacera pas ma CI. » | 1,4 s contre 28 s (13 à 43 s), 6 à 16 centimes | 2 min |
+| 11 | comment · geste 2 | Lancez gherkin-eyes là où la colle ne suit pas | « Je sais quand le lancer, et je peux croire ses verdicts. » | 3 usages ; juge à l'aveugle : 9 accords sur 10, preuves conformes 10/10 | 2 min 30 |
+| 12 | comment · geste 3 | Écrivez le Gherkin avec 3 règles : l'objet, le bouton, ce qu'on voit | « Mes scénarios s'améliorent, même sans agent. » | les refus réels regroupés | 1 min 30 |
+| 13 | comment | Un bon testeur sait dire non. Et il ne casse pas quand l'écran change. | La phrase à retenir, et les 2 commandes. | `pipx install …` + `gherkin-eyes …` | 2 min (+ questions) |
 
-| n° | titre-phrase | objectif : le public doit penser… | preuve | durée |
-|---|---|---|---|---|
-| 1 | L'écran change : mes step definitions cassent, pas l'agent | « C'est ma douleur, et il annonce des chiffres. » | annonce de la mesure (détail aux slides 7 et 8) | 1 min |
-| 2 | Deux lignes de Gherkin ; derrière, du code qui casse au premier changement d'écran | « C'est mon quotidien : la colle me coûte. » | un vrai scénario + sa step definition (`Etapes.java`, simplifiée) | 2 min |
-| 3 | Un agent lit le scénario, regarde l'écran, clique et rend un verdict | « J'ai compris l'idée en 10 secondes. » | schéma en 3 verbes, consigne `agent/CONSIGNE.md` | 2 min |
-| 4 | Démo : l'agent joue « Commande valide » en une vingtaine de secondes, sans une ligne de colle | « Ça marche vraiment. » | démo live (plan B : vidéo) ; passages réels de 19 à 25 s | 4 min |
-| 5 | J'ai piégé mon appli trois fois ; il ne tombe dans aucun piège | « Il ne clique pas au hasard, et l'auteur ne cache pas que l'appli est la sienne. » | bouton grisé, 3 « Ajouter », texte caché : verdicts réels | 2 min |
-| 6 | Devant un scénario ambigu, il refuse, et il dit pourquoi | « Il fait ce qu'un bon testeur fait, et Cucumber ne fait pas. » | un vrai refus tiré des résultats ; 27 refus sur 27 passages ambigus | 2 min |
-| 7 | 153 verdicts justes sur 153, jamais un « passe » à tort, quoi qu'il voie | « Ce n'est pas un coup de chance, et je n'ai pas à choisir finement ce qu'il voit. » | 17 scénarios × 3 vues × 3 passages, tableau par vue (durée, coût) | 2 min |
-| 8 | Démo : je refonds l'interface ; Cucumber casse 7 scénarios sur 17, l'agent aucun | « C'est exactement ma douleur, et elle disparaît. » | tableau v1 / v2 (CI run 45566605569 + 51 passages agent sur v2), un passage live sur v2 | 5 min 30 |
-| 9 | Pire que le rouge : 3 tests échouent encore, mais plus pour la bonne raison | « Mes tests verts peuvent mentir après une refonte. » | les 3 pièges qui échouent ailleurs (`resultats/LISEZMOI.md`) | 2 min |
-| 10 | Le prix : 14 s et 6 à 9 centimes par scénario, contre 1,4 s et aucune facture | « Il ne remplacera pas ma CI. » | durées et coûts mesurés + limites | 2 min |
-| 11 | Gardez Cucumber en CI ; envoyez l'agent là où la colle ne suit pas | « Je sais où l'essayer lundi. » | les 3 usages, chacun relié à un résultat | 2 min |
-| 12 | Ses refus donnent 3 règles : nommez l'objet, le bouton, et ce qu'on voit | « Mes scénarios vont devenir meilleurs, même sans agent. » | les refus regroupés | 1 min 30 |
-| 13 | Un bon testeur sait dire non. Et il ne casse pas quand l'écran change. | La phrase à retenir. | dépôt, questions | 2 min (+ questions) |
+Total : 28 min 30 + 1 min 30 de marge.
 
-Total : 30 min. L'ancienne slide 8 (« Capture, arbre ou les deux ») est fondue dans la 7 ; sa minute et demie va à la démo 2.
+## Variante Quickie 20 min (9 slides)
 
-## Variante Quickie 20 min (9 slides gardées)
-
-Garder **1, 2, 3, 6, 7, 8, 10, 11, 13**. On retire la démo 1 (4) : elle coûte 4 minutes et un risque technique, alors que la démo 2 porte le message (la refonte) et que la slide 6 montre déjà une vraie réponse de l'agent. On retire aussi les pièges (5), le faux vert (9) et les règles d'écriture (12).
-À dire en plus, pour ne rien perdre d'honnête : sur la 3, qu'il joue « Commande valide » en une vingtaine de secondes ; sur la 7, que l'appli et ses pièges sont écrits par moi ; à la fin de la 8, le faux vert en une phrase ; sur la 13, les 3 règles d'écriture en une phrase.
-Minutage : 1 · 2 · 2 · 2 · 2 · 4 (démo 2 sans passage live, tableau seul) · 2 · 2 · 1,5 = 18 min 30, plus une minute et demie de marge.
-
-## Variante Tools-in-Action 30 min (13 slides gardées)
-
-Toutes : 1 à 13, minutage du tableau ci-dessus.
+Garder **1, 2, 3, 5, 6, 8, 9, 10, 11**. On retire le faux vert (4, dit en une phrase à la fin de la 3), les pièges (7, dire sur la 6 que l'appli et les pièges sont les miens et qu'il refuse les ambigus), les 3 règles (12, dites en une phrase sur la 11) et la fin (13 : afficher les 2 commandes sur la 11).
+Minutage : 1 · 2 · 2 · 1 · 2 · 4 (démo) · 2 · 1,5 · 2 = 17 min 30, plus 2 min 30 de marge.
 
 ## Skim test (titres seuls)
 
-Mes step definitions cassent quand l'écran change, pas l'agent → derrière deux lignes de Gherkin, du code qui casse au premier changement d'écran → un agent lit, regarde, clique et juge → il joue un vrai scénario en une vingtaine de secondes → il évite les pièges que j'ai posés dans mon appli → il refuse l'ambigu et explique → 153 sur 153 sans faux « passe », quoi qu'il voie → la refonte casse 7 Cucumber sur 17 et aucun agent → et 3 Cucumber « conformes » ne testent plus rien → mais il coûte 14 s et quelques centimes → donc Cucumber en CI, l'agent là où la colle ne suit pas → écrivez pour qu'il puisse jouer → un bon testeur sait dire non. L'argument et la recommandation tiennent sans le corps des slides.
+Départ : on écrit du Gherkin, Cucumber le joue grâce à de la colle → problème : une refonte casse 7 scénarios sur 17, et 3 tests verts ne testent plus rien → cible : des verdicts qui survivent et s'expliquent ; un agent y arrive (204 sur 204), sans tomber dans les pièges → comment : l'outil gherkin-eyes, une commande ; après la refonte, rien à réparer ; geste 1 Cucumber en CI (l'agent est 20 fois plus lent) ; geste 2 l'agent là où la colle ne suit pas ; geste 3 trois règles d'écriture → un bon testeur sait dire non.
 
 ## Sources des chiffres
 
-`resultats/LISEZMOI.md`, `resultats/synthese-agent.json`, `resultats/agent-*/resultats.json`, `resultats/robustesse-v2/agent-les-deux/resultats.json`, `docs/app-v2/CHANGEMENTS.md`, CI run 45566605569 (job `reference-cucumber-v2`). Chaque note de slide cite le sien.
+`resultats/LISEZMOI.md`, `resultats/synthese-agent.json`, `resultats/agent-*/resultats.json`, `resultats/robustesse-v2/agent-les-deux/resultats.json`, `docs/app-v2/CHANGEMENTS.md`, CI run 45566605569 (job `reference-cucumber-v2`), `outil/exemple/resultats.json` (série gherkin-eyes du 28/11/2026 sur `docs/app`), `revue/juge-aveugle.json` (juge à l'aveugle), `slides/REVUE.md` (série gherkin-eyes sur `docs/app-v2`, revue de code croisée). Chaque note de slide cite le sien.
