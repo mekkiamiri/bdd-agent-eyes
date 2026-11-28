@@ -1,0 +1,223 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>gherkin-eyes · rapport</title>
+<style>
+body{background:#121416;color:#e9e4d8;font:15px/1.5 ui-monospace,Menlo,monospace;margin:0;padding:32px}
+h1{font:400 34px Georgia,serif;margin:0 0 4px}h1 em{color:#ffb000;font-style:normal}
+.meta{color:#9a958a;margin-bottom:24px}.bilan{display:flex;gap:16px;flex-wrap:wrap;margin:16px 0 28px}
+.bilan div{border:1px solid #2c3034;padding:10px 16px;border-radius:6px}.bilan b{font-size:26px;display:block}
+table{border-collapse:collapse;width:100%}td,th{border-top:1px solid #2c3034;padding:10px 8px;vertical-align:top;text-align:left}
+th{color:#9a958a;font-weight:400}.v{font-weight:600;white-space:nowrap}.passe{color:#7bd389}.echec{color:#ff6b5b}
+.refus{color:#ffb000}.erreur{color:#b48ead}.non{color:#ff6b5b}img{max-width:260px;border:1px solid #2c3034;border-radius:4px}
+details summary{cursor:pointer;color:#9a958a}pre{white-space:pre-wrap;color:#c8c2b4;margin:6px 0}
+.preuve{color:#9a958a;font-size:13px;margin-top:6px}
+</style></head><body>
+<h1>gherkin-<em>eyes</em> · rapport</h1>
+<div class="meta">2026-11-28T12:14:12 · docs/app-v2/index.html · modèle claude-sonnet-5-5 · vue les-deux
+ · navigateur webkit headless</div>
+<div class="bilan"><div><b class="passe">11</b>passe</div><div><b class="echec">3</b>échec</div><div><b class="refus">3</b>refus</div><div><b class="erreur">0</b>erreur</div><div><b>17/17</b>conformes à l'attendu</div><div><b>388.7 s</b>durée cumulée</div><div><b>2.22 $</b>coût</div></div>
+<table><tr><th>Scénario</th><th>Verdict</th><th>Explication de l'agent</th><th>Écran final</th></tr>
+<tr><td><b>Connexion réussie</b><br><span class="meta">connexion.feature · passage 1 · 14.45 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Connexion
+
+  Contexte:
+    Soit je suis sur la page &quot;Connexion&quot;
+
+  Scénario: Connexion réussie
+    Quand je saisis &quot;demo@exemple.org&quot; dans le champ &quot;Email&quot;
+    Et je saisis &quot;bonjour123&quot; dans le champ &quot;Mot de passe&quot;
+    Et je clique sur &quot;Se connecter&quot;
+    Alors je vois &quot;Bonjour demo@exemple.org&quot;
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>J&#x27;ai joué les étapes dans l&#x27;ordre : saisie de l&#x27;email et du mot de passe, puis clic sur « Se connecter ». Le message « Bonjour demo@exemple.org » s&#x27;est affiché.<div class="preuve">Vu à l'écran : Sur la capture finale, le bandeau du haut affiche « Bonjour demo@exemple.org » au centre. Les champs Email et Mot de passe sont remplis et aucune alerte d&#x27;erreur n&#x27;est visible.</div></td><td><a href="passages/connexion--Connexion-réussie--1--essai1/captures/page-2026-11-28T11-13-31-353Z.png"><img src="passages/connexion--Connexion-réussie--1--essai1/captures/page-2026-11-28T11-13-31-353Z.png" alt="écran final"></a></td></tr><tr><td><b>Mauvais mot de passe</b><br><span class="meta">connexion.feature · passage 1 · 12.67 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Connexion
+
+  Contexte:
+    Soit je suis sur la page &quot;Connexion&quot;
+
+  Scénario: Mauvais mot de passe
+    Quand je saisis &quot;demo@exemple.org&quot; dans le champ &quot;Email&quot;
+    Et je saisis &quot;mauvais&quot; dans le champ &quot;Mot de passe&quot;
+    Et je clique sur &quot;Se connecter&quot;
+    Alors je vois &quot;Email ou mot de passe incorrect.&quot;
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>J&#x27;ai joué les étapes dans l&#x27;ordre : saisie de l&#x27;email et du mot de passe &quot;mauvais&quot;, puis clic sur &quot;Se connecter&quot;. Le message attendu s&#x27;est affiché.<div class="preuve">Vu à l'écran : Sur la page Connexion, un message en rouge « Email ou mot de passe incorrect. » apparaît sous le titre. Les champs contiennent demo@exemple.org et un mot de passe masqué de 7 caractères.</div></td><td><a href="passages/connexion--Mauvais-mot-de-passe--1--essai1/captures/page-2026-11-28T11-13-35-474Z.png"><img src="passages/connexion--Mauvais-mot-de-passe--1--essai1/captures/page-2026-11-28T11-13-35-474Z.png" alt="écran final"></a></td></tr><tr><td><b>Compte bloqué après trois échecs</b><br><span class="meta">connexion.feature · passage 1 · 12.13 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Connexion
+
+  Contexte:
+    Soit je suis sur la page &quot;Connexion&quot;
+
+  Scénario: Compte bloqué après trois échecs
+    Quand je saisis &quot;demo@exemple.org&quot; dans le champ &quot;Email&quot;
+    Et je saisis &quot;mauvais&quot; dans le champ &quot;Mot de passe&quot;
+    Et je clique sur &quot;Se connecter&quot;
+    Et je clique sur &quot;Se connecter&quot;
+    Et je clique sur &quot;Se connecter&quot;
+    Alors je vois &quot;Compte bloqué après 3 essais. Réessayez plus tard.&quot;
+    Et le bouton &quot;Se connecter&quot; est désactivé
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>J&#x27;ai joué les étapes dans l&#x27;ordre : saisie de l&#x27;email et du mauvais mot de passe, puis trois clics sur « Se connecter ». Le message de blocage s&#x27;affiche et le bouton est désactivé.<div class="preuve">Vu à l'écran : La capture montre le message rouge « Compte bloqué après 3 essais. Réessayez plus tard. » au-dessus du formulaire. Le bouton « Se connecter » est grisé, et l&#x27;arbre d&#x27;accessibilité le marque [disabled].</div></td><td><a href="passages/connexion--Compte-bloqué-après-trois-échecs--1--essai1/captures/page-2026-11-28T11-13-32-118Z.png"><img src="passages/connexion--Compte-bloqué-après-trois-échecs--1--essai1/captures/page-2026-11-28T11-13-32-118Z.png" alt="écran final"></a></td></tr><tr><td><b>Message d&#x27;accueil personnalisé</b><br><span class="meta">connexion.feature · passage 1 · 11.2 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Connexion
+
+  Contexte:
+    Soit je suis sur la page &quot;Connexion&quot;
+
+  Scénario: Message d&#x27;accueil personnalisé
+    Quand je saisis &quot;demo@exemple.org&quot; dans le champ &quot;Email&quot;
+    Et je saisis &quot;bonjour123&quot; dans le champ &quot;Mot de passe&quot;
+    Et je clique sur &quot;Se connecter&quot;
+    Alors je vois &quot;Bienvenue, Demo&quot;
+</pre></details></td><td class="v echec">échec (étape 4)<br><span class="">attendu : échec</span></td><td>Après la connexion, l&#x27;application affiche « Bonjour demo@exemple.org » et non « Bienvenue, Demo ». Le message attendu par le scénario n&#x27;apparaît nulle part.<div class="preuve">Vu à l'écran : Dans l&#x27;en-tête, au centre, on lit « Bonjour demo@exemple.org ». Le formulaire est toujours affiché avec les champs remplis. Aucune alerte ni texte « Bienvenue, Demo » n&#x27;est visible.</div></td><td><a href="passages/connexion--Message-d-accueil-personnalisé--1--essai1/captures/page-2026-11-28T11-13-37-000Z.png"><img src="passages/connexion--Message-d-accueil-personnalisé--1--essai1/captures/page-2026-11-28T11-13-37-000Z.png" alt="écran final"></a></td></tr><tr><td><b>Connexion rapide</b><br><span class="meta">connexion.feature · passage 1 · 57.93 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Connexion
+
+  Contexte:
+    Soit je suis sur la page &quot;Connexion&quot;
+
+  Scénario: Connexion rapide
+    Quand je clique sur &quot;Connexion&quot;
+    Alors je suis connecté
+</pre></details></td><td class="v refus">refus (étape 1)<br><span class="">attendu : refus</span></td><td>L&#x27;étape « je clique sur &quot;Connexion&quot; » peut désigner plusieurs éléments : le lien « Connexion » du menu, qui ne fait que changer d&#x27;ancre, ou le bouton du formulaire, qui s&#x27;appelle « Se connecter ». « Je suis connecté » n&#x27;a pas non plus de résultat observable défini, et aucun identifiant n&#x27;est fourni pour remplir le formulaire.<div class="preuve">Vu à l'écran : L&#x27;arbre d&#x27;accessibilité montre le lien « Connexion » dans la navigation, le titre « Connexion », les champs Email et Mot de passe, le bouton « Se connecter » et la mention « Compte de démo : demo@exemple.org / bonjour123 ». La capture d&#x27;écran finale est restée entièrement blanche, donc je n&#x27;ai rien pu confirmer visuellement. Je n&#x27;ai cliqué sur rien.</div></td><td><a href="passages/connexion--Connexion-rapide--1/captures/page-2026-11-28T11-04-08-859Z.png"><img src="passages/connexion--Connexion-rapide--1/captures/page-2026-11-28T11-04-08-859Z.png" alt="écran final"></a></td></tr><tr><td><b>Commande refusée quand le panier est vide</b><br><span class="meta">livraison-panier-vide.feature · passage 1 · 15.94 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Livraison sans panier
+
+  Contexte:
+    Soit je suis sur la page &quot;Livraison&quot;
+
+  Scénario: Commande refusée quand le panier est vide
+    Quand je saisis &quot;Camille Martin&quot; dans le champ &quot;Nom&quot;
+    Et je saisis &quot;69003&quot; dans le champ &quot;Code postal&quot;
+    Et je coche &quot;J&#x27;accepte les conditions de vente&quot;
+    Et je clique sur &quot;Valider la commande&quot;
+    Alors je vois &quot;Votre panier est vide.&quot;
+    Et je ne vois pas &quot;Commande confirmée&quot;
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>J&#x27;ai joué toutes les étapes dans l&#x27;ordre. Après le clic sur « Valider la commande », le message « Votre panier est vide. » s&#x27;affiche, et « Commande confirmée » n&#x27;apparaît nulle part.<div class="preuve">Vu à l'écran : Le bouton « Valider la commande » était désactivé au départ et s&#x27;est activé après la saisie du nom, du code postal et la case cochée. Après le clic, la page Livraison affiche en rouge « Votre panier est vide. » sous le titre. Les champs sont restés remplis : Nom « Camille Martin », Code postal « 69003 », Adresse vide. Aucun texte « Commande confirmée » n&#x27;est visible.</div></td><td><a href="passages/livraison-panier-vide--Commande-refusée-quand-le-panier-est-vide--1--essai1/captures/page-2026-11-28T11-13-46-750Z.png"><img src="passages/livraison-panier-vide--Commande-refusée-quand-le-panier-est-vide--1--essai1/captures/page-2026-11-28T11-13-46-750Z.png" alt="écran final"></a></td></tr><tr><td><b>Commande valide</b><br><span class="meta">livraison.feature · passage 1 · 18.12 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Livraison
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+    Et j&#x27;ajoute &quot;Marteau&quot; au panier
+    Et je clique sur &quot;Commander&quot;
+
+  Scénario: Commande valide
+    Quand je saisis &quot;Camille Martin&quot; dans le champ &quot;Nom&quot;
+    Et je saisis &quot;12 rue des Lilas&quot; dans le champ &quot;Adresse&quot;
+    Et je saisis &quot;69003&quot; dans le champ &quot;Code postal&quot;
+    Et je coche &quot;J&#x27;accepte les conditions de vente&quot;
+    Et je clique sur &quot;Valider la commande&quot;
+    Alors je vois &quot;Commande confirmée&quot;
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>J&#x27;ai joué le Contexte et toutes les étapes du scénario dans l&#x27;ordre. Après le clic sur « Valider la commande », « Commande confirmée » s&#x27;est affiché.<div class="preuve">Vu à l'écran : Dans le Contexte, j&#x27;ai ouvert le Catalogue, ajouté le Marteau et cliqué sur « Commander », ce qui a ouvert la page Livraison. J&#x27;ai rempli Nom, Adresse et Code postal, puis coché les conditions. Le bouton « Valider la commande » était alors actif. Après le clic, la page affiche un encadré vert avec le titre « Commande confirmée » et le texte « Merci, votre commande est en préparation. »</div></td><td><a href="passages/livraison--Commande-valide--1--essai1/captures/page-2026-11-28T11-13-51-889Z.png"><img src="passages/livraison--Commande-valide--1--essai1/captures/page-2026-11-28T11-13-51-889Z.png" alt="écran final"></a></td></tr><tr><td><b>Code postal invalide</b><br><span class="meta">livraison.feature · passage 1 · 21.46 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Livraison
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+    Et j&#x27;ajoute &quot;Marteau&quot; au panier
+    Et je clique sur &quot;Commander&quot;
+
+  Scénario: Code postal invalide
+    Quand je saisis &quot;Camille Martin&quot; dans le champ &quot;Nom&quot;
+    Et je saisis &quot;6900&quot; dans le champ &quot;Code postal&quot;
+    Et je clique sur &quot;Enregistrer l&#x27;adresse&quot;
+    Alors je vois &quot;Le code postal doit contenir 5 chiffres.&quot;
+    Et je ne vois pas &quot;Adresse enregistrée.&quot;
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>J&#x27;ai joué le Contexte puis les étapes du scénario. Le message d&#x27;erreur attendu s&#x27;affiche et « Adresse enregistrée. » n&#x27;apparaît pas.<div class="preuve">Vu à l'écran : Sur la page Livraison, après avoir saisi Nom = « Camille Martin » et Code postal = « 6900 » puis cliqué sur « Enregistrer l&#x27;adresse », le message rouge « Le code postal doit contenir 5 chiffres. » s&#x27;affiche sous le titre. Le texte « Adresse enregistrée. » n&#x27;apparaît nulle part à l&#x27;écran.</div></td><td><a href="passages/livraison--Code-postal-invalide--1--essai1/captures/page-2026-11-28T11-13-58-328Z.png"><img src="passages/livraison--Code-postal-invalide--1--essai1/captures/page-2026-11-28T11-13-58-328Z.png" alt="écran final"></a></td></tr><tr><td><b>Conditions de vente non acceptées</b><br><span class="meta">livraison.feature · passage 1 · 17.31 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Livraison
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+    Et j&#x27;ajoute &quot;Marteau&quot; au panier
+    Et je clique sur &quot;Commander&quot;
+
+  Scénario: Conditions de vente non acceptées
+    Quand je saisis &quot;Camille Martin&quot; dans le champ &quot;Nom&quot;
+    Et je saisis &quot;69003&quot; dans le champ &quot;Code postal&quot;
+    Alors le bouton &quot;Valider la commande&quot; est désactivé
+    Et je ne vois pas &quot;Commande confirmée&quot;
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>Après avoir saisi le nom et le code postal, sans cocher les conditions de vente, le bouton « Valider la commande » est grisé et désactivé. Le texte « Commande confirmée » n&#x27;apparaît pas.<div class="preuve">Vu à l'écran : Sur la page Livraison, Nom = « Camille Martin » et Code postal = « 69003 ». La case « J&#x27;accepte les conditions de vente » est décochée et le champ Adresse est vide. Le bouton « Valider la commande » est affiché grisé et marqué [disabled] dans l&#x27;arbre d&#x27;accessibilité. Aucun message « Commande confirmée » n&#x27;est visible.</div></td><td><a href="passages/livraison--Conditions-de-vente-non-acceptées--1--essai1/captures/page-2026-11-28T11-13-56-493Z.png"><img src="passages/livraison--Conditions-de-vente-non-acceptées--1--essai1/captures/page-2026-11-28T11-13-56-493Z.png" alt="écran final"></a></td></tr><tr><td><b>Message quand les conditions ne sont pas cochées</b><br><span class="meta">livraison.feature · passage 1 · 19.9 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Livraison
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+    Et j&#x27;ajoute &quot;Marteau&quot; au panier
+    Et je clique sur &quot;Commander&quot;
+
+  Scénario: Message quand les conditions ne sont pas cochées
+    Quand je saisis &quot;Camille Martin&quot; dans le champ &quot;Nom&quot;
+    Et je saisis &quot;69003&quot; dans le champ &quot;Code postal&quot;
+    Et je clique sur &quot;Valider la commande&quot;
+    Alors je vois &quot;Veuillez accepter les conditions de vente&quot;
+</pre></details></td><td class="v echec">échec (étape 3)<br><span class="">attendu : échec</span></td><td>Après avoir saisi le nom et le code postal, le bouton « Valider la commande » reste désactivé. Je ne peux donc pas cliquer dessus et le message attendu n&#x27;apparaît pas. Le scénario ne dit pas si c&#x27;est l&#x27;adresse vide ou la case non cochée qui bloque le bouton.<div class="preuve">Vu à l'écran : Page Livraison : Nom = « Camille Martin », Adresse vide, Code postal = « 69003 », case « J&#x27;accepte les conditions de vente » non cochée. Le bouton « Valider la commande » est grisé et désactivé. Aucun message « Veuillez accepter les conditions de vente » n&#x27;est affiché.</div></td><td><a href="passages/livraison--Message-quand-les-conditions-ne-sont-pas-cochées--1--essai1/captures/page-2026-11-28T11-14-06-519Z.png"><img src="passages/livraison--Message-quand-les-conditions-ne-sont-pas-cochées--1--essai1/captures/page-2026-11-28T11-14-06-519Z.png" alt="écran final"></a></td></tr><tr><td><b>La commande est enregistrée</b><br><span class="meta">livraison.feature · passage 1 · 18.03 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Livraison
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+    Et j&#x27;ajoute &quot;Marteau&quot; au panier
+    Et je clique sur &quot;Commander&quot;
+
+  Scénario: La commande est enregistrée
+    Quand je saisis &quot;Camille Martin&quot; dans le champ &quot;Nom&quot;
+    Et je saisis &quot;69003&quot; dans le champ &quot;Code postal&quot;
+    Et je valide
+    Alors la commande est enregistrée
+</pre></details></td><td class="v refus">refus (étape 3)<br><span class="">attendu : refus</span></td><td>L&#x27;étape « je valide » peut désigner deux boutons, « Valider la commande » et « Enregistrer l&#x27;adresse ». « Valider la commande » est désactivé après la saisie du nom et du code postal. Le scénario ne dit rien du champ « Adresse » ni de la case « J&#x27;accepte les conditions de vente », qui semblent nécessaires pour l&#x27;activer. Il ne dit pas non plus à quoi ressemble « la commande est enregistrée » à l&#x27;écran.<div class="preuve">Vu à l'écran : Dans le formulaire Livraison, Nom = « Camille Martin » et Code postal = « 69003 » sont remplis. Adresse est vide et la case des conditions n&#x27;est pas cochée. « Valider la commande » est grisé (désactivé) et « Enregistrer l&#x27;adresse » est actif. Aucun message de confirmation n&#x27;est affiché.</div></td><td><a href="passages/livraison--La-commande-est-enregistrée--1--essai1/captures/page-2026-11-28T11-14-09-534Z.png"><img src="passages/livraison--La-commande-est-enregistrée--1--essai1/captures/page-2026-11-28T11-14-09-534Z.png" alt="écran final"></a></td></tr><tr><td><b>Ajouter un produit</b><br><span class="meta">panier.feature · passage 1 · 44.97 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Panier
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+
+  Scénario: Ajouter un produit
+    Quand j&#x27;ajoute &quot;Marteau&quot; au panier
+    Alors le panier contient 1 article
+    Et le total est &quot;12,00 €&quot;
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>Après un clic sur « Ajouter » pour le Marteau dans le Catalogue, le panier affiche bien 1 article et un total de 12,00 €.<div class="preuve">Vu à l'écran : Page Catalogue, bloc Panier : « 1 article · Total : 12,00 € » et la ligne « Marteau × 1 ». Le bouton « Commander » est devenu actif.</div></td><td><a href="passages/panier--Ajouter-un-produit--1/captures/page-2026-11-28T11-05-19-631Z.png"><img src="passages/panier--Ajouter-un-produit--1/captures/page-2026-11-28T11-05-19-631Z.png" alt="écran final"></a></td></tr><tr><td><b>Code promo de bienvenue</b><br><span class="meta">panier.feature · passage 1 · 33.16 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Panier
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+
+  Scénario: Code promo de bienvenue
+    Soit j&#x27;ajoute &quot;Marteau&quot; au panier
+    Et j&#x27;ajoute &quot;Mètre ruban&quot; au panier
+    Quand je saisis &quot;BIENVENUE&quot; dans le champ &quot;Code promo&quot;
+    Et je clique sur &quot;Appliquer&quot;
+    Alors je vois &quot;Code BIENVENUE appliqué : -10 %&quot;
+    Et le total est &quot;19,71 €&quot;
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>J&#x27;ai joué toutes les étapes. Le message de confirmation du code promo et le total attendu s&#x27;affichent tous les deux.<div class="preuve">Vu à l'écran : Le panier contient Marteau × 1 et Mètre ruban × 1. Le message vert « Code BIENVENUE appliqué : -10 % » est affiché. Le panier indique « 2 articles · Total : 19,71 € ».</div></td><td><a href="passages/panier--Code-promo-de-bienvenue--1/captures/page-2026-11-28T11-05-21-000Z.png"><img src="passages/panier--Code-promo-de-bienvenue--1/captures/page-2026-11-28T11-05-21-000Z.png" alt="écran final"></a></td></tr><tr><td><b>Panier vide, commande impossible</b><br><span class="meta">panier.feature · passage 1 · 26.42 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Panier
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+
+  Scénario: Panier vide, commande impossible
+    Alors le panier contient 0 article
+    Et le bouton &quot;Commander&quot; est désactivé
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>Sur la page Catalogue, le panier affiche 0 article et le bouton &quot;Commander&quot; est désactivé, comme le scénario l&#x27;attend.<div class="preuve">Vu à l'écran : Le bloc Panier affiche &quot;0 article · Total : 0,00 €&quot;. Le bouton &quot;Commander&quot; est grisé, et l&#x27;arbre d&#x27;accessibilité le marque [disabled].</div></td><td><a href="passages/panier--Panier-vide-commande-impossible--1/captures/page-2026-11-28T11-05-17-773Z.png"><img src="passages/panier--Panier-vide-commande-impossible--1/captures/page-2026-11-28T11-05-17-773Z.png" alt="écran final"></a></td></tr><tr><td><b>Ajouter un produit épuisé</b><br><span class="meta">panier.feature · passage 1 · 22.08 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Panier
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+
+  Scénario: Ajouter un produit épuisé
+    Quand j&#x27;ajoute &quot;Tournevis&quot; au panier
+    Alors le panier contient 1 article
+</pre></details></td><td class="v echec">échec (étape 1)<br><span class="">attendu : échec</span></td><td>Le bouton « Ajouter » du Tournevis est désactivé parce que le produit est épuisé. Je n&#x27;ai donc pas pu l&#x27;ajouter au panier, et le panier reste à 0 article au lieu de 1.<div class="preuve">Vu à l'écran : Sur la page Catalogue, la fiche « Tournevis » affiche « Épuisé » et son bouton « Ajouter » est grisé. Le panier indique « 0 article · Total : 0,00 € » et le bouton « Commander » est désactivé.</div></td><td><a href="passages/panier--Ajouter-un-produit-épuisé--1/captures/page-2026-11-28T11-05-39-282Z.png"><img src="passages/panier--Ajouter-un-produit-épuisé--1/captures/page-2026-11-28T11-05-39-282Z.png" alt="écran final"></a></td></tr><tr><td><b>Ajouter au panier</b><br><span class="meta">panier.feature · passage 1 · 20.27 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Panier
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+
+  Scénario: Ajouter au panier
+    Quand je clique sur &quot;Ajouter&quot;
+    Alors le total est &quot;12,00 €&quot;
+</pre></details></td><td class="v refus">refus (étape 1)<br><span class="">attendu : refus</span></td><td>L&#x27;étape « je clique sur &quot;Ajouter&quot; » peut désigner plusieurs boutons : la page en affiche trois, un par produit. Le scénario ne dit pas lequel utiliser, donc je n&#x27;ai pas cliqué.<div class="preuve">Vu à l'écran : Sur la page Catalogue, il y a trois boutons « Ajouter » : Marteau (12,00 €), Tournevis (6,50 €, désactivé car épuisé) et Mètre ruban (9,90 €). Le panier affiche « 0 article · Total : 0,00 € ». Le total attendu de 12,00 € correspond au Marteau, mais le scénario ne le précise pas. Il faudrait écrire par exemple « je clique sur &quot;Ajouter&quot; pour le produit &quot;Marteau&quot; ».</div></td><td><a href="passages/panier--Ajouter-au-panier--1/captures/page-2026-11-28T11-05-39-719Z.png"><img src="passages/panier--Ajouter-au-panier--1/captures/page-2026-11-28T11-05-39-719Z.png" alt="écran final"></a></td></tr><tr><td><b>Un code inconnu retire la remise</b><br><span class="meta">panier.feature · passage 1 · 22.69 s</span><details><summary>scénario envoyé</summary><pre># language: fr
+Fonctionnalité: Panier
+
+  Contexte:
+    Soit je suis sur la page &quot;Catalogue&quot;
+
+  Scénario: Un code inconnu retire la remise
+    Soit j&#x27;ajoute &quot;Marteau&quot; au panier
+    Et je saisis &quot;BIENVENUE&quot; dans le champ &quot;Code promo&quot;
+    Et je clique sur &quot;Appliquer&quot;
+    Quand je saisis &quot;FAUX&quot; dans le champ &quot;Code promo&quot;
+    Et je clique sur &quot;Appliquer&quot;
+    Alors je vois &quot;Code promo inconnu.&quot;
+    Et le total est &quot;12,00 €&quot;
+</pre></details></td><td class="v passe">passe<br><span class="">attendu : passe</span></td><td>J&#x27;ai joué le scénario dans l&#x27;ordre. Après le code inconnu « FAUX », le message « Code promo inconnu. » s&#x27;affiche et le total revient à 12,00 €.<div class="preuve">Vu à l'écran : Après BIENVENUE, le panier affichait « Total : 10,80 € » et « Code BIENVENUE appliqué : -10 % ». Après FAUX puis Appliquer, la capture montre « Code promo inconnu. » sous le bouton Appliquer. Le panier indique « 1 article · Total : 12,00 € » avec « Marteau × 1 ».</div></td><td><a href="passages/panier--Un-code-inconnu-retire-la-remise--1/captures/page-2026-11-28T11-05-45-798Z.png"><img src="passages/panier--Un-code-inconnu-retire-la-remise--1/captures/page-2026-11-28T11-05-45-798Z.png" alt="écran final"></a></td></tr></table>
+<p class="meta">passe : chaque résultat attendu a été vu à l'écran · échec : l'appli ne fait pas ce que dit le scénario ·
+refus : le scénario est ambigu ou son résultat n'est pas observable, à réécrire.</p>
+</body></html>

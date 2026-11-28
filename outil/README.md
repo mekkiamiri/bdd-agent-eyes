@@ -39,6 +39,8 @@ rapport : gherkin-eyes-rapport/rapport.html · JUnit : gherkin-eyes-rapport/juni
 Durée réelle de la série : 2 min 24 s avec 4 passages en parallèle (473 s cumulés). Fichiers complets :
 [`exemple/rapport.html`](exemple/rapport.html), [`exemple/junit.xml`](exemple/junit.xml),
 [`exemple/resultats.json`](exemple/resultats.json), captures dans `exemple/passages/`.
+Même commande sur l'interface refondue (`docs/app-v2/`, mêmes comportements) : 17/17 conformes aussi, dans
+[`exemple-v2/`](exemple-v2/rapport.html) (10 passages relancés une fois : navigateur piloté qui ne répondait plus).
 Ce qu'il répond sur le produit épuisé (mot pour mot) : « Le bouton « Ajouter » de « Tournevis » est désactivé et le
 produit est marqué « Épuisé ». Je n'ai donc pas pu l'ajouter au panier, et le panier reste à 0 article au lieu de 1.
 Je n'ai pas forcé le clic sur le bouton désactivé. »
