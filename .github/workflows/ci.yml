@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [main, mesures]
+    branches: [main, mesures, deck-v3]
     tags: ["cfp-*"]
   pull_request:
 
@@ -19,6 +19,8 @@ jobs:
           python-version: "3.12"
       - name: Tests du validateur
         run: python3 -m unittest discover -s tests -v
+      - name: Tests de gherkin-eyes (faux agent)
+        run: python3 -m unittest discover -s outil/tests -v
       - name: Features valides et liées à l'appli
         run: python3 outils/valider.py
       - name: Page de démo à jour

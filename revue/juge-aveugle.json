@@ -1,0 +1,134 @@
+{
+ "bilan": {
+  "passages": 10,
+  "accord": 9,
+  "desaccord": 1,
+  "preuve": {
+   "oui": 10
+  },
+  "cout_juge_usd": 1.93,
+  "modele_juge": "claude-opus-5-5"
+ },
+ "passages": [
+  {
+   "code": "P01",
+   "id": "connexion.feature:Message d'accueil personnalisé",
+   "agent": "echec",
+   "attendu": "echec",
+   "juge": "echec",
+   "accord": "accord",
+   "justification": "La connexion semble avoir réussi, mais l'en-tête affiche « Bonjour demo@exemple.org » au lieu de « Bienvenue, Demo ». Ce texte contredit le message d'accueil attendu par le scénario.",
+   "preuve_conforme": "oui",
+   "ecarts": "",
+   "cout_usd": 0.2914
+  },
+  {
+   "code": "P02",
+   "id": "livraison.feature:Message quand les conditions ne sont pas cochées",
+   "agent": "echec",
+   "attendu": "echec",
+   "juge": "echec",
+   "accord": "accord",
+   "justification": "Le bouton « Valider la commande » est grisé tant que les conditions ne sont pas cochées, donc l'étape « je clique sur Valider la commande » ne peut pas se faire. Aucun message « Veuillez accepter les conditions de vente » n'apparaît à l'écran.",
+   "preuve_conforme": "oui",
+   "ecarts": "",
+   "cout_usd": 0.2671
+  },
+  {
+   "code": "P03",
+   "id": "panier.feature:Ajouter un produit épuisé",
+   "agent": "echec",
+   "attendu": "echec",
+   "juge": "echec",
+   "accord": "accord",
+   "justification": "Le panier affiche « 0 article · Total : 0,00 € » au lieu d'1 article. Le bouton « Ajouter » de Tournevis est grisé, avec la mention « Épuisé », alors que le scénario demandait de l'utiliser.",
+   "preuve_conforme": "oui",
+   "ecarts": "",
+   "cout_usd": 0.2092
+  },
+  {
+   "code": "P04",
+   "id": "panier.feature:Un code inconnu retire la remise",
+   "agent": "passe",
+   "attendu": "passe",
+   "juge": "passe",
+   "accord": "accord",
+   "justification": "Le message « Code promo inconnu. » apparaît sous le champ Code promo, qui contient « FAUX ». Le panier affiche « Total : 12,00 € », soit le prix du Marteau sans remise.",
+   "preuve_conforme": "oui",
+   "ecarts": "",
+   "cout_usd": 0.1576
+  },
+  {
+   "code": "P05",
+   "id": "panier.feature:Ajouter au panier",
+   "agent": "refus",
+   "attendu": "refus",
+   "juge": "refus",
+   "accord": "accord",
+   "justification": "La capture montre trois boutons « Ajouter » (Marteau, Tournevis grisé, Mètre ruban), donc l'étape « je clique sur \"Ajouter\" » peut désigner plusieurs éléments. Le panier affiche « Total : 0,00 € » et non « 12,00 € », mais cet écart vient de l'ambiguïté du scénario.",
+   "preuve_conforme": "oui",
+   "ecarts": "",
+   "cout_usd": 0.2676
+  },
+  {
+   "code": "P06",
+   "id": "livraison.feature:La commande est enregistrée",
+   "agent": "refus",
+   "attendu": "refus",
+   "juge": "echec",
+   "accord": "desaccord",
+   "justification": "L'écran final montre toujours le formulaire de livraison, avec tous les champs vides et aucun message confirmant la commande. Le bouton « Valider la commande » est grisé parce que la case des conditions de vente n'est pas cochée, et le scénario ne prévoit pas de la cocher : l'étape « je valide » ne pouvait donc pas aboutir.",
+   "preuve_conforme": "oui",
+   "ecarts": "",
+   "cout_usd": 0.1438
+  },
+  {
+   "code": "P07",
+   "id": "livraison.feature:Code postal invalide",
+   "agent": "passe",
+   "attendu": "passe",
+   "juge": "passe",
+   "accord": "accord",
+   "justification": "Le message d'erreur « Le code postal doit contenir 5 chiffres. » s'affiche en rouge sous les boutons, et les champs contiennent bien « Camille Martin » et « 6900 ». Le texte « Adresse enregistrée. » n'apparaît nulle part sur l'écran.",
+   "preuve_conforme": "oui",
+   "ecarts": "",
+   "cout_usd": 0.1484
+  },
+  {
+   "code": "P08",
+   "id": "connexion.feature:Mauvais mot de passe",
+   "agent": "passe",
+   "attendu": "passe",
+   "juge": "passe",
+   "accord": "accord",
+   "justification": "Le message « Email ou mot de passe incorrect. » apparaît en rouge sous le formulaire de la page Connexion. Le champ Email contient demo@exemple.org et le champ Mot de passe contient 7 caractères masqués, autant que dans « mauvais ».",
+   "preuve_conforme": "oui",
+   "ecarts": "",
+   "cout_usd": 0.1569
+  },
+  {
+   "code": "P09",
+   "id": "panier.feature:Code promo de bienvenue",
+   "agent": "passe",
+   "attendu": "passe",
+   "juge": "passe",
+   "accord": "accord",
+   "justification": "Le message vert « Code BIENVENUE appliqué : -10 % » s'affiche sous le champ Code promo, et le panier contient bien Marteau et Mètre ruban. Le total affiché est « 19,71 € », ce qui correspond à 12,00 € + 9,90 € = 21,90 € avec 10 % de remise.",
+   "preuve_conforme": "oui",
+   "ecarts": "",
+   "cout_usd": 0.1372
+  },
+  {
+   "code": "P10",
+   "id": "connexion.feature:Connexion rapide",
+   "agent": "refus",
+   "attendu": "refus",
+   "juge": "refus",
+   "accord": "accord",
+   "justification": "Deux éléments visibles s'appellent « Connexion » : le lien du menu et le titre de la page. Aucun bouton ne porte ce nom (le bouton s'appelle « Se connecter »), et « je suis connecté » ne nomme aucun indicateur précis à vérifier à l'écran, qui montre d'ailleurs toujours le formulaire vide.",
+   "preuve_conforme": "oui",
+   "ecarts": "",
+   "cout_usd": 0.1484
+  }
+ ]
+}

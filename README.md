@@ -2,7 +2,14 @@
 
 [![ci](https://github.com/mekkiamiri/bdd-agent-eyes/actions/workflows/ci.yml/badge.svg)](https://github.com/mekkiamiri/bdd-agent-eyes/actions/workflows/ci.yml)
 
-**La promesse du talk : un agent qui regarde l'écran peut-il jouer vos scénarios Gherkin sans step definitions, et sait-il refuser un scénario faux ou ambigu ? On le mesure face à Cucumber + Playwright.**
+**Le talk : quand l'écran change sans que le comportement change, ce sont les step definitions qui cassent (7 scénarios Cucumber sur 17 sur notre appli de démo). L'outil livré, [`gherkin-eyes`](outil/), fait jouer vos scénarios Gherkin par un agent qui regarde l'écran et rend un verdict expliqué (passe, échec, refus), avec un rapport HTML et un fichier JUnit.**
+
+```sh
+pipx install "git+https://github.com/mekkiamiri/bdd-agent-eyes#subdirectory=outil"
+gherkin-eyes features/ --url http://localhost:8080
+```
+
+Sortie réelle sur l'exemple du dépôt, documentation et limites : [outil/README.md](outil/README.md).
 
 Talk proposé à Devoxx France 2027 (Tools-in-Action, 30 min) par Mekki Amiri.
 
@@ -25,6 +32,7 @@ Autres commandes :
 
 ```sh
 python3 -m unittest discover -s tests -v     # tests du validateur, du générateur de page et du comparateur
+python3 -m unittest discover -s outil/tests  # tests de gherkin-eyes (faux agent)
 python3 outils/construire_page.py            # régénère docs/scenarios.js après une modification des features
 mvn verify                                   # référence Cucumber-JVM + Playwright Java (Java 21, télécharge Chromium)
 python3 outils/verifier_pieges.py --lancer   # Cucumber sur les scénarios faux ou ambigus : chacun doit échouer comme étiqueté
@@ -51,6 +59,8 @@ features/*.feature ──(tags @parcours, @attendu)──► outils/valider.py �
 
 | Élément | Rôle |
 |---|---|
+| `outil/` | **gherkin-eyes**, l'outil livré : `gherkin-eyes features/ --url <appli>` → `rapport.html` + `junit.xml`. Python sans dépendance, sur Playwright MCP. Exemple réel : `outil/exemple/`. |
+| `revue/` | Revue du code et des verdicts : rapport de l'agent de revue (`REVUE-CODE.md`), grille et résultats du juge à l'aveugle (`GRILLE-JUGE.md`, `juge_aveugle.py`, `juge-aveugle.json`). |
 | `docs/app/` | Appli de démo « La Quincaillerie », HTML/JS sans dépendance : connexion, panier, livraison. Pièges : bouton désactivé (produit épuisé, conditions non cochées, compte bloqué), messages d'erreur, trois boutons « Ajouter », texte « Commande confirmée » présent dans le DOM mais caché. |
 | `features/` | 17 scénarios en Gherkin français. Chaque scénario porte sa vérité terrain : `@attendu:passe`, `@attendu:echec` (scénario faux) ou `@attendu:ambigu` (à refuser), et une ligne `Piège :` qui l'explique. |
 | `outils/valider.py` | Vérifie la syntaxe, la vérité terrain, que chaque étape d'un scénario juste appartient au vocabulaire et cite des libellés du parcours, et que chaque libellé du parcours existe dans le code de l'appli. |
@@ -75,6 +85,7 @@ Versions vérifiées sur Maven Central le 16/11/2026 : Cucumber-JVM 8.1.0, JUnit
 | Vérification des pièges côté Cucumber (job CI `pieges-cucumber`) | écrite ; **la CI fait foi** (pas de Chromium en local) |
 | Lanceur de l'agent (`agent/lancer.py`) | écrit et testé avec un faux agent ; jamais lancé avec un vrai modèle |
 | Mesures agent contre Cucumber (réussite, faux positifs, temps, coût, robustesse) | mesurées (branche `mesures`) : [resultats/LISEZMOI.md](resultats/LISEZMOI.md) ; appli refondue pour la robustesse : `docs/app-v2/` |
+| Outil `gherkin-eyes` (rapport HTML + JUnit), 25 tests, revue de code et juge à l'aveugle | fait (`outil/`, `revue/`) ; pas encore publié sur PyPI |
 | Conversion du rapport Cucumber en `resultats/cucumber/resultats.json` | à faire |
 
 ## Licence

@@ -1,0 +1,72 @@
+{
+ "P01": {
+  "id": "connexion.feature:Message d'accueil personnalisé",
+  "passage": 1,
+  "verdict": "echec",
+  "attendu": "echec",
+  "capture": "passages/connexion--Message-d-accueil-personnalisé--1/captures/page-2026-11-28T10-56-28-981Z.png"
+ },
+ "P02": {
+  "id": "livraison.feature:Message quand les conditions ne sont pas cochées",
+  "passage": 1,
+  "verdict": "echec",
+  "attendu": "echec",
+  "capture": "passages/livraison--Message-quand-les-conditions-ne-sont-pas-cochées--1/captures/page-2026-11-28T10-57-30-812Z.png"
+ },
+ "P03": {
+  "id": "panier.feature:Ajouter un produit épuisé",
+  "passage": 1,
+  "verdict": "echec",
+  "attendu": "echec",
+  "capture": "passages/panier--Ajouter-un-produit-épuisé--1/captures/page-2026-11-28T10-58-02-575Z.png"
+ },
+ "P04": {
+  "id": "panier.feature:Un code inconnu retire la remise",
+  "passage": 1,
+  "verdict": "passe",
+  "attendu": "passe",
+  "capture": "passages/panier--Un-code-inconnu-retire-la-remise--1/captures/page-2026-11-28T10-58-18-770Z.png"
+ },
+ "P05": {
+  "id": "panier.feature:Ajouter au panier",
+  "passage": 1,
+  "verdict": "refus",
+  "attendu": "refus",
+  "capture": "passages/panier--Ajouter-au-panier--1/captures/page-2026-11-28T10-58-06-440Z.png"
+ },
+ "P06": {
+  "id": "livraison.feature:La commande est enregistrée",
+  "passage": 1,
+  "verdict": "refus",
+  "attendu": "refus",
+  "capture": "passages/livraison--La-commande-est-enregistrée--1/captures/page-2026-11-28T10-57-28-490Z.png"
+ },
+ "P07": {
+  "id": "livraison.feature:Code postal invalide",
+  "passage": 1,
+  "verdict": "passe",
+  "attendu": "passe",
+  "capture": "passages/livraison--Code-postal-invalide--1/captures/page-2026-11-28T10-57-07-692Z.png"
+ },
+ "P08": {
+  "id": "connexion.feature:Mauvais mot de passe",
+  "passage": 1,
+  "verdict": "passe",
+  "attendu": "passe",
+  "capture": "passages/connexion--Mauvais-mot-de-passe--1/captures/page-2026-11-28T10-56-28-959Z.png"
+ },
+ "P09": {
+  "id": "panier.feature:Code promo de bienvenue",
+  "passage": 1,
+  "verdict": "passe",
+  "attendu": "passe",
+  "capture": "passages/panier--Code-promo-de-bienvenue--1/captures/page-2026-11-28T10-57-29-806Z.png"
+ },
+ "P10": {
+  "id": "connexion.feature:Connexion rapide",
+  "passage": 1,
+  "verdict": "refus",
+  "attendu": "refus",
+  "capture": "passages/connexion--Connexion-rapide--1/captures/page-2026-11-28T10-56-41-264Z.png"
+ }
+}

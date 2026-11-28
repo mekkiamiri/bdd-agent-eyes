@@ -1,0 +1,18 @@
+{
+ "etape1": {
+  "resultats": [
+   {
+    "etape": "Alors je suis connecté",
+    "visible": "non"
+   }
+  ],
+  "verdict": "refus",
+  "justification": "Deux éléments visibles s'appellent « Connexion » : le lien du menu et le titre de la page. Aucun bouton ne porte ce nom (le bouton s'appelle « Se connecter »), et « je suis connecté » ne nomme aucun indicateur précis à vérifier à l'écran, qui montre d'ailleurs toujours le formulaire vide.",
+  "cout_usd": 0.08206659999999999
+ },
+ "etape2": {
+  "preuve_conforme": "oui",
+  "ecarts": "",
+  "cout_usd": 0.06637979999999999
+ }
+}

@@ -10,3 +10,8 @@ __pycache__/
 # Traces locales du navigateur piloté
 .playwright-mcp/
 /${local_app_data}*
+
+# Construction du paquet gherkin-eyes
+build/
+*.egg-info/
+gherkin-eyes-rapport/

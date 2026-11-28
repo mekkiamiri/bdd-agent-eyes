@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gherkin-eyes"
+version = "0.1.0"
+description = "Un agent qui regarde l'écran joue vos scénarios Gherkin, sans step definitions : rapport HTML et JUnit."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "Mekki Amiri" }]
+dependencies = []
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Testing :: BDD",
+]
+
+[project.urls]
+Source = "https://github.com/mekkiamiri/bdd-agent-eyes/tree/main/outil"
+
+[project.scripts]
+gherkin-eyes = "gherkin_eyes.cli:main"
+
+[tool.setuptools]
+packages = ["gherkin_eyes"]

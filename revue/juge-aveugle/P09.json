@@ -1,0 +1,22 @@
+{
+ "etape1": {
+  "resultats": [
+   {
+    "etape": "Alors je vois \"Code BIENVENUE appliqué : -10 %\"",
+    "visible": "oui"
+   },
+   {
+    "etape": "Et le total est \"19,71 €\"",
+    "visible": "oui"
+   }
+  ],
+  "verdict": "passe",
+  "justification": "Le message vert « Code BIENVENUE appliqué : -10 % » s'affiche sous le champ Code promo, et le panier contient bien Marteau et Mètre ruban. Le total affiché est « 19,71 € », ce qui correspond à 12,00 € + 9,90 € = 21,90 € avec 10 % de remise.",
+  "cout_usd": 0.0818166
+ },
+ "etape2": {
+  "preuve_conforme": "oui",
+  "ecarts": "",
+  "cout_usd": 0.055413000000000004
+ }
+}

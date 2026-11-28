@@ -2,5 +2,6 @@
 # Contrôles propres à bdd-agent-eyes, lancés par .githooks/pre-push.
 set -eu
 python3 -m unittest discover -s tests -q
+python3 -m unittest discover -s outil/tests -q
 python3 outils/valider.py >/dev/null
 python3 outils/construire_page.py --check

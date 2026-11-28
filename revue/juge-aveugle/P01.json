@@ -1,0 +1,18 @@
+{
+ "etape1": {
+  "resultats": [
+   {
+    "etape": "Alors je vois \"Bienvenue, Demo\"",
+    "visible": "non"
+   }
+  ],
+  "verdict": "echec",
+  "justification": "La connexion semble avoir réussi, mais l'en-tête affiche « Bonjour demo@exemple.org » au lieu de « Bienvenue, Demo ». Ce texte contredit le message d'accueil attendu par le scénario.",
+  "cout_usd": 0.1044978
+ },
+ "etape2": {
+  "preuve_conforme": "oui",
+  "ecarts": "",
+  "cout_usd": 0.18694099999999997
+ }
+}

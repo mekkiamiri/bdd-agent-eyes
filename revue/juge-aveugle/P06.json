@@ -1,0 +1,18 @@
+{
+ "etape1": {
+  "resultats": [
+   {
+    "etape": "Alors la commande est enregistrée",
+    "visible": "non"
+   }
+  ],
+  "verdict": "echec",
+  "justification": "L'écran final montre toujours le formulaire de livraison, avec tous les champs vides et aucun message confirmant la commande. Le bouton « Valider la commande » est grisé parce que la case des conditions de vente n'est pas cochée, et le scénario ne prévoit pas de la cocher : l'étape « je valide » ne pouvait donc pas aboutir.",
+  "cout_usd": 0.0882666
+ },
+ "etape2": {
+  "preuve_conforme": "oui",
+  "ecarts": "",
+  "cout_usd": 0.055543
+ }
+}

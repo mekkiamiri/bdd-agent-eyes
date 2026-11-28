@@ -1,0 +1,22 @@
+{
+ "etape1": {
+  "resultats": [
+   {
+    "etape": "Alors je vois \"Code promo inconnu.\"",
+    "visible": "oui"
+   },
+   {
+    "etape": "Et le total est \"12,00 €\"",
+    "visible": "oui"
+   }
+  ],
+  "verdict": "passe",
+  "justification": "Le message « Code promo inconnu. » apparaît sous le champ Code promo, qui contient « FAUX ». Le panier affiche « Total : 12,00 € », soit le prix du Marteau sans remise.",
+  "cout_usd": 0.0802466
+ },
+ "etape2": {
+  "preuve_conforme": "oui",
+  "ecarts": "",
+  "cout_usd": 0.0773766
+ }
+}

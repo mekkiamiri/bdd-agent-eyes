@@ -1,0 +1,18 @@
+{
+ "etape1": {
+  "resultats": [
+   {
+    "etape": "Alors je vois \"Email ou mot de passe incorrect.\"",
+    "visible": "oui"
+   }
+  ],
+  "verdict": "passe",
+  "justification": "Le message « Email ou mot de passe incorrect. » apparaît en rouge sous le formulaire de la page Connexion. Le champ Email contient demo@exemple.org et le champ Mot de passe contient 7 caractères masqués, autant que dans « mauvais ».",
+  "cout_usd": 0.0796666
+ },
+ "etape2": {
+  "preuve_conforme": "oui",
+  "ecarts": "",
+  "cout_usd": 0.07725660000000001
+ }
+}

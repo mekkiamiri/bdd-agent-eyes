@@ -1,0 +1,18 @@
+{
+ "etape1": {
+  "resultats": [
+   {
+    "etape": "Alors le panier contient 1 article",
+    "visible": "non"
+   }
+  ],
+  "verdict": "echec",
+  "justification": "Le panier affiche « 0 article · Total : 0,00 € » au lieu d'1 article. Le bouton « Ajouter » de Tournevis est grisé, avec la mention « Épuisé », alors que le scénario demandait de l'utiliser.",
+  "cout_usd": 0.1331438
+ },
+ "etape2": {
+  "preuve_conforme": "oui",
+  "ecarts": "",
+  "cout_usd": 0.0760566
+ }
+}

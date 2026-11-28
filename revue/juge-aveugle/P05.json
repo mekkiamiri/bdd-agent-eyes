@@ -1,0 +1,18 @@
+{
+ "etape1": {
+  "resultats": [
+   {
+    "etape": "Alors le total est \"12,00 €\"",
+    "visible": "non"
+   }
+  ],
+  "verdict": "refus",
+  "justification": "La capture montre trois boutons « Ajouter » (Marteau, Tournevis grisé, Mètre ruban), donc l'étape « je clique sur \"Ajouter\" » peut désigner plusieurs éléments. Le panier affiche « Total : 0,00 € » et non « 12,00 € », mais cet écart vient de l'ambiguïté du scénario.",
+  "cout_usd": 0.0814466
+ },
+ "etape2": {
+  "preuve_conforme": "oui",
+  "ecarts": "",
+  "cout_usd": 0.18616100000000002
+ }
+}

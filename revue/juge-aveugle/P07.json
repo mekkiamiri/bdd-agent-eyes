@@ -1,0 +1,22 @@
+{
+ "etape1": {
+  "resultats": [
+   {
+    "etape": "Alors je vois \"Le code postal doit contenir 5 chiffres.\"",
+    "visible": "oui"
+   },
+   {
+    "etape": "Et je ne vois pas \"Adresse enregistrée.\"",
+    "visible": "oui"
+   }
+  ],
+  "verdict": "passe",
+  "justification": "Le message d'erreur « Le code postal doit contenir 5 chiffres. » s'affiche en rouge sous les boutons, et les champs contiennent bien « Camille Martin » et « 6900 ». Le texte « Adresse enregistrée. » n'apparaît nulle part sur l'écran.",
+  "cout_usd": 0.0813466
+ },
+ "etape2": {
+  "preuve_conforme": "oui",
+  "ecarts": "",
+  "cout_usd": 0.0670198
+ }
+}

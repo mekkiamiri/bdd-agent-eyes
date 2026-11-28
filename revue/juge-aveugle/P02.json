@@ -1,0 +1,18 @@
+{
+ "etape1": {
+  "resultats": [
+   {
+    "etape": "Alors je vois \"Veuillez accepter les conditions de vente\"",
+    "visible": "non"
+   }
+  ],
+  "verdict": "echec",
+  "justification": "Le bouton « Valider la commande » est grisé tant que les conditions ne sont pas cochées, donc l'étape « je clique sur Valider la commande » ne peut pas se faire. Aucun message « Veuillez accepter les conditions de vente » n'apparaît à l'écran.",
+  "cout_usd": 0.1345838
+ },
+ "etape2": {
+  "preuve_conforme": "oui",
+  "ecarts": "",
+  "cout_usd": 0.1325038
+ }
+}
